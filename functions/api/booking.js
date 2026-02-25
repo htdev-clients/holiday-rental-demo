@@ -64,6 +64,7 @@ export async function onRequestPost(context) {
   // Email owner
   const approveUrl = `${env.SITE_URL}/api/approve?id=${id}&token=${token}`;
   await sendEmail(env.RESEND_API_KEY, {
+    from: env.FROM_EMAIL,
     to: env.OWNER_EMAIL,
     subject: `Nouvelle demande de réservation — ${firstname} ${lastname}`,
     html: ownerEmailHtml({ firstname, lastname, email, phone: data.phone, checkin, checkout, nights, guests, message: data.message, approveUrl }),

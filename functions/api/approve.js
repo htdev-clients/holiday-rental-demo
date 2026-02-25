@@ -43,6 +43,7 @@ export async function onRequestGet(context) {
 
   // Email guest the payment link
   await sendEmail(env.RESEND_API_KEY, {
+    from: env.FROM_EMAIL,
     to: booking.email,
     subject: 'Votre réservation est approuvée — Le Refuge Sauvage',
     html: guestPaymentEmailHtml({ booking, nights, total, paymentUrl }),

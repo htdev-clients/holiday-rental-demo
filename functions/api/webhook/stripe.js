@@ -40,11 +40,13 @@ export async function onRequestPost(context) {
 
       await Promise.all([
         sendEmail(env.RESEND_API_KEY, {
+          from:    env.FROM_EMAIL,
           to:      booking.email,
           subject: 'Confirmation de votre réservation — Le Refuge Sauvage',
           html:    guestConfirmationHtml({ booking, nights, total }),
         }),
         sendEmail(env.RESEND_API_KEY, {
+          from:    env.FROM_EMAIL,
           to:      env.OWNER_EMAIL,
           subject: `Paiement reçu — ${booking.firstname} ${booking.lastname}`,
           html:    ownerConfirmationHtml({ booking, nights, total }),

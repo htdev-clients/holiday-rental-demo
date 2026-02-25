@@ -8,6 +8,8 @@ PRICE_PER_NIGHT=150
 PRICE_WEEK_RATE=900
 SITE_URL=http://localhost:8788
 # In production (wrangler.toml): https://holiday-rental-template.pages.dev
+# Use onboarding@resend.dev until client domain is verified with Resend
+FROM_EMAIL=onboarding@resend.dev
 
 # Secrets — production values go in secrets.json → npm run deploy:secrets
 RESEND_API_KEY=re_...
