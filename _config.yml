@@ -1,0 +1,16 @@
+title: Le Refuge Sauvage
+description: Location de chalet éco-responsable au cœur des Ardennes Belges.
+baseurl: ""
+url: "https://refugesauvage.be"
+
+markdown: kramdown
+permalink: pretty
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/
+  - .git/
+  - example.html
+  - instructions.txt

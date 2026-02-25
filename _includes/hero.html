@@ -1,0 +1,35 @@
+{% assign p = site.data.property %}
+<header class="relative w-full h-screen overflow-hidden">
+    <img src="{{ p.hero_image }}"
+         alt="{{ p.hero_image_alt }}"
+         class="absolute inset-0 w-full h-full object-cover">
+    <div class="absolute inset-0 bg-gradient-to-t from-earth/90 via-earth/30 to-transparent"></div>
+
+    <div class="absolute bottom-0 left-0 w-full p-8 md:p-20">
+        <div class="max-w-3xl hero-reveal">
+            <p class="text-clay font-bold tracking-[0.25em] uppercase text-sm mb-4 drop-shadow-md">{{ p.subtitle }}</p>
+            <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl text-white leading-none mb-6 drop-shadow-xl">
+                {{ p.short_name | upcase }}<br>
+                <em class="font-light">{{ p.name | upcase | split: ' ' | last }}</em>
+            </h1>
+            <p class="text-white/90 text-base md:text-xl font-light max-w-lg leading-relaxed border-l-2 border-clay pl-6 drop-shadow-lg mb-10 hero-reveal-delay">
+                {{ p.description }}
+            </p>
+            <div class="flex flex-wrap gap-4 hero-reveal-delay">
+                <a href="#booking"
+                   class="px-8 py-4 bg-clay text-white font-bold uppercase tracking-widest text-xs hover:bg-white hover:text-earth transition-colors shadow-xl">
+                    Vérifier les disponibilités
+                </a>
+                <a href="#presentation"
+                   class="px-8 py-4 border border-white/60 text-white font-medium uppercase tracking-widest text-xs hover:border-clay hover:text-clay transition-colors">
+                    Découvrir le lieu
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="absolute bottom-8 right-8 flex flex-col items-center gap-2 text-white/50 text-xs tracking-widest uppercase">
+        <span>Défiler</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 animate-bounce"></i>
+    </div>
+</header>

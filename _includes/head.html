@@ -1,0 +1,263 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2C2520">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+    <title>{% if page.title %}{{ page.title }} | {{ site.data.property.name }}{% else %}{{ site.data.property.name }} | {{ site.data.property.tagline }}{% endif %}</title>
+    <meta name="description" content="{{ site.data.property.description }}">
+    <meta property="og:title"       content="{{ site.data.property.name }}">
+    <meta property="og:description" content="{{ site.data.property.description }}">
+    <meta property="og:image"       content="{{ site.data.property.hero_image }}">
+    <meta property="og:type"        content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        earth: '#2C2520',
+                        clay:  '#D6A87C',
+                        leaf:  '#4A5D44',
+                        paper: '#F2F0E9',
+                        stone: '#E5E2D9',
+                        cream: '#FAF8F3',
+                    },
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'serif'],
+                        sans:  ['Montserrat', 'sans-serif'],
+                    },
+                    screens: {
+                        pointer: { raw: '(hover: hover)' },
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* ── Scrollbar ── */
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* ── Hero reveal ── */
+        .hero-reveal       { animation: heroFadeIn 1.6s ease-out forwards; }
+        .hero-reveal-delay { animation: heroFadeIn 1.6s 0.4s ease-out both; }
+        @keyframes heroFadeIn {
+            from { opacity: 0; transform: translateY(28px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Scroll reveal (JS-driven) ── */
+        .sr { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+        .sr.visible { opacity: 1; transform: translateY(0); }
+
+        /* ── Hard shadow card ── */
+        .hard-shadow {
+            box-shadow: 14px 14px 0 0 #2C2520;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        @media (hover: hover) {
+            .hard-shadow:hover {
+                transform: translate(-4px, -4px);
+                box-shadow: 18px 18px 0 0 #D6A87C;
+            }
+        }
+
+        /* ── Mobile menu ── */
+        #mobile-menu { transition: opacity 0.3s ease, visibility 0.3s ease; }
+        .menu-hidden  { opacity: 0; visibility: hidden; pointer-events: none; }
+        .menu-visible { opacity: 1; visibility: visible; pointer-events: auto; }
+
+        /* ── Sticky nav background ── */
+        #main-nav.scrolled { background: rgba(44,37,32,0.97) !important; backdrop-filter: blur(8px); }
+
+        /* ── Calendar ── */
+        .cal-day { width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; border-radius: 0.25rem; cursor: default; }
+        .cal-day.available { background: #F2F0E9; color: #2C2520; cursor: pointer; }
+        .cal-day.booked    { background: #D9D6CE; color: #A8A49D; cursor: not-allowed; }
+        .cal-day.today     { outline: 2px solid #D6A87C; outline-offset: -2px; font-weight: 700; }
+        .cal-day.empty     { background: transparent; cursor: default; }
+        .cal-day.selected-start,
+        .cal-day.selected-end { background: #D6A87C !important; color: white; font-weight: 700; }
+        .cal-day.in-range          { background: #D6A87C; color: white; }
+        .cal-day.blocked           { background: #EDEAE3; color: #B8B3AB; cursor: not-allowed; }
+        .cal-day.in-range-preview  { background: #F0E0CF; color: #2C2520; }
+        .cal-day.hover-end         { background: #D6A87C !important; color: white !important; font-weight: 700; opacity: 0.75; }
+
+        /* ── Form inputs ── */
+        .form-input {
+            width: 100%;
+            background: #FAF8F3;
+            border: 1px solid #E5E2D9;
+            padding: 0.75rem 1rem;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem; /* ≥ 16 px prevents iOS Safari from auto-zooming on focus */
+            color: #2C2520;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus { border-color: #D6A87C; }
+        .form-input::placeholder { color: #aaa; }
+
+        /* ── Mobile / Touch ── */
+        /* Consistent input appearance on iOS (removes inner shadows, rounded corners) */
+        input.form-input, textarea.form-input { -webkit-appearance: none; appearance: none; }
+        /* Suppress tap highlight flash on Android/iOS */
+        a, button { -webkit-tap-highlight-color: transparent; }
+        /* No text selection or double-tap zoom on calendar cells */
+        .cal-day { user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+        /* iOS Safari: use svh so the hero never extends behind the retracted address bar */
+        @supports (height: 100svh) { header.h-screen { height: 100svh; } }
+
+        /* ── Amenity badge ── */
+        .amenity-badge {
+            display: flex; align-items: center; gap: 0.6rem;
+            padding: 0.6rem 1rem;
+            background: #FAF8F3;
+            border: 1px solid #E5E2D9;
+            font-size: 0.78rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #2C2520;
+        }
+    </style>
+
+    {% if page.layout == 'legal' %}
+    <style>
+        /* ── Legal page typography ── */
+        .legal-content h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.9rem, 5vw, 2.8rem);
+            font-weight: 700;
+            line-height: 1.15;
+            color: #2C2520;
+            margin-bottom: 0.25rem;
+        }
+        .legal-meta {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #D6A87C;
+            margin-top: 0 !important;
+            margin-bottom: 2.5rem;
+            display: block;
+        }
+        .legal-content h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #2C2520;
+            margin-top: 2.5rem;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid #E5E2D9;
+        }
+        .legal-content h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #2C2520;
+            margin-top: 1.5rem;
+            margin-bottom: 0.4rem;
+        }
+        .legal-content p {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.875rem;
+            line-height: 1.85;
+            color: #4a4440;
+            margin-bottom: 1rem;
+        }
+        .legal-content ul, .legal-content ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .legal-content ul { list-style: disc; }
+        .legal-content ol { list-style: decimal; }
+        .legal-content li {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.875rem;
+            line-height: 1.85;
+            color: #4a4440;
+            margin-bottom: 0.3rem;
+        }
+        .legal-content a { color: #D6A87C; text-decoration: underline; }
+        .legal-content a:hover { color: #2C2520; }
+        .legal-content strong { font-weight: 700; color: #2C2520; }
+        .legal-content hr {
+            border: none;
+            border-top: 1px solid #E5E2D9;
+            margin: 2.5rem 0;
+        }
+        .legal-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+        .legal-content th {
+            background: #E5E2D9;
+            color: #2C2520;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            text-align: left;
+            padding: 0.55rem 1rem;
+        }
+        .legal-content td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid #E5E2D9;
+            color: #4a4440;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.875rem;
+        }
+        .legal-content tr:last-child td { border-bottom: none; }
+        .legal-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #D6A87C;
+            text-decoration: none !important;
+            margin-bottom: 2rem;
+            transition: color 0.2s;
+        }
+        .legal-back:hover { color: #2C2520 !important; }
+        .legal-btn {
+            display: inline-block;
+            padding: 0.6rem 1.5rem;
+            border: 1px solid #D6A87C;
+            color: #D6A87C;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            background: transparent;
+            transition: background-color 0.2s, color 0.2s;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .legal-btn:hover { background: #D6A87C; color: white; }
+        .legal-btn:disabled { opacity: 0.5; cursor: default; }
+    </style>
+    {% endif %}
+</head>

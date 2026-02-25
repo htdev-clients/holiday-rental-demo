@@ -1,0 +1,363 @@
+<script>
+    // ── Icons ──────────────────────────────────────────────────
+    lucide.createIcons();
+
+    // ── Mobile Menu ────────────────────────────────────────────
+    const openBtn     = document.getElementById('open-menu-btn');
+    const closeBtn    = document.getElementById('close-menu-btn');
+    const menu        = document.getElementById('mobile-menu');
+    const mobileLinks = document.querySelectorAll('.mobile-link');
+
+    // iOS Safari ignores overflow:hidden on body — position:fixed is the reliable fix.
+    let _menuScrollY = 0;
+    function openMenu() {
+        _menuScrollY = window.scrollY;
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.top      = `-${_menuScrollY}px`;
+        document.body.style.width    = '100%';
+        menu.classList.replace('menu-hidden', 'menu-visible');
+    }
+    function closeMenu() {
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top      = '';
+        document.body.style.width    = '';
+        window.scrollTo(0, _menuScrollY);
+        menu.classList.replace('menu-visible', 'menu-hidden');
+    }
+
+    openBtn.addEventListener('click', openMenu);
+    closeBtn.addEventListener('click', closeMenu);
+    mobileLinks.forEach(l => l.addEventListener('click', closeMenu));
+    // Close on Escape key (desktop) or tap on the dark overlay itself (mobile)
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+    menu.addEventListener('click', (e) => { if (e.target === menu) closeMenu(); });
+
+    // ── Sticky Nav ─────────────────────────────────────────────
+    window.addEventListener('scroll', () => {
+        document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 80);
+    }, { passive: true });
+
+    // ── Scroll Reveal ──────────────────────────────────────────
+    const srObserver = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) { e.target.classList.add('visible'); srObserver.unobserve(e.target); }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.sr').forEach(el => srObserver.observe(el));
+
+    // ── Gallery Scroll ─────────────────────────────────────────
+    function scrollGallery(dir) {
+        const container = document.getElementById('gallery-container');
+        const card = container.querySelector('.snap-center');
+        if (!card) return;
+        const gap = parseFloat(getComputedStyle(container).columnGap) || 0;
+        container.scrollBy({ left: (dir === 'left' ? -1 : 1) * (card.offsetWidth + gap), behavior: 'smooth' });
+    }
+
+    // ── Availability Calendar ──────────────────────────────────
+    // TODO (Phase 4): Replace BOOKED_DATES with data fetched from /api/availability
+    // which will parse the Airbnb iCal feed server-side.
+    const BOOKED_DATES = new Set([
+        '2025-08-10','2025-08-11','2025-08-12','2025-08-13','2025-08-14',
+        '2025-08-15','2025-08-16','2025-08-17',
+        '2025-09-05','2025-09-06','2025-09-07',
+        '2025-10-18','2025-10-19','2025-10-20','2025-10-21','2025-10-22',
+        '2025-10-23','2025-10-24','2025-10-25','2025-10-26',
+    ]);
+
+    const PER_NIGHT = {{ site.data.property.pricing.per_night }};
+    const WEEK_RATE = {{ site.data.property.pricing.week }};
+
+    let selectedStart = null, selectedEnd = null;
+    let calYear, calMonth;
+
+    function pad(n)          { return String(n).padStart(2, '0'); }
+    function toKey(y, m, d)  { return `${y}-${pad(m + 1)}-${pad(d)}`; }
+
+    function getPhase() {
+        if (!selectedStart) return 'idle';
+        if (!selectedEnd)   return 'selecting';
+        return 'complete';
+    }
+
+    function clearFormDates() {
+        document.getElementById('checkin').value  = '';
+        document.getElementById('checkout').value = '';
+        updatePriceSummary();
+    }
+
+    function setHover(key) {
+        if (getPhase() !== 'selecting') return;
+        document.querySelectorAll('.in-range-preview, .hover-end').forEach(el => {
+            el.classList.remove('in-range-preview', 'hover-end');
+        });
+        if (!key || key <= selectedStart) return;
+        document.querySelectorAll('[data-key]').forEach(el => {
+            const k = el.dataset.key;
+            if (k > selectedStart && k < key) el.classList.add('in-range-preview');
+            else if (k === key)               el.classList.add('hover-end');
+        });
+    }
+
+    function clearHover() {
+        document.querySelectorAll('.in-range-preview, .hover-end').forEach(el => {
+            el.classList.remove('in-range-preview', 'hover-end');
+        });
+    }
+
+    function renderMonth(year, month) {
+        const today       = new Date();
+        const firstDay    = new Date(year, month, 1).getDay();
+        const startOffset = (firstDay + 6) % 7; // Mon = 0
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const monthNames  = ['Janvier','Février','Mars','Avril','Mai','Juin',
+                             'Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+        const dayNames    = ['Lu','Ma','Me','Je','Ve','Sa','Di'];
+
+        // Compute the first booked date after selectedStart so we can block everything past it
+        const phase = getPhase();
+        let blockLimit = null;
+        if (phase === 'selecting') {
+            const st = new Date(selectedStart);
+            BOOKED_DATES.forEach(d => {
+                const dt = new Date(d);
+                if (dt > st && (!blockLimit || dt < new Date(blockLimit))) blockLimit = d;
+            });
+        }
+
+        let html = `<div class="bg-white p-6 border border-stone" onmouseleave="clearHover()">`;
+
+        // Header
+        html += `<div class="flex items-center justify-between mb-4">`;
+        html += `<button onclick="shiftCalendar(-1)" class="p-1 hover:text-clay transition-colors" aria-label="Mois précédent"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>`;
+        html += `<span class="font-serif text-lg text-earth">${monthNames[month]} ${year}</span>`;
+        html += `<button onclick="shiftCalendar(1)"  class="p-1 hover:text-clay transition-colors" aria-label="Mois suivant"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>`;
+        html += `</div>`;
+
+        // Day names
+        html += `<div class="grid grid-cols-7 gap-1 mb-2">`;
+        dayNames.forEach(d => {
+            html += `<div class="cal-day text-center text-xs font-bold text-gray-400 uppercase">${d}</div>`;
+        });
+        html += `</div>`;
+
+        // Days
+        html += `<div class="grid grid-cols-7 gap-1">`;
+        for (let i = 0; i < startOffset; i++) html += `<div class="cal-day empty"></div>`;
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const key    = toKey(year, month, d);
+            const date   = new Date(year, month, d);
+            const todayD = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            const isPast = date < todayD;
+            const isBook = BOOKED_DATES.has(key);
+            const isTdy  = date.getTime() === todayD.getTime();
+
+            // During 'selecting': block dates before start and dates past the next booked date
+            const isBlocked = phase === 'selecting' && key !== selectedStart &&
+                              (key < selectedStart || (blockLimit !== null && key >= blockLimit));
+
+            let cls = 'cal-day ';
+            if (isPast || isBook) {
+                cls += 'booked';
+            } else if (isBlocked) {
+                cls += 'blocked';
+            } else {
+                cls += 'available';
+                if (key === selectedStart) cls += ' selected-start';
+                else if (key === selectedEnd) cls += ' selected-end';
+                else if (selectedStart && selectedEnd && key > selectedStart && key < selectedEnd) cls += ' in-range';
+            }
+            if (isTdy) cls += ' today';
+
+            const clickable   = !isPast && !isBook && !isBlocked;
+            const onclick     = clickable ? `onclick="selectDate('${key}')"` : '';
+            const mouseenter  = (clickable && phase === 'selecting' && key !== selectedStart)
+                                ? `onmouseenter="setHover('${key}')"` : '';
+            html += `<div class="${cls}" data-key="${key}" ${onclick} ${mouseenter}>${d}</div>`;
+        }
+        // Always fill to 42 cells (6 rows) so height never changes
+        const trailing = 42 - startOffset - daysInMonth;
+        for (let i = 0; i < trailing; i++) html += `<div class="cal-day empty"></div>`;
+        html += `</div></div>`;
+        return html;
+    }
+
+    function drawCalendars() {
+        document.getElementById('calendar-root').innerHTML = renderMonth(calYear, calMonth);
+        lucide.createIcons();
+    }
+
+    function shiftCalendar(dir) {
+        calMonth += dir;
+        if (calMonth > 11) { calMonth = 0;  calYear++; }
+        if (calMonth < 0)  { calMonth = 11; calYear--; }
+        drawCalendars();
+    }
+
+    function selectDate(key) {
+        const phase = getPhase();
+
+        if (phase === 'idle') {
+            // First click: set check-in
+            selectedStart = key;
+            selectedEnd   = null;
+        } else if (phase === 'selecting') {
+            if (key === selectedStart) {
+                // Click same date again → full deselect
+                selectedStart = null;
+                selectedEnd   = null;
+                clearFormDates();
+            } else if (key < selectedStart) {
+                // Click before start → restart from this date
+                selectedStart = key;
+                selectedEnd   = null;
+            } else {
+                // Click after start → confirm check-out
+                selectedEnd = key;
+                document.getElementById('checkin').value  = selectedStart;
+                document.getElementById('checkout').value = selectedEnd;
+                document.getElementById('checkout').min   = selectedStart;
+                updatePriceSummary();
+            }
+        } else {
+            // Complete → any click starts a new selection
+            selectedStart = key;
+            selectedEnd   = null;
+            clearFormDates();
+        }
+
+        clearHover();
+        drawCalendars();
+    }
+
+    if (document.getElementById('calendar-root')) {
+        calYear  = new Date().getFullYear();
+        calMonth = new Date().getMonth();
+        drawCalendars();
+    }
+
+    // ── Price Calculation & Form Validation ────────────────────
+    function calcNights(a, b) {
+        return Math.round((new Date(b) - new Date(a)) / 86400000);
+    }
+
+    function calcTotal(nights) {
+        const weeks = Math.floor(nights / 7);
+        const extra = nights % 7;
+        return weeks * WEEK_RATE + extra * PER_NIGHT;
+    }
+
+    function updatePriceSummary() {
+        const ci        = document.getElementById('checkin').value;
+        const co        = document.getElementById('checkout').value;
+        const promptEl  = document.getElementById('price-prompt');
+        const summaryEl = document.getElementById('price-summary-row');
+        const nightsEl  = document.getElementById('price-nights-label');
+        const totalEl   = document.getElementById('price-total');
+        const noteEl    = document.getElementById('price-note');
+        if (ci && co) {
+            const n = calcNights(ci, co);
+            if (n > 0) {
+                nightsEl.textContent = `${n} nuit${n > 1 ? 's' : ''}`;
+                promptEl.classList.add('opacity-0', 'pointer-events-none');
+                summaryEl.classList.remove('opacity-0', 'pointer-events-none');
+                totalEl.textContent = calcTotal(n).toLocaleString('fr-BE') + ' €';
+                totalEl.classList.remove('opacity-0', 'pointer-events-none');
+                noteEl.classList.remove('opacity-0', 'pointer-events-none');
+                updateSubmitBtn();
+                return;
+            }
+        }
+        promptEl.classList.remove('opacity-0', 'pointer-events-none');
+        summaryEl.classList.add('opacity-0', 'pointer-events-none');
+        totalEl.classList.add('opacity-0', 'pointer-events-none');
+        noteEl.classList.add('opacity-0', 'pointer-events-none');
+        updateSubmitBtn();
+    }
+
+    function updateSubmitBtn() {
+        const form = document.getElementById('booking-form');
+        if (!form) return;
+        const ok =
+            document.getElementById('checkin').value &&
+            document.getElementById('checkout').value &&
+            form.querySelector('[name="guests"]').value &&
+            form.querySelector('[name="firstname"]').value.trim() &&
+            form.querySelector('[name="lastname"]').value.trim() &&
+            form.querySelector('[name="email"]').value.trim() &&
+            document.getElementById('cgv').checked;
+        document.getElementById('submit-btn').disabled = !ok;
+    }
+
+    // ── Booking Form ───────────────────────────────────────────
+    if (document.getElementById('checkin')) {
+        const todayStr = new Date().toISOString().split('T')[0];
+        document.getElementById('checkin').min  = todayStr;
+        document.getElementById('checkout').min = todayStr;
+
+        document.getElementById('checkin').addEventListener('change', function () {
+            document.getElementById('checkout').min = this.value;
+            if (document.getElementById('checkout').value < this.value)
+                document.getElementById('checkout').value = '';
+            updatePriceSummary();
+        });
+        document.getElementById('checkout').addEventListener('change', updatePriceSummary);
+
+        ['guests', 'firstname', 'lastname', 'email'].forEach(name => {
+            const el = document.querySelector(`[name="${name}"]`);
+            if (el) { el.addEventListener('input', updateSubmitBtn); el.addEventListener('change', updateSubmitBtn); }
+        });
+        document.getElementById('cgv').addEventListener('change', updateSubmitBtn);
+    }
+
+    // ── Testimonial Carousel ───────────────────────────────────
+    (function () {
+        const slides = document.querySelectorAll('#testimonial-track .t-slide');
+        const dots   = document.querySelectorAll('#testimonial-dots .t-dot');
+        if (slides.length < 2) return;
+
+        let current = 0;
+
+        function goTo(index) {
+            slides[current].classList.remove('active');
+            dots[current].classList.remove('w-6', 'bg-white');
+            dots[current].classList.add('w-2', 'bg-white/30');
+            current = (index + slides.length) % slides.length;
+            slides[current].classList.add('active');
+            dots[current].classList.remove('w-2', 'bg-white/30');
+            dots[current].classList.add('w-6', 'bg-white');
+        }
+
+        document.getElementById('t-prev').addEventListener('click', () => goTo(current - 1));
+        document.getElementById('t-next').addEventListener('click', () => goTo(current + 1));
+        dots.forEach(dot => dot.addEventListener('click', () => goTo(parseInt(dot.dataset.index))));
+    })();
+
+    if (document.getElementById('booking-form'))
+    document.getElementById('booking-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const form    = e.target;
+        const errorEl = document.getElementById('form-error');
+
+        if (!form.checkValidity()) { errorEl.classList.remove('hidden'); return; }
+        errorEl.classList.add('hidden');
+
+        const btn = document.getElementById('submit-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>&nbsp;Envoi en cours…';
+        lucide.createIcons();
+
+        // TODO (Phase 3): Replace with real fetch to Cloudflare Pages Function
+        // const data = Object.fromEntries(new FormData(form));
+        // const res  = await fetch('/api/booking', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        // if (!res.ok) { btn.disabled = false; errorEl.textContent = 'Une erreur est survenue. Veuillez réessayer.'; errorEl.classList.remove('hidden'); return; }
+
+        await new Promise(r => setTimeout(r, 1500)); // Simulated delay
+
+        document.getElementById('booking-form-container').classList.add('hidden');
+        document.getElementById('booking-success').classList.remove('hidden');
+    });
+</script>

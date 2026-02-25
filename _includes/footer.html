@@ -1,0 +1,73 @@
+{% assign p = site.data.property %}
+<footer id="contact" class="bg-[#1f1a16] text-stone">
+    <div class="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-3 gap-12">
+
+        <!-- Brand -->
+        <div class="space-y-4">
+            <p class="font-serif text-white text-3xl font-bold">{{ p.name }}.</p>
+            <p class="text-white/50 text-xs leading-relaxed max-w-xs">
+                Chalet en plein cœur des Ardennes Belges. Une retraite sauvage, loin du bruit du monde.
+            </p>
+            <div class="flex gap-5 text-white/50 pt-2">
+                <a href="{{ p.social.instagram }}" class="hover:text-clay transition-colors" aria-label="Instagram">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="5"/>
+                        <circle cx="12" cy="12" r="4"/>
+                        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+                    </svg>
+                </a>
+                <a href="{{ p.social.facebook }}" class="hover:text-clay transition-colors" aria-label="Facebook">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Address -->
+        <div class="space-y-4">
+            <span class="text-clay text-xs font-bold uppercase tracking-widest">Adresse</span>
+            <address class="not-italic text-white/80 font-serif text-lg leading-relaxed">
+                {{ p.location.address_line1 }},<br>
+                {{ p.location.address_line2 }},<br>
+                {{ p.location.country }}
+            </address>
+            <a href="{{ p.location.maps_url }}" target="_blank" rel="noopener"
+               class="inline-flex items-center gap-2 text-xs text-clay hover:text-white transition-colors uppercase tracking-widest">
+                <i data-lucide="map-pin" class="w-3 h-3"></i> Voir sur la carte
+            </a>
+        </div>
+
+        <!-- Contact -->
+        <div class="space-y-4">
+            <span class="text-clay text-xs font-bold uppercase tracking-widest">Contact</span>
+            <div class="space-y-3 text-white/80 font-serif text-lg">
+                <a href="tel:{{ p.contact.phone | remove: ' ' }}" class="flex items-center gap-3 hover:text-clay transition-colors">
+                    <i data-lucide="phone" class="w-4 h-4 text-clay"></i>
+                    {{ p.contact.phone }}
+                </a>
+                <a href="mailto:{{ p.contact.email }}" class="flex items-center gap-3 hover:text-clay transition-colors break-all">
+                    <i data-lucide="mail" class="w-4 h-4 text-clay"></i>
+                    {{ p.contact.email }}
+                </a>
+            </div>
+            <a href="#booking"
+               class="inline-block mt-4 px-6 py-3 border border-clay text-clay text-xs font-bold uppercase tracking-widest hover:bg-clay hover:text-white transition-colors">
+                Faire une réservation
+            </a>
+        </div>
+
+    </div>
+
+    <div class="border-t border-white/10 py-5">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-white/55 uppercase tracking-widest">
+            <span>© {{ 'now' | date: "%Y" }} {{ p.name }} · Tous droits réservés</span>
+            <span class="text-white/40 normal-case tracking-normal">{{ p.compliance.registration_number }} · Agréé CGT Wallonie</span>
+            <div class="flex flex-wrap gap-x-6 gap-y-2">
+                <a href="/cgv"              class="hover:text-white transition-colors">CGV</a>
+                <a href="/confidentialite"  class="hover:text-white transition-colors">Politique de confidentialité</a>
+                <a href="/cookies"          class="hover:text-white transition-colors">Cookies</a>
+            </div>
+        </div>
+    </div>
+</footer>

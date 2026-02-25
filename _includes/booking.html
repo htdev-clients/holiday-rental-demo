@@ -1,0 +1,203 @@
+{% assign p = site.data.property %}
+<section id="booking" class="py-24 bg-stone">
+    <div class="max-w-7xl mx-auto px-6">
+
+        <div class="text-center mb-16 sr">
+            <span class="text-clay font-bold uppercase tracking-widest text-xs">Réservation directe</span>
+            <h2 class="font-serif text-4xl md:text-5xl text-earth mt-3">
+                Réservez <em class="text-clay">votre séjour</em>
+            </h2>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:items-stretch">
+
+            <!-- Left: Steps (top) + Calendar (bottom) -->
+            <div class="flex flex-col sr">
+
+                <!-- Process steps — anchored top -->
+                <div class="space-y-4">
+                    <div class="flex gap-4 items-start">
+                        <div class="w-7 h-7 shrink-0 bg-clay text-white flex items-center justify-center text-xs font-bold rounded-full">1</div>
+                        <div>
+                            <p class="font-semibold text-earth text-sm">Sélectionnez vos dates</p>
+                            <p class="text-gray-600 text-sm mt-1">Cliquez sur votre date d'arrivée, puis sur votre date de départ.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start">
+                        <div class="w-7 h-7 shrink-0 bg-clay text-white flex items-center justify-center text-xs font-bold rounded-full">2</div>
+                        <div>
+                            <p class="font-semibold text-earth text-sm">Complétez le formulaire</p>
+                            <p class="text-gray-600 text-sm mt-1">Vos coordonnées et le nombre de voyageurs.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 items-start">
+                        <div class="w-7 h-7 shrink-0 bg-clay text-white flex items-center justify-center text-xs font-bold rounded-full">3</div>
+                        <div>
+                            <p class="font-semibold text-earth text-sm">Confirmation sous 24h</p>
+                            <p class="text-gray-600 text-sm mt-1">Le propriétaire confirme et vous envoie le lien de paiement.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Legend + Calendar — anchored bottom -->
+                <div class="mt-12">
+                    <div class="flex gap-6 mb-4 text-xs uppercase tracking-widest font-semibold">
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 rounded-sm bg-paper border border-earth/20"></div>
+                            <span>Disponible</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 rounded-sm bg-clay"></div>
+                            <span>Sélectionné</span>
+                        </div>
+                    </div>
+
+                    <div id="availability">
+                        <div id="calendar-root"></div>
+                    </div>
+
+                    <!-- Récapitulatif tarifaire — toujours rendu, aucun décalage de mise en page -->
+                    <div class="mt-6 border border-stone bg-white shadow-sm overflow-hidden">
+                        <div class="h-1 bg-clay"></div>
+                        <div class="px-6 pt-5 pb-5">
+
+                            <div class="flex items-center justify-between gap-6">
+                                <!-- Zone texte — superposition CSS grid, hauteur stable dans les deux états -->
+                                <div class="flex-1 min-w-0" style="display:grid;grid-template-areas:'s'">
+                                    <p id="price-prompt"
+                                       class="text-xl text-earth/70 font-serif italic leading-relaxed transition-opacity duration-300"
+                                       style="grid-area:s">
+                                        Sélectionnez vos dates
+                                    </p>
+                                    <div id="price-summary-row"
+                                         class="opacity-0 pointer-events-none transition-opacity duration-300"
+                                         style="grid-area:s">
+                                        <p id="price-nights-label" class="font-serif text-4xl font-bold text-earth"></p>
+                                    </div>
+                                </div>
+                                <!-- Montant total — largeur fixe pour éviter tout recalcul de layout -->
+                                <span id="price-total"
+                                      class="font-serif text-4xl font-bold text-clay shrink-0 min-w-36 text-right opacity-0 pointer-events-none transition-opacity duration-300">
+                                    0 €
+                                </span>
+                            </div>
+
+                            <div class="mt-5 pt-4 border-t border-stone">
+                                <p id="price-note"
+                                   class="text-xs text-earth/40 opacity-0 pointer-events-none transition-opacity duration-300">
+                                    * {{ p.pricing.note }}
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Right: Form -->
+            <div class="sr flex flex-col">
+                <div id="booking-form-container" class="flex flex-col flex-1">
+                    <form id="booking-form" class="flex flex-col flex-1 bg-cream px-8 py-10 border border-stone" novalidate>
+
+                        <!-- Fields -->
+                        <div class="space-y-5">
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">Arrivée *</label>
+                                    <input type="date" name="checkin" id="checkin" required class="form-input">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">Départ *</label>
+                                    <input type="date" name="checkout" id="checkout" required class="form-input">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">Nombre de voyageurs *</label>
+                                <select name="guests" required class="form-input">
+                                    <option value="" disabled selected>Sélectionner</option>
+                                    {% for i in (1..p.capacity.guests) %}
+                                    <option value="{{ i }}">{{ i }} personne{% if i > 1 %}s{% endif %}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">Prénom *</label>
+                                    <input type="text" name="firstname" required placeholder="Marie" class="form-input">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">Nom *</label>
+                                    <input type="text" name="lastname" required placeholder="Dupont" class="form-input">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">Email *</label>
+                                <input type="email" name="email" required placeholder="marie.dupont@gmail.com" class="form-input">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">Téléphone</label>
+                                <input type="tel" name="phone" placeholder="+32 4XX XX XX XX" class="form-input">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">Message</label>
+                                <textarea name="message" rows="3"
+                                    placeholder="Questions particulières, animaux de compagnie, allergies..."
+                                    class="form-input resize-none"></textarea>
+                            </div>
+
+                            <div class="flex items-start gap-3 pt-1">
+                                <input type="checkbox" name="cgv" id="cgv" required class="mt-1 w-4 h-4 accent-clay shrink-0">
+                                <label for="cgv" class="text-xs text-gray-500 leading-relaxed">
+                                    J'ai lu et j'accepte les
+                                    <a href="/cgv" class="text-clay underline hover:text-earth">Conditions Générales de Vente</a>
+                                    ainsi que la
+                                    <a href="/confidentialite" class="text-clay underline hover:text-earth">Politique de confidentialité</a>. *
+                                </label>
+                            </div>
+
+                        </div>
+
+                        <!-- Spacer — absorbs extra height to match left column -->
+                        <div class="flex-1 min-h-12"></div>
+
+                        <!-- CTA -->
+                        <div class="space-y-3">
+                            <p id="form-error" class="text-red-500 text-xs hidden">Veuillez remplir tous les champs obligatoires.</p>
+                            <button type="submit" id="submit-btn"
+                                class="w-full py-4 bg-clay text-white font-bold uppercase tracking-widest text-sm hover:bg-earth transition-colors flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                                disabled>
+                                <i data-lucide="send" class="w-4 h-4"></i>
+                                Envoyer ma demande
+                            </button>
+                            <p class="text-xs text-gray-400 text-center">
+                                <i data-lucide="lock" class="w-3 h-3 inline -mt-0.5 mr-1"></i>
+                                Données transmises de manière sécurisée
+                            </p>
+                        </div>
+
+                    </form>
+                </div>
+
+                <!-- Success state -->
+                <div id="booking-success" class="flex-1 hidden bg-leaf/10 border border-leaf p-10 text-center flex flex-col items-center justify-center space-y-4">
+                    <i data-lucide="check-circle-2" class="w-12 h-12 text-leaf mx-auto"></i>
+                    <h3 class="font-serif text-2xl text-earth">Demande envoyée !</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed max-w-xs mx-auto">
+                        Merci pour votre demande. Le propriétaire l'examinera et vous enverra
+                        un lien de paiement sécurisé sous <strong>24h</strong>.
+                    </p>
+                    <p class="text-xs text-gray-400">Pensez à vérifier vos spams si vous ne recevez pas d'email.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>

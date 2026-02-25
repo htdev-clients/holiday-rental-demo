@@ -1,0 +1,124 @@
+{% assign p = site.data.property %}
+{% assign c = p.capacity %}
+{% assign interior = p.concept | first %}
+{% assign exterior = p.concept | last %}
+
+<section id="presentation" class="bg-paper">
+
+    <!-- ── Opening: Heading + Stats ──────────────────────────── -->
+    <div class="max-w-7xl mx-auto px-6 pt-24 pb-20">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center sr">
+
+            <!-- Heading -->
+            <div class="space-y-6">
+                <h2 class="font-serif text-5xl md:text-6xl text-earth leading-tight">
+                    Un chalet<br><em class="text-clay">dans les Ardennes</em>
+                </h2>
+                <p class="text-gray-500 leading-loose text-sm md:text-base max-w-md">
+                    Le Refuge Sauvage se trouve au cœur des Ardennes belges, entouré d'environ deux hectares
+                    de forêt. C'est un endroit calme et confortable, loin de l'agitation du quotidien.
+                </p>
+            </div>
+
+            <!-- Stats grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div class="bg-earth px-4 py-6 text-center">
+                    <span class="block font-serif text-3xl text-clay font-bold">{{ c.guests }}</span>
+                    <span class="block text-white/60 text-xs uppercase tracking-widest mt-1">Personnes</span>
+                </div>
+                <div class="bg-earth px-4 py-6 text-center">
+                    <span class="block font-serif text-3xl text-clay font-bold">{{ c.bedrooms }}</span>
+                    <span class="block text-white/60 text-xs uppercase tracking-widest mt-1">Chambres</span>
+                </div>
+                <div class="bg-earth px-4 py-6 text-center">
+                    <span class="block font-serif text-3xl text-clay font-bold">{{ c.area_m2 }}</span>
+                    <span class="block text-white/60 text-xs uppercase tracking-widest mt-1">m² habitables</span>
+                </div>
+                <div class="bg-earth px-4 py-6 text-center">
+                    <span class="block font-serif text-3xl text-clay font-bold">{{ c.land_ha }} ha</span>
+                    <span class="block text-white/60 text-xs uppercase tracking-widest mt-1">Terrain privé</span>
+                </div>
+                <div class="bg-clay col-span-2 px-4 py-6 text-center">
+                    <span class="block font-serif text-3xl text-white font-bold">{{ p.pricing.per_night }} €</span>
+                    <span class="block text-white/80 text-xs uppercase tracking-widest mt-1">Par nuit</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ── Interior ───────────────────────────────────────────── -->
+    <div class="max-w-7xl mx-auto px-6 pb-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:items-stretch sr">
+
+            <!-- Main photo -->
+            <div class="lg:col-span-7">
+                <img src="{{ interior.image }}" alt="{{ interior.image_alt }}"
+                    class="w-full h-72 lg:h-full object-cover hard-shadow">
+            </div>
+
+            <!-- Text -->
+            <div class="lg:col-span-5 space-y-5 lg:pt-4">
+                <span class="text-clay font-bold uppercase tracking-widest text-xs">{{ interior.number }} · {{ interior.label }}</span>
+                <h3 class="font-serif text-4xl text-earth leading-tight">{{ interior.title }}</h3>
+                <p class="text-gray-500 leading-loose text-sm">{{ interior.description }}</p>
+                <ul class="space-y-3 text-sm text-leaf font-medium">
+                    {% for feature in interior.features %}
+                    <li class="flex items-center gap-3">
+                        <i data-lucide="{{ feature.icon }}" class="w-4 h-4 shrink-0"></i>
+                        {{ feature.text }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ── Exterior ───────────────────────────────────────────── -->
+    <div class="max-w-7xl mx-auto px-6 pt-10 pb-24">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:items-stretch sr">
+
+            <!-- Text -->
+            <div class="lg:col-span-5 space-y-5 lg:pt-4 order-2 lg:order-1">
+                <span class="text-clay font-bold uppercase tracking-widest text-xs">{{ exterior.number }} · {{ exterior.label }}</span>
+                <h3 class="font-serif text-4xl text-earth leading-tight">{{ exterior.title }}</h3>
+                <p class="text-gray-500 leading-loose text-sm">{{ exterior.description }}</p>
+                <ul class="space-y-3 text-sm text-leaf font-medium">
+                    {% for feature in exterior.features %}
+                    <li class="flex items-center gap-3">
+                        <i data-lucide="{{ feature.icon }}" class="w-4 h-4 shrink-0"></i>
+                        {{ feature.text }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Main photo -->
+            <div class="lg:col-span-7 order-1 lg:order-2">
+                <img src="{{ exterior.image }}" alt="{{ exterior.image_alt }}"
+                    class="w-full h-72 lg:h-full object-cover hard-shadow">
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ── Amenities ─────────────────────────────────────────── -->
+    <div id="amenities" class="bg-earth">
+        <div class="max-w-7xl mx-auto px-6 py-20">
+            <div class="mb-12 sr">
+                <span class="text-clay font-bold uppercase tracking-widest text-xs">Ce qui est inclus</span>
+                <h3 class="font-serif text-3xl md:text-4xl text-white mt-2">Équipements</h3>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 sr">
+                {% for a in p.amenities %}
+                <div class="flex items-center gap-3 py-4 border-b border-white/10 text-white/75 text-sm font-medium">
+                    <i data-lucide="{{ a.icon }}" class="w-4 h-4 text-clay shrink-0"></i>
+                    {{ a.label }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</section>

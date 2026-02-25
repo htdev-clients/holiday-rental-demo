@@ -1,0 +1,52 @@
+{% assign testimonials = site.data.property.testimonials %}
+<div class="bg-leaf py-20 relative overflow-hidden">
+    <!-- Texture overlay -->
+    <div class="absolute inset-0 opacity-[0.20] pointer-events-none" style="background-image: url('/assets/images/charlie-brown.svg'); background-size: 20px 12px;"></div>
+
+    <div class="relative z-10 max-w-3xl mx-auto px-6 text-center" id="testimonial-carousel">
+
+        <style>
+            #testimonial-track { display: grid; }
+            #testimonial-track .t-slide { grid-column: 1; grid-row: 1; transition: opacity 0.5s ease; opacity: 0; pointer-events: none; }
+            #testimonial-track .t-slide.active { opacity: 1; pointer-events: auto; }
+        </style>
+
+        <i data-lucide="quote" class="w-10 h-10 text-white/60 mx-auto mb-8"></i>
+
+        <!-- Arrows + content row -->
+        <div class="flex items-center gap-6">
+            <button id="t-prev" class="shrink-0 p-2 -ml-2 text-white/40 hover:text-white transition-colors" aria-label="Témoignage précédent">
+                <i data-lucide="chevron-left" class="w-8 h-8"></i>
+            </button>
+
+            <div id="testimonial-track" class="flex-1">
+                {% for t in testimonials %}
+                <div class="t-slide {% if forloop.first %}active{% endif %}">
+                    <p class="font-serif text-2xl md:text-3xl text-white italic leading-relaxed mb-8">
+                        "{{ t.quote }}"
+                    </p>
+                    <div class="flex items-center justify-center gap-4">
+                        <div class="h-px w-12 bg-white/40"></div>
+                        <span class="text-white/80 text-xs font-bold tracking-[0.2em] uppercase">{{ t.author }} · {{ t.date }}</span>
+                        <div class="h-px w-12 bg-white/40"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <button id="t-next" class="shrink-0 p-2 -mr-2 text-white/40 hover:text-white transition-colors" aria-label="Témoignage suivant">
+                <i data-lucide="chevron-right" class="w-8 h-8"></i>
+            </button>
+        </div>
+
+        <!-- Dots -->
+        <div class="flex justify-center gap-3 mt-10" id="testimonial-dots">
+            {% for t in testimonials %}
+            <button class="t-dot h-2 rounded-full transition-all duration-300 {% if forloop.first %}w-6 bg-white{% else %}w-2 bg-white/30{% endif %}"
+                    data-index="{{ forloop.index0 }}"
+                    aria-label="Témoignage {{ forloop.index }}"></button>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
