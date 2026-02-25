@@ -350,12 +350,32 @@
         btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>&nbsp;Envoi en cours…';
         lucide.createIcons();
 
-        // TODO (Phase 3): Replace with real fetch to Cloudflare Pages Function
-        // const data = Object.fromEntries(new FormData(form));
-        // const res  = await fetch('/api/booking', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-        // if (!res.ok) { btn.disabled = false; errorEl.textContent = 'Une erreur est survenue. Veuillez réessayer.'; errorEl.classList.remove('hidden'); return; }
+        const data = Object.fromEntries(new FormData(form));
+        let res;
+        try {
+            res = await fetch('/api/booking', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+        } catch {
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="send" class="w-4 h-4"></i>&nbsp;Envoyer ma demande';
+            lucide.createIcons();
+            errorEl.textContent = 'Erreur réseau. Vérifiez votre connexion et réessayez.';
+            errorEl.classList.remove('hidden');
+            return;
+        }
 
-        await new Promise(r => setTimeout(r, 1500)); // Simulated delay
+        if (!res.ok) {
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="send" class="w-4 h-4"></i>&nbsp;Envoyer ma demande';
+            lucide.createIcons();
+            const { error } = await res.json().catch(() => ({}));
+            errorEl.textContent = error || 'Une erreur est survenue. Veuillez réessayer.';
+            errorEl.classList.remove('hidden');
+            return;
+        }
 
         document.getElementById('booking-form-container').classList.add('hidden');
         document.getElementById('booking-success').classList.remove('hidden');

@@ -25,7 +25,7 @@ Demo website for a Belgian chalet rental property (Ardennes). Built as a client 
 |---|---|---|
 | 1 | Static HTML rework — all sections, visual design | ✅ Done |
 | 2 | Jekyll structure — `_data`, `_layouts`, `_includes` | ✅ Done |
-| 3 | Cloudflare Pages Functions + D1 database (booking inquiry backend) | 🔜 Next |
+| 3 | Cloudflare Pages Functions + D1 database (booking inquiry backend) | ✅ Done |
 | 4 | iCal calendar integration (Airbnb availability sync) | 🔜 Pending |
 | 5 | Stripe/Mollie payment flow + webhooks | 🔜 Pending |
 
@@ -122,15 +122,57 @@ All content is in **`_data/property.yml`** — no HTML editing needed for:
 | Framework preset | Jekyll |
 | Build command | `bundle exec jekyll build` |
 | Build output directory | `_site` |
-| Environment variable | `JEKYLL_ENV=production` |
+| Environment variable | `RUBY_VERSION=3.4.4` |
 
 `Gemfile.lock` is committed intentionally — Cloudflare Pages uses it to pin gem versions and ensure reproducible builds. Do not add it back to `.gitignore`.
 
 ---
 
-## Phase 3 — Cloudflare Backend (Next)
+## Phase 3 — Cloudflare Backend
 
-### What needs building
+### First-time setup (once per Cloudflare account)
+
+**1. Create the shared D1 database**
+```bash
+wrangler d1 create holiday-rentals-db
+# Copy the database_id from the output into wrangler.toml
+```
+
+**2. Apply the schema**
+```bash
+# Production
+wrangler d1 execute holiday-rentals-db --file=schema.sql
+
+# Local dev
+wrangler d1 execute holiday-rentals-db --local --file=schema.sql
+```
+
+**3. Configure environment**
+```bash
+cp .dev.vars.example .dev.vars
+# Fill in .dev.vars with real values for local dev
+```
+
+**4. Push secrets to Cloudflare**
+```bash
+# Create secrets.json (gitignored) with your secret values, then:
+npm run deploy:secrets
+```
+
+**5. Register the Stripe webhook**
+In the Stripe dashboard → Webhooks, add:
+`https://<your-site>.pages.dev/api/webhook/stripe`
+Event to listen for: `checkout.session.completed`
+
+**6. Local development**
+```bash
+bundle exec jekyll build   # build the static site first
+npm run dev                # wrangler pages dev — serves site + functions on :8788
+```
+
+---
+
+### Architecture
 
 **1. D1 Database schema**
 ```sql

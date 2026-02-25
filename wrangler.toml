@@ -1,0 +1,19 @@
+name = "refuge-sauvage"
+compatibility_date = "2024-09-23"
+pages_build_output_dir = "_site"
+
+# Non-secret per-project config — safe to commit.
+# Secrets (API keys etc.) go in secrets.json (gitignored) → `npm run deploy:secrets`
+[vars]
+PROPERTY_ID     = "refuge-sauvage-001"
+OWNER_EMAIL     = "bonjour@refugesauvage.be"
+PRICE_PER_NIGHT = "150"
+PRICE_WEEK_RATE = "900"
+SITE_URL        = "https://holiday-rental-template.pages.dev"
+
+# D1 database binding — shared across all client projects.
+# Run `wrangler d1 create holiday-rentals-db` once, then paste the database_id here.
+[[d1_databases]]
+binding       = "DB"
+database_name = "holiday-rentals-db"
+database_id   = "febe74a2-262a-41ef-a6a5-446ae0d488f8"

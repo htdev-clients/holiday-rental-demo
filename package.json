@@ -1,0 +1,11 @@
+{
+  "name": "holiday-rental-template",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler pages dev _site",
+    "deploy:secrets": "wrangler pages secret bulk secrets.json --project-name holiday-rental-template"
+  },
+  "devDependencies": {
+    "wrangler": "^4.68.1"
+  }
+}

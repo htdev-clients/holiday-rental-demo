@@ -1,0 +1,16 @@
+# Copy this file to .dev.vars and fill in real values.
+# .dev.vars is gitignored — never commit it.
+
+# Non-secrets (keep in sync with wrangler.toml [vars])
+PROPERTY_ID=refuge-sauvage-001
+OWNER_EMAIL=bonjour@refugesauvage.be
+PRICE_PER_NIGHT=150
+PRICE_WEEK_RATE=900
+SITE_URL=http://localhost:8788
+# In production (wrangler.toml): https://holiday-rental-template.pages.dev
+
+# Secrets — production values go in secrets.json → npm run deploy:secrets
+RESEND_API_KEY=re_...
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+APPROVE_SECRET=change-me-to-a-long-random-string
