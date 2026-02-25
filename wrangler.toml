@@ -6,7 +6,7 @@ pages_build_output_dir = "_site"
 # Secrets (API keys etc.) go in secrets.json (gitignored) → `npm run deploy:secrets`
 [vars]
 PROPERTY_ID     = "refuge-sauvage-001"
-OWNER_EMAIL     = "bonjour@refugesauvage.be"
+OWNER_EMAIL     = "harold.taeter@gmail.com"
 PRICE_PER_NIGHT = "150"
 PRICE_WEEK_RATE = "900"
 SITE_URL        = "https://holiday-rental-template.pages.dev"
