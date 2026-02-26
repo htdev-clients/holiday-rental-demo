@@ -57,15 +57,10 @@
     }
 
     // ── Availability Calendar ──────────────────────────────────
-    // TODO (Phase 4): Replace BOOKED_DATES with data fetched from /api/availability
-    // which will parse the Airbnb iCal feed server-side.
-    const BOOKED_DATES = new Set([
-        '2025-08-10','2025-08-11','2025-08-12','2025-08-13','2025-08-14',
-        '2025-08-15','2025-08-16','2025-08-17',
-        '2025-09-05','2025-09-06','2025-09-07',
-        '2025-10-18','2025-10-19','2025-10-20','2025-10-21','2025-10-22',
-        '2025-10-23','2025-10-24','2025-10-25','2025-10-26',
-    ]);
+    // Populated async from /api/availability (Airbnb iCal feed, parsed server-side).
+    // Starts empty so the calendar renders immediately; updates once the API responds.
+    // If ICAL_URL is not configured or the fetch fails, stays empty — safe default.
+    let BOOKED_DATES = new Set();
 
     const PER_NIGHT = {{ site.data.property.pricing.per_night }};
     const WEEK_RATE = {{ site.data.property.pricing.week }};
@@ -236,7 +231,17 @@
     if (document.getElementById('calendar-root')) {
         calYear  = new Date().getFullYear();
         calMonth = new Date().getMonth();
-        drawCalendars();
+        drawCalendars(); // initial render — all dates available until API responds
+        (async () => {
+            try {
+                const res = await fetch('/api/availability');
+                if (res.ok) {
+                    const { booked } = await res.json();
+                    BOOKED_DATES = new Set(booked);
+                    drawCalendars(); // re-render with real booked dates
+                }
+            } catch { /* silently ignore — empty set is a safe default */ }
+        })();
     }
 
     // ── Price Calculation & Form Validation ────────────────────

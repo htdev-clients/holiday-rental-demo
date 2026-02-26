@@ -12,6 +12,9 @@ PRICE_WEEK_RATE = "900"
 SITE_URL        = "https://holiday-rental-template.pages.dev"
 # Sender address — use onboarding@resend.dev until client domain is verified with Resend
 FROM_EMAIL      = "onboarding@resend.dev"
+# Airbnb iCal export URL — get from Airbnb › Listing › Availability › Export Calendar.
+# Leave empty for demo/template. /api/availability returns [] when not set.
+ICAL_URL        = ""
 
 # D1 database binding — shared across all client projects.
 # Run `wrangler d1 create holiday-rentals-db` once, then paste the database_id here.

@@ -26,8 +26,8 @@ Demo website for a Belgian chalet rental property (Ardennes). Built as a client 
 | 1 | Static HTML rework — all sections, visual design | ✅ Done |
 | 2 | Jekyll structure — `_data`, `_layouts`, `_includes` | ✅ Done |
 | 3 | Cloudflare Pages Functions + D1 database (booking inquiry backend) | ✅ Done |
-| 4 | iCal calendar integration (Airbnb availability sync) | 🔜 Pending |
-| 5 | Stripe/Mollie payment flow + webhooks | 🔜 Pending |
+| 4 | iCal calendar integration (Airbnb availability sync) | ✅ Done |
+| 5 | Stripe/Mollie payment flow + webhooks | ✅ Done |
 
 ---
 
@@ -155,7 +155,7 @@ All content is in **`_data/property.yml`** — no HTML editing needed for:
 ### Per-project setup (new client)
 
 1. Duplicate this repo
-2. Update `wrangler.toml`: `PROPERTY_ID`, `OWNER_EMAIL`, `FROM_EMAIL`, `SITE_URL`
+2. Update `wrangler.toml`: `PROPERTY_ID`, `OWNER_EMAIL`, `FROM_EMAIL`, `SITE_URL`, `ICAL_URL` (from Airbnb export)
 3. Copy `.dev.vars.example` → `.dev.vars`, fill in secrets
 4. Create `secrets.json` with secret values, run `npm run deploy:secrets`
 5. In Cloudflare Pages dashboard, bind D1 database (`DB` → `holiday-rentals-db`)
@@ -175,6 +175,7 @@ npm run dev                     # wrangler pages dev on :8788
 | `PROPERTY_ID` | `wrangler.toml` | Unique key per client (e.g. `refuge-sauvage-001`) |
 | `OWNER_EMAIL` | `wrangler.toml` | Property owner's inbox for booking notifications |
 | `FROM_EMAIL` | `wrangler.toml` | Sender address — `onboarding@resend.dev` until domain verified |
+| `ICAL_URL` | `wrangler.toml` | Airbnb iCal export URL — Airbnb › Listing › Availability › Export Calendar |
 | `PRICE_PER_NIGHT` | `wrangler.toml` | Used server-side to calculate Stripe amount |
 | `PRICE_WEEK_RATE` | `wrangler.toml` | Weekly rate (7 nights) |
 | `SITE_URL` | `wrangler.toml` | Base URL for approve links and Stripe redirects |
@@ -185,34 +186,42 @@ npm run dev                     # wrangler pages dev on :8788
 
 ---
 
-## Phase 4 — iCal Calendar Integration
+## Phase 4 — iCal Calendar Integration ✅
 
-### Approach
-- Airbnb iCal URL stored as environment variable `ICAL_URL`
-- Cloudflare Pages Function `GET /api/availability` fetches + parses the feed
-- Returns JSON array of booked date ranges
-- Frontend calendar replaces hardcoded `BOOKED_DATES` set with API call
-- Cache with `Cache-Control` or KV store (TTL ~1h) to avoid hammering iCal
+### What's built
 
-### TODO in `_includes/scripts.html`
-Replace the `BOOKED_DATES` placeholder block with:
-```js
-const res = await fetch('/api/availability');
-const { booked } = await res.json();
-const BOOKED_DATES = new Set(booked); // array of 'YYYY-MM-DD' strings
-```
+| Endpoint | File | Purpose |
+|---|---|---|
+| `GET /api/availability` | `functions/api/availability.js` | Fetch + parse Airbnb iCal feed, return `{ booked: ['YYYY-MM-DD', …] }` |
+
+- `ICAL_URL` env var read from `wrangler.toml` — returns `[]` gracefully when not set
+- Frontend calendar fetches `/api/availability` on load; renders immediately (empty), updates once API responds
+- 1-hour `Cache-Control` to avoid hammering the iCal feed on every page visit
+- iCal parser handles both `DATE` and `DATE-TIME` formats; DTEND treated as exclusive (checkout day)
+
+### Per-project setup (new client)
+Set `ICAL_URL` in `wrangler.toml` — get URL from Airbnb › Listing › Availability › Export Calendar.
 
 ---
 
-## Phase 5 — Payment Flow
+## Phase 5 — Payment Flow ✅
 
-- Stripe Checkout session is already created in `approve.js` (Phase 3)
-- **Remaining:** register the webhook URL in Stripe dashboard to activate post-payment confirmation emails:
-  1. Stripe dashboard → Developers → Webhooks → Add endpoint: `https://<site>.pages.dev/api/webhook/stripe`
-  2. Event: `checkout.session.completed`
-  3. Copy the signing secret → update `STRIPE_WEBHOOK_SECRET` in `secrets.json` → `npm run deploy:secrets`
-- **Stripe Connect** for platform fee: collect X% on each transaction (future)
-- **Bancontact** already enabled in `approve.js` (`payment_method_types[]`)
+Full booking → approval → payment → confirmation flow is working end-to-end in test mode.
+
+- Stripe Checkout session created in `approve.js` (card + Bancontact)
+- Webhook registered in Stripe Workbench: event `checkout.session.completed`
+- `STRIPE_WEBHOOK_SECRET` deployed via `npm run deploy:secrets`
+- `/reservation-confirmee` success page added (Jekyll, design-system styled)
+- **Stripe Connect** for platform fee: collect X% on each transaction (future — Phase 6)
+
+### Per-project setup reminder
+- Register webhook in Stripe Workbench → Destinations: `https://<site>.pages.dev/api/webhook/stripe`
+- Event: `checkout.session.completed` → Your account only
+- Copy `whsec_...` signing secret → `secrets.json` → `npm run deploy:secrets`
+
+### Resend sandbox limitation
+`FROM_EMAIL=onboarding@resend.dev` can only deliver to the Resend account's own verified email.
+For production: verify the client's domain in Resend and update `FROM_EMAIL` in `wrangler.toml`.
 
 ---
 
