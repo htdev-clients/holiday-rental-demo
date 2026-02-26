@@ -34,7 +34,7 @@ Demo website for a Belgian chalet rental property (Ardennes). Built as a client 
 ## File Structure
 
 ```
-test-website/
+holiday-rental-template/
 ├── _config.yml              # Jekyll config (site URL, build settings)
 ├── _data/
 │   └── property.yml         # ← ALL content lives here. Edit to update the site.
@@ -44,20 +44,27 @@ test-website/
 │   ├── head.html            # <head>: meta, fonts, Tailwind config, custom CSS
 │   ├── nav.html             # Fixed nav + mobile menu overlay
 │   ├── hero.html            # Full-screen hero section
-│   ├── stats.html           # Key numbers band (guests, bedrooms, m², land)
-│   ├── concept.html         # 2-column concept sections (Liquid loop)
-│   ├── testimonial.html     # Testimonial with SVG wave dividers
-│   ├── amenities.html       # Amenity badges grid (Liquid loop)
-│   ├── gallery.html         # Horizontal scroll gallery (Liquid loop)
-│   ├── calendar.html        # Availability calendar HTML shell
 │   ├── booking.html         # Booking inquiry form + success state
-│   ├── compliance.html      # Belgian registration / insurance / payment band
 │   ├── footer.html          # Footer: address, contact, social, legal links
 │   └── scripts.html         # All JavaScript (mobile menu, calendar, form, gallery)
-├── index.html               # 12-line page: front matter + includes
-├── Gemfile
+├── functions/
+│   ├── _shared/
+│   │   └── utils.js         # Shared helpers: signHmac, sendEmail, calcTotal, jsonError
+│   └── api/
+│       ├── booking.js       # POST /api/booking — save to D1, email owner
+│       ├── approve.js       # GET  /api/approve — validate token, Stripe session, email guest
+│       └── webhook/
+│           └── stripe.js    # POST /api/webhook/stripe — verify sig, update D1, confirm emails
+├── index.html               # Page: front matter + include calls
+├── cgv.md                   # CGV legal page
+├── confidentialite.md       # Privacy policy page
+├── cookies.md               # Cookie policy page
+├── wrangler.toml            # Cloudflare config: non-secret vars + D1 binding
+├── schema.sql               # D1 migration — run once per account
+├── .dev.vars.example        # Template for local secrets (copy to .dev.vars)
+├── package.json             # wrangler dev dependency + deploy:secrets script
+├── Gemfile / Gemfile.lock   # Ruby dependencies (Gemfile.lock committed intentionally)
 ├── .gitignore
-├── example.html             # Original site (reference only)
 └── instructions.txt         # Original client brief (reference only)
 ```
 
@@ -128,98 +135,53 @@ All content is in **`_data/property.yml`** — no HTML editing needed for:
 
 ---
 
-## Phase 3 — Cloudflare Backend
+## Phase 3 — Cloudflare Backend ✅
 
-### First-time setup (once per Cloudflare account)
+### What's built
 
-**1. Create the shared D1 database**
+| Endpoint | File | Purpose |
+|---|---|---|
+| `POST /api/booking` | `functions/api/booking.js` | Validate form, save to D1, email owner approval link |
+| `GET /api/approve` | `functions/api/approve.js` | Verify HMAC token, create Stripe Checkout session, email guest |
+| `POST /api/webhook/stripe` | `functions/api/webhook/stripe.js` | Verify signature, mark booking paid, send confirmation emails |
+
+### Infrastructure (already provisioned)
+
+- **D1 database:** `holiday-rentals-db` (id: `febe74a2-262a-41ef-a6a5-446ae0d488f8`) — shared across all client projects, multi-tenant via `property_id`
+- **Email:** Resend API — `FROM_EMAIL=onboarding@resend.dev` until client domain verified
+- **Secrets:** managed via `secrets.json` (gitignored) → `npm run deploy:secrets`
+- **D1 binding:** set in Cloudflare Pages dashboard → Settings → Bindings → variable name `DB`
+
+### Per-project setup (new client)
+
+1. Duplicate this repo
+2. Update `wrangler.toml`: `PROPERTY_ID`, `OWNER_EMAIL`, `FROM_EMAIL`, `SITE_URL`
+3. Copy `.dev.vars.example` → `.dev.vars`, fill in secrets
+4. Create `secrets.json` with secret values, run `npm run deploy:secrets`
+5. In Cloudflare Pages dashboard, bind D1 database (`DB` → `holiday-rentals-db`)
+6. Register Stripe webhook URL (see Phase 5)
+
+### Local development
+
 ```bash
-wrangler d1 create holiday-rentals-db
-# Copy the database_id from the output into wrangler.toml
+bundle exec jekyll build        # build static site first
+npm run dev                     # wrangler pages dev on :8788
 ```
 
-**2. Apply the schema**
-```bash
-# Production
-wrangler d1 execute holiday-rentals-db --file=schema.sql
+### Environment variables
 
-# Local dev
-wrangler d1 execute holiday-rentals-db --local --file=schema.sql
-```
-
-**3. Configure environment**
-```bash
-cp .dev.vars.example .dev.vars
-# Fill in .dev.vars with real values for local dev
-```
-
-**4. Push secrets to Cloudflare**
-```bash
-# Create secrets.json (gitignored) with your secret values, then:
-npm run deploy:secrets
-```
-
-**5. Register the Stripe webhook**
-In the Stripe dashboard → Webhooks, add:
-`https://<your-site>.pages.dev/api/webhook/stripe`
-Event to listen for: `checkout.session.completed`
-
-**6. Local development**
-```bash
-bundle exec jekyll build   # build the static site first
-npm run dev                # wrangler pages dev — serves site + functions on :8788
-```
-
----
-
-### Architecture
-
-**1. D1 Database schema**
-```sql
-CREATE TABLE bookings (
-  id          TEXT PRIMARY KEY,
-  property_id TEXT NOT NULL,        -- multi-tenant key
-  status      TEXT DEFAULT 'pending', -- pending | approved | paid | cancelled
-  checkin     TEXT NOT NULL,
-  checkout    TEXT NOT NULL,
-  guests      INTEGER NOT NULL,
-  firstname   TEXT NOT NULL,
-  lastname    TEXT NOT NULL,
-  email       TEXT NOT NULL,
-  phone       TEXT,
-  message     TEXT,
-  created_at  TEXT DEFAULT (datetime('now'))
-);
-```
-
-**2. Pages Function: `POST /api/booking`**
-- Validates form data
-- Inserts row into D1 with `property_id` and `status = 'pending'`
-- Sends owner an email notification with an "Approve" link
-- Returns JSON success/error
-
-**3. Pages Function: `GET /api/approve?token=...`**
-- Owner clicks link from email
-- Updates booking status to `approved`
-- Triggers Stripe Checkout Session creation
-- Emails guest the payment link
-
-**4. Pages Function: `POST /api/webhook/stripe`**
-- Verifies Stripe webhook signature
-- On `checkout.session.completed`: updates status to `paid`
-- Sends confirmation email to both owner and guest
-
-### Environment variables needed (`.dev.vars` for local, Cloudflare dashboard for prod)
-```
-PROPERTY_ID=refuge-sauvage-001
-OWNER_EMAIL=bonjour@refugesauvage.be
-RESEND_API_KEY=...          # or Mailgun / SendGrid
-STRIPE_SECRET_KEY=...
-STRIPE_WEBHOOK_SECRET=...
-STRIPE_CONNECT_ACCOUNT=...  # for platform fee routing
-D1_DATABASE_ID=...
-APPROVE_SECRET=...          # HMAC secret for approval link token
-```
+| Variable | Where | Notes |
+|---|---|---|
+| `PROPERTY_ID` | `wrangler.toml` | Unique key per client (e.g. `refuge-sauvage-001`) |
+| `OWNER_EMAIL` | `wrangler.toml` | Property owner's inbox for booking notifications |
+| `FROM_EMAIL` | `wrangler.toml` | Sender address — `onboarding@resend.dev` until domain verified |
+| `PRICE_PER_NIGHT` | `wrangler.toml` | Used server-side to calculate Stripe amount |
+| `PRICE_WEEK_RATE` | `wrangler.toml` | Weekly rate (7 nights) |
+| `SITE_URL` | `wrangler.toml` | Base URL for approve links and Stripe redirects |
+| `RESEND_API_KEY` | `secrets.json` | Resend transactional email API key |
+| `STRIPE_SECRET_KEY` | `secrets.json` | `sk_test_...` for dev, `sk_live_...` for production |
+| `STRIPE_WEBHOOK_SECRET` | `secrets.json` | From Stripe dashboard after registering webhook URL |
+| `APPROVE_SECRET` | `secrets.json` | Long random string — signs owner approval links (HMAC-SHA256) |
 
 ---
 
@@ -244,10 +206,13 @@ const BOOKED_DATES = new Set(booked); // array of 'YYYY-MM-DD' strings
 
 ## Phase 5 — Payment Flow
 
-- **Stripe Checkout** for payment page (hosted by Stripe)
-- **Stripe Connect** for platform fee: collect X% on each transaction
-- **Bancontact** payment method enabled in Stripe dashboard (required for Belgium)
-- Webhook updates D1 booking status on successful payment
+- Stripe Checkout session is already created in `approve.js` (Phase 3)
+- **Remaining:** register the webhook URL in Stripe dashboard to activate post-payment confirmation emails:
+  1. Stripe dashboard → Developers → Webhooks → Add endpoint: `https://<site>.pages.dev/api/webhook/stripe`
+  2. Event: `checkout.session.completed`
+  3. Copy the signing secret → update `STRIPE_WEBHOOK_SECRET` in `secrets.json` → `npm run deploy:secrets`
+- **Stripe Connect** for platform fee: collect X% on each transaction (future)
+- **Bancontact** already enabled in `approve.js` (`payment_method_types[]`)
 
 ---
 

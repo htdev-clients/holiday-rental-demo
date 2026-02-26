@@ -61,20 +61,22 @@ async function createStripeSession({ booking, total, env }) {
       'Authorization': `Bearer ${env.STRIPE_SECRET_KEY}`,
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: new URLSearchParams({
-      'payment_method_types[]':                         'card',
-      'payment_method_types[]':                         'bancontact',
-      'line_items[0][price_data][currency]':            'eur',
-      'line_items[0][price_data][product_data][name]':  `Le Refuge Sauvage — ${booking.checkin} au ${booking.checkout}`,
-      'line_items[0][price_data][unit_amount]':         String(Math.round(total * 100)),
-      'line_items[0][quantity]':                        '1',
-      'mode':                                           'payment',
-      'success_url':                                    `${env.SITE_URL}/reservation-confirmee`,
-      'cancel_url':                                     `${env.SITE_URL}/#booking`,
-      'customer_email':                                 booking.email,
-      'metadata[booking_id]':                           booking.id,
-      'metadata[property_id]':                          booking.property_id,
-    }),
+    // URLSearchParams must be built from an array of tuples to allow duplicate keys
+    // (object literals silently drop duplicate keys — bancontact would override card)
+    body: new URLSearchParams([
+      ['payment_method_types[]',                         'card'],
+      ['payment_method_types[]',                         'bancontact'],
+      ['line_items[0][price_data][currency]',            'eur'],
+      ['line_items[0][price_data][product_data][name]',  `Le Refuge Sauvage — ${booking.checkin} au ${booking.checkout}`],
+      ['line_items[0][price_data][unit_amount]',         String(Math.round(total * 100))],
+      ['line_items[0][quantity]',                        '1'],
+      ['mode',                                           'payment'],
+      ['success_url',                                    `${env.SITE_URL}/reservation-confirmee`],
+      ['cancel_url',                                     `${env.SITE_URL}/#booking`],
+      ['customer_email',                                 booking.email],
+      ['metadata[booking_id]',                           booking.id],
+      ['metadata[property_id]',                          booking.property_id],
+    ]),
   });
   if (!res.ok) throw new Error(await res.text());
   return res.json();
