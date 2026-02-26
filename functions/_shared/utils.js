@@ -18,12 +18,10 @@ export async function signHmac(data, secret) {
 }
 
 /**
- * Calculate total price: full weeks at weekRate, remaining nights at perNight.
+ * Calculate total price at a flat per-night rate.
  */
-export function calcTotal(nights, perNight, weekRate) {
-  const weeks = Math.floor(nights / 7);
-  const extra = nights % 7;
-  return weeks * weekRate + extra * perNight;
+export function calcTotal(nights, perNight) {
+  return nights * perNight;
 }
 
 /**

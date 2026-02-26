@@ -92,7 +92,7 @@ All content is in **`_data/property.yml`** — no HTML editing needed for:
 
 - Property name, tagline, description
 - Capacity (guests, bedrooms, m², land)
-- Pricing (per night, weekend, weekly)
+- Pricing (per night)
 - Address and contact details
 - Social media links
 - Belgian compliance info (registration number, insurance)
@@ -155,7 +155,7 @@ All content is in **`_data/property.yml`** — no HTML editing needed for:
 ### Per-project setup (new client)
 
 1. Duplicate this repo
-2. Update `wrangler.toml`: `PROPERTY_ID`, `OWNER_EMAIL`, `FROM_EMAIL`, `SITE_URL`, `ICAL_URL` (from Airbnb export)
+2. Update `wrangler.toml`: `PROPERTY_ID`, `PROPERTY_NAME`, `OWNER_EMAIL`, `FROM_EMAIL`, `SITE_URL`, `ICAL_URL` (from Airbnb export)
 3. Copy `.dev.vars.example` → `.dev.vars`, fill in secrets
 4. Create `secrets.json` with secret values, run `npm run deploy:secrets`
 5. In Cloudflare Pages dashboard, bind D1 database (`DB` → `holiday-rentals-db`)
@@ -173,11 +173,11 @@ npm run dev                     # wrangler pages dev on :8788
 | Variable | Where | Notes |
 |---|---|---|
 | `PROPERTY_ID` | `wrangler.toml` | Unique key per client (e.g. `refuge-sauvage-001`) |
+| `PROPERTY_NAME` | `wrangler.toml` | Property display name — used in all transactional emails |
 | `OWNER_EMAIL` | `wrangler.toml` | Property owner's inbox for booking notifications |
 | `FROM_EMAIL` | `wrangler.toml` | Sender address — `onboarding@resend.dev` until domain verified |
 | `ICAL_URL` | `wrangler.toml` | Airbnb iCal export URL — Airbnb › Listing › Availability › Export Calendar |
-| `PRICE_PER_NIGHT` | `wrangler.toml` | Used server-side to calculate Stripe amount |
-| `PRICE_WEEK_RATE` | `wrangler.toml` | Weekly rate (7 nights) |
+| `PRICE_PER_NIGHT` | `wrangler.toml` | Nightly rate — used server-side to calculate Stripe amount |
 | `SITE_URL` | `wrangler.toml` | Base URL for approve links and Stripe redirects |
 | `RESEND_API_KEY` | `secrets.json` | Resend transactional email API key |
 | `STRIPE_SECRET_KEY` | `secrets.json` | `sk_test_...` for dev, `sk_live_...` for production |

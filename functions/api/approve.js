@@ -1,5 +1,7 @@
 import { signHmac, calcTotal, sendEmail } from '../_shared/utils.js';
 
+const TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
 /**
  * GET /api/approve?id=<booking_id>&token=<hmac>
  * Called when the owner clicks the approval link from their email.
@@ -24,37 +26,45 @@ export async function onRequestGet(context) {
     return errorPage(`Cette réservation a déjà été traitée (statut : ${booking.status}).`);
   }
 
+  // Enforce 7-day expiry on approval links
+  const createdAt = new Date(booking.created_at + 'Z'); // created_at is UTC
+  if (Date.now() - createdAt.getTime() > TOKEN_TTL_MS) {
+    return errorPage('Ce lien d\'approbation a expiré (7 jours). Veuillez contacter le voyageur directement.');
+  }
+
   // Calculate total price server-side
   const nights = Math.round((new Date(booking.checkout) - new Date(booking.checkin)) / 86400000);
-  const total  = calcTotal(nights, parseFloat(env.PRICE_PER_NIGHT), parseFloat(env.PRICE_WEEK_RATE));
+  const total  = calcTotal(nights, parseFloat(env.PRICE_PER_NIGHT));
+
+  const propertyName = env.PROPERTY_NAME || 'Le Refuge Sauvage';
 
   // Create Stripe Checkout session
   let paymentUrl;
   try {
-    const session = await createStripeSession({ booking, total, env });
+    const session = await createStripeSession({ booking, total, env, propertyName });
     paymentUrl = session.url;
   } catch (err) {
     console.error('Stripe error:', err);
     return errorPage('Erreur lors de la création du lien de paiement. Veuillez réessayer.');
   }
 
-  // Update booking status to approved
-  await env.DB.prepare("UPDATE bookings SET status = 'approved' WHERE id = ?").bind(id).run();
-
-  // Email guest the payment link
+  // Email guest the payment link (before updating status so owner can retry if this fails)
   await sendEmail(env.RESEND_API_KEY, {
     from: env.FROM_EMAIL,
     to: booking.email,
-    subject: 'Votre réservation est approuvée — Le Refuge Sauvage',
-    html: guestPaymentEmailHtml({ booking, nights, total, paymentUrl }),
+    subject: `Votre réservation est approuvée — ${propertyName}`,
+    html: guestPaymentEmailHtml({ booking, nights, total, paymentUrl, propertyName }),
   });
 
-  return new Response(successPageHtml(booking), {
+  // Only mark as approved once the Stripe session exists and the guest has been notified
+  await env.DB.prepare("UPDATE bookings SET status = 'approved' WHERE id = ?").bind(id).run();
+
+  return new Response(successPageHtml(booking, propertyName), {
     headers: { 'Content-Type': 'text/html;charset=UTF-8' },
   });
 }
 
-async function createStripeSession({ booking, total, env }) {
+async function createStripeSession({ booking, total, env, propertyName }) {
   const res = await fetch('https://api.stripe.com/v1/checkout/sessions', {
     method: 'POST',
     headers: {
@@ -67,7 +77,7 @@ async function createStripeSession({ booking, total, env }) {
       ['payment_method_types[]',                         'card'],
       ['payment_method_types[]',                         'bancontact'],
       ['line_items[0][price_data][currency]',            'eur'],
-      ['line_items[0][price_data][product_data][name]',  `Le Refuge Sauvage — ${booking.checkin} au ${booking.checkout}`],
+      ['line_items[0][price_data][product_data][name]',  `${propertyName} — ${booking.checkin} au ${booking.checkout}`],
       ['line_items[0][price_data][unit_amount]',         String(Math.round(total * 100))],
       ['line_items[0][quantity]',                        '1'],
       ['mode',                                           'payment'],
@@ -82,11 +92,11 @@ async function createStripeSession({ booking, total, env }) {
   return res.json();
 }
 
-function guestPaymentEmailHtml({ booking, nights, total, paymentUrl }) {
+function guestPaymentEmailHtml({ booking, nights, total, paymentUrl, propertyName }) {
   return `
 <h2 style="color:#2C2520">Votre réservation est approuvée !</h2>
 <p style="font-family:sans-serif">Bonjour ${booking.firstname},</p>
-<p style="font-family:sans-serif">Le propriétaire du Refuge Sauvage a approuvé votre demande de réservation.</p>
+<p style="font-family:sans-serif">Le propriétaire de ${propertyName} a approuvé votre demande de réservation.</p>
 <table style="border-collapse:collapse;font-family:sans-serif;font-size:14px">
   <tr><td style="padding:6px 16px 6px 0;color:#888">Arrivée</td><td style="padding:6px 0">${booking.checkin}</td></tr>
   <tr><td style="padding:6px 16px 6px 0;color:#888">Départ</td><td style="padding:6px 0">${booking.checkout}</td></tr>
@@ -103,13 +113,13 @@ function guestPaymentEmailHtml({ booking, nights, total, paymentUrl }) {
 `;
 }
 
-function successPageHtml(booking) {
+function successPageHtml(booking, propertyName) {
   return `<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Réservation approuvée — Le Refuge Sauvage</title>
+  <title>Réservation approuvée — ${propertyName}</title>
   <style>
     body { font-family: sans-serif; max-width: 480px; margin: 80px auto; padding: 0 24px; text-align: center; color: #2C2520; }
     h1   { color: #4A5D44; font-size: 1.5rem; }
@@ -129,7 +139,7 @@ function errorPage(message) {
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Erreur — Le Refuge Sauvage</title>
+  <title>Erreur</title>
   <style>body{font-family:sans-serif;max-width:480px;margin:80px auto;padding:0 24px;text-align:center;color:#2C2520}h1{color:#c0392b}</style>
 </head>
 <body>

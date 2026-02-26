@@ -18,11 +18,17 @@ export async function onRequestPost(context) {
   }
 
   const event = JSON.parse(body);
+  const propertyName = env.PROPERTY_NAME || 'Le Refuge Sauvage';
+
+  console.log(`[webhook] Stripe event received: ${event.type}`);
 
   if (event.type === 'checkout.session.completed') {
     const session   = event.data.object;
     const bookingId = session.metadata?.booking_id;
-    if (!bookingId) return new Response('OK', { status: 200 });
+    if (!bookingId) {
+      console.error('[webhook] checkout.session.completed missing booking_id in metadata');
+      return new Response('OK', { status: 200 });
+    }
 
     // Update booking status to paid
     await env.DB.prepare("UPDATE bookings SET status = 'paid' WHERE id = ?")
@@ -42,8 +48,8 @@ export async function onRequestPost(context) {
         sendEmail(env.RESEND_API_KEY, {
           from:    env.FROM_EMAIL,
           to:      booking.email,
-          subject: 'Confirmation de votre réservation — Le Refuge Sauvage',
-          html:    guestConfirmationHtml({ booking, nights, total }),
+          subject: `Confirmation de votre réservation — ${propertyName}`,
+          html:    guestConfirmationHtml({ booking, nights, total, propertyName }),
         }),
         sendEmail(env.RESEND_API_KEY, {
           from:    env.FROM_EMAIL,
@@ -52,7 +58,12 @@ export async function onRequestPost(context) {
           html:    ownerConfirmationHtml({ booking, nights, total }),
         }),
       ]);
+    } else {
+      console.error(`[webhook] checkout.session.completed: booking ${bookingId} not found in DB`);
     }
+  } else {
+    // Log unhandled event types for visibility — harmless but useful for debugging
+    console.log(`[webhook] Unhandled Stripe event type: ${event.type}`);
   }
 
   return new Response('OK', { status: 200 });
@@ -78,11 +89,11 @@ async function verifyStripeSignature(body, header, secret) {
   return hex === signature;
 }
 
-function guestConfirmationHtml({ booking, nights, total }) {
+function guestConfirmationHtml({ booking, nights, total, propertyName }) {
   return `
 <h2 style="color:#4A5D44">Votre réservation est confirmée !</h2>
 <p style="font-family:sans-serif">Bonjour ${booking.firstname},</p>
-<p style="font-family:sans-serif">Votre paiement a bien été reçu. Votre séjour au Refuge Sauvage est confirmé.</p>
+<p style="font-family:sans-serif">Votre paiement a bien été reçu. Votre séjour à ${propertyName} est confirmé.</p>
 <table style="border-collapse:collapse;font-family:sans-serif;font-size:14px">
   <tr><td style="padding:6px 16px 6px 0;color:#888">Arrivée</td><td style="padding:6px 0">${booking.checkin}</td></tr>
   <tr><td style="padding:6px 16px 6px 0;color:#888">Départ</td><td style="padding:6px 0">${booking.checkout}</td></tr>

@@ -23,8 +23,6 @@ capacity:
 # ── Pricing ─────────────────────────────────────────────
 pricing:
   per_night: 150
-  weekend:   280
-  week:      850
   currency:  "€"
   note:      "Taxe de séjour & frais de ménage inclus"
 

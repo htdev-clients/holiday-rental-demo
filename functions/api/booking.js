@@ -37,6 +37,17 @@ export async function onRequestPost(context) {
     return jsonError('Adresse email invalide.', 400);
   }
 
+  // Rate limiting: max 3 pending bookings per email in the last 24 hours
+  const recentCount = await env.DB
+    .prepare(`SELECT COUNT(*) AS n FROM bookings
+              WHERE email = ? AND property_id = ?
+              AND created_at > datetime('now', '-24 hours')`)
+    .bind(email.trim().toLowerCase(), env.PROPERTY_ID)
+    .first('n');
+  if (recentCount >= 3) {
+    return jsonError('Trop de demandes. Veuillez réessayer dans 24h.', 429);
+  }
+
   const nights = Math.round((co - ci) / 86400000);
   const id     = crypto.randomUUID();
   const token  = await signHmac(id, env.APPROVE_SECRET);

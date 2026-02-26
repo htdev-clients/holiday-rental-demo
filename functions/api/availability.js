@@ -30,8 +30,9 @@ export async function onRequestGet({ env }) {
         return Response.json({ booked }, {
             headers: { 'Cache-Control': 'public, max-age=3600' },
         });
-    } catch {
+    } catch (err) {
         // Return empty rather than a 500 — calendar degrades gracefully.
+        console.error('[availability] iCal fetch failed for ICAL_URL:', url, err);
         return Response.json({ booked: [] }, {
             headers: { 'Cache-Control': 'no-store' },
         });

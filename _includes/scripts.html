@@ -63,7 +63,6 @@
     let BOOKED_DATES = new Set();
 
     const PER_NIGHT = {{ site.data.property.pricing.per_night }};
-    const WEEK_RATE = {{ site.data.property.pricing.week }};
 
     let selectedStart = null, selectedEnd = null;
     let calYear, calMonth;
@@ -186,6 +185,14 @@
     }
 
     function shiftCalendar(dir) {
+        const today   = new Date();
+        const minYear = today.getFullYear(), minMonth = today.getMonth();
+        const maxDate = new Date(today.getFullYear(), today.getMonth() + 12, 1);
+
+        const next = new Date(calYear, calMonth + dir, 1);
+        if (next < new Date(minYear, minMonth, 1)) return; // don't go before today's month
+        if (next >= maxDate) return;                        // don't go beyond 12 months ahead
+
         calMonth += dir;
         if (calMonth > 11) { calMonth = 0;  calYear++; }
         if (calMonth < 0)  { calMonth = 11; calYear--; }
@@ -250,9 +257,7 @@
     }
 
     function calcTotal(nights) {
-        const weeks = Math.floor(nights / 7);
-        const extra = nights % 7;
-        return weeks * WEEK_RATE + extra * PER_NIGHT;
+        return nights * PER_NIGHT;
     }
 
     function updatePriceSummary() {
@@ -339,6 +344,15 @@
         document.getElementById('t-prev').addEventListener('click', () => goTo(current - 1));
         document.getElementById('t-next').addEventListener('click', () => goTo(current + 1));
         dots.forEach(dot => dot.addEventListener('click', () => goTo(parseInt(dot.dataset.index))));
+
+        // Swipe support for mobile
+        const track = document.getElementById('testimonial-track');
+        let touchStartX = 0;
+        track.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].clientX; }, { passive: true });
+        track.addEventListener('touchend', e => {
+            const dx = e.changedTouches[0].clientX - touchStartX;
+            if (Math.abs(dx) > 40) goTo(dx < 0 ? current + 1 : current - 1);
+        }, { passive: true });
     })();
 
     if (document.getElementById('booking-form'))

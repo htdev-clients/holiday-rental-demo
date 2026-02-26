@@ -6,9 +6,9 @@ pages_build_output_dir = "_site"
 # Secrets (API keys etc.) go in secrets.json (gitignored) → `npm run deploy:secrets`
 [vars]
 PROPERTY_ID     = "refuge-sauvage-001"
+PROPERTY_NAME   = "Le Refuge Sauvage"
 OWNER_EMAIL     = "harold.taeter@gmail.com"
 PRICE_PER_NIGHT = "150"
-PRICE_WEEK_RATE = "900"
 SITE_URL        = "https://holiday-rental-template.pages.dev"
 # Sender address — use onboarding@resend.dev until client domain is verified with Resend
 FROM_EMAIL      = "onboarding@resend.dev"

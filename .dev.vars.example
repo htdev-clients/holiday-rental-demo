@@ -3,9 +3,9 @@
 
 # Non-secrets (keep in sync with wrangler.toml [vars])
 PROPERTY_ID=refuge-sauvage-001
+PROPERTY_NAME=Le Refuge Sauvage
 OWNER_EMAIL=bonjour@refugesauvage.be
 PRICE_PER_NIGHT=150
-PRICE_WEEK_RATE=900
 SITE_URL=http://localhost:8788
 # In production (wrangler.toml): https://holiday-rental-template.pages.dev
 # Use onboarding@resend.dev until client domain is verified with Resend
