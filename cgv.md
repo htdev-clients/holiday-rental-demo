@@ -12,7 +12,7 @@ permalink: /cgv/
 
 Le présent hébergement touristique est exploité par :
 
-**Le Refuge Sauvage** — Lieu-dit Le Bois Clair, 6900 Marche-en-Famenne, Belgique
+**{{ site.data.property.contact.owner_name }}**, propriétaire de **{{ site.data.property.name }}** — {{ site.data.property.location.address_line1 }}, {{ site.data.property.location.address_line2 }}, {{ site.data.property.location.country }}
 
 Enregistrement touristique : {{ site.data.property.compliance.registration_number }} — {{ site.data.property.compliance.registration_body }}
 
@@ -20,7 +20,7 @@ Contact : [{{ site.data.property.contact.email }}](mailto:{{ site.data.property.
 
 ## 2. Objet
 
-Les présentes Conditions Générales de Vente (CGV) régissent les relations contractuelles entre le prestataire et toute personne physique (ci-après « le Locataire ») effectuant une réservation de séjour au Refuge Sauvage. Toute réservation implique l'acceptation pleine et entière des présentes CGV.
+Les présentes Conditions Générales de Vente (CGV) régissent les relations contractuelles entre le prestataire et toute personne physique (ci-après « le Locataire ») effectuant une réservation de séjour au {{ site.data.property.name }}. Toute réservation implique l'acceptation pleine et entière des présentes CGV.
 
 ## 3. Réservation et confirmation
 
@@ -43,11 +43,7 @@ Le solde est dû au plus tard **30 jours** avant la date d'arrivée. Pour les r�
 
 Le paiement s'effectue exclusivement par voie électronique sécurisée (Stripe). Aucune donnée bancaire n'est conservée par le prestataire.
 
-## 6. Caution
-
-Une caution de **300 €** est prélevée par pré-autorisation bancaire avant l'arrivée. Elle est restituée intégralement dans les **7 jours** suivant le départ, déduction faite, le cas échéant, des frais liés à des dommages constatés ou à des manquements au règlement intérieur.
-
-## 7. Annulation par le Locataire
+## 6. Annulation par le Locataire
 
 Toute annulation doit être notifiée par écrit à [{{ site.data.property.contact.email }}](mailto:{{ site.data.property.contact.email }}).
 
@@ -59,20 +55,20 @@ Toute annulation doit être notifiée par écrit à [{{ site.data.property.conta
 
 En cas de non-présentation sans annulation préalable, aucun remboursement ne sera accordé.
 
-## 8. Annulation par le propriétaire
+## 7. Annulation par le propriétaire
 
 En cas d'annulation par le propriétaire pour un motif de force majeure (sinistre, catastrophe naturelle, etc.), le Locataire sera intégralement remboursé des sommes versées, sans autre indemnité.
 
 En cas d'annulation pour tout autre motif imputable au propriétaire, le Locataire sera remboursé du double de l'acompte versé.
 
-## 9. Arrivée et départ
+## 8. Arrivée et départ
 
-- **Arrivée** : à partir de **16h00**
-- **Départ** : avant **11h00**
+- **Arrivée** : à partir de **{{ site.data.property.checkin_time }}**
+- **Départ** : avant **{{ site.data.property.checkout_time }}**
 
 Tout écart avec ces horaires doit être convenu préalablement par écrit. Un départ tardif non autorisé pourra faire l'objet d'une facturation supplémentaire.
 
-## 10. Règlement intérieur
+## 9. Règlement intérieur
 
 La capacité maximale d'accueil est de **{{ site.data.property.capacity.guests }} personnes**. Tout dépassement est interdit et peut entraîner la résiliation immédiate du contrat sans remboursement.
 
@@ -86,7 +82,7 @@ Les animaux domestiques sont acceptés sous réserve de déclaration préalable.
 
 Le Locataire s'engage à restituer le logement dans l'état dans lequel il l'a trouvé (vaisselle faite, déchets évacués, équipements rangés).
 
-## 11. Assurance et responsabilité
+## 10. Assurance et responsabilité
 
 Le prestataire est couvert par {{ site.data.property.compliance.insurance_provider }}, incluant une clause d'abandon de recours en faveur des Locataires.
 
@@ -94,14 +90,20 @@ Le Locataire est responsable des dégradations qu'il cause au bien loué et à s
 
 Le prestataire décline toute responsabilité pour les accidents, vols ou dommages survenus sur la propriété, sauf faute prouvée de sa part.
 
-## 12. Données personnelles
+## 11. Données personnelles
 
 Les données collectées dans le cadre de la réservation sont traitées conformément à notre [Politique de confidentialité](/confidentialite).
 
-## 13. Droit applicable et litiges
+## 12. Droit applicable et litiges
 
 Les présentes CGV sont soumises au **droit belge**.
 
 En cas de litige, le Locataire peut recourir à la médiation via le **Service de Médiation pour le Consommateur** ([mediationconsommateur.be](https://www.mediationconsommateur.be)) préalablement à toute action judiciaire.
 
-À défaut de résolution amiable, le litige sera soumis à la compétence exclusive des tribunaux du ressort de **Marche-en-Famenne (Belgique)**.
+À défaut de résolution amiable, le litige sera soumis à la compétence exclusive des tribunaux du ressort de **{{ site.data.property.location.address_line2 }} (Belgique)**.
+
+## 13. Droit de rétractation
+
+Conformément à l'article VI.53, 12° du Code de droit économique (transposant la Directive 2011/83/UE), **le droit de rétractation ne s'applique pas** aux contrats de location de logement de vacances portant sur une date ou une période d'exécution spécifique.
+
+En soumettant sa demande de réservation et en procédant au paiement, le Locataire reconnaît expressément être informé de cette exception et y consent.

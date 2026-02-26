@@ -20,6 +20,10 @@ capacity:
   area_m2:   120
   land_ha:   2
 
+# ── Check-in / Check-out ─────────────────────────────────
+checkin_time:  "16h00"
+checkout_time: "11h00"
+
 # ── Pricing ─────────────────────────────────────────────
 pricing:
   per_night: 150
@@ -36,8 +40,9 @@ location:
 
 # ── Contact ─────────────────────────────────────────────
 contact:
-  email: "bonjour@refugesauvage.be"
-  phone: "+32 123 45 67 89"
+  owner_name: "Prénom Nom"
+  email:      "bonjour@refugesauvage.be"
+  phone:      "+32 123 45 67 89"
 
 # ── Social ──────────────────────────────────────────────
 social:

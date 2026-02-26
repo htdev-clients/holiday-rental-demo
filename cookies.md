@@ -24,7 +24,6 @@ Ce site utilise uniquement des **cookies techniques essentiels**. Aucun cookie p
 
 Ce site intègre les services externes suivants, susceptibles de déposer leurs propres cookies ou d'effectuer des requêtes vers leurs serveurs :
 
-- **Google Fonts** — chargement des polices typographiques. Google Fonts, lorsqu'utilisé via CDN, peut transmettre l'adresse IP du visiteur aux serveurs de Google. Depuis 2022, il est possible de les charger localement pour éviter tout transfert de données ; cette option n'est pas encore implémentée sur ce site.
 - **Stripe** — lors du processus de paiement uniquement. Stripe peut déposer des cookies nécessaires à la sécurisation et à la lutte contre la fraude. Ces cookies sont régis par la [politique de confidentialité de Stripe](https://stripe.com/fr-be/privacy).
 
 ## 4. Gérer vos préférences

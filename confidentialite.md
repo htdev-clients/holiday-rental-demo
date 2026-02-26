@@ -12,7 +12,7 @@ permalink: /confidentialite/
 
 Les données personnelles collectées via ce site sont traitées par :
 
-**Le Refuge Sauvage** — Lieu-dit Le Bois Clair, 6900 Marche-en-Famenne, Belgique
+**{{ site.data.property.contact.owner_name }}**, propriétaire de **{{ site.data.property.name }}** — {{ site.data.property.location.address_line1 }}, {{ site.data.property.location.address_line2 }}, {{ site.data.property.location.country }}
 
 Contact : [{{ site.data.property.contact.email }}](mailto:{{ site.data.property.contact.email }})
 
