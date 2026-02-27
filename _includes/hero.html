@@ -2,6 +2,10 @@
 <header class="relative w-full h-screen overflow-hidden">
     <img src="{{ p.hero_image }}"
          alt="{{ p.hero_image_alt }}"
+         srcset="{{ p.hero_image }} 1920w"
+         sizes="100vw"
+         fetchpriority="high"
+         decoding="async"
          class="absolute inset-0 w-full h-full object-cover">
     <div class="absolute inset-0 bg-gradient-to-t from-earth/90 via-earth/30 to-transparent"></div>
 

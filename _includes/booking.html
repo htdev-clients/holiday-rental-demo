@@ -33,7 +33,7 @@
                     <div class="flex gap-4 items-start">
                         <div class="w-7 h-7 shrink-0 bg-clay text-white flex items-center justify-center text-xs font-bold rounded-full">3</div>
                         <div>
-                            <p class="font-semibold text-earth text-sm">Confirmation sous 24h</p>
+                            <p class="font-semibold text-earth text-sm">Confirmation sous {{ p.booking.response_hours }}h</p>
                             <p class="text-gray-600 text-sm mt-1">Le propriétaire confirme et vous envoie le lien de paiement.</p>
                         </div>
                     </div>
@@ -192,7 +192,7 @@
                     <h3 class="font-serif text-2xl text-earth">Demande envoyée !</h3>
                     <p class="text-gray-600 text-sm leading-relaxed max-w-xs mx-auto">
                         Merci pour votre demande. Le propriétaire l'examinera et vous enverra
-                        un lien de paiement sécurisé sous <strong>24h</strong>.
+                        un lien de paiement sécurisé sous <strong>{{ p.booking.response_hours }}h</strong>.
                     </p>
                     <p class="text-xs text-gray-400">Pensez à vérifier vos spams si vous ne recevez pas d'email.</p>
                 </div>

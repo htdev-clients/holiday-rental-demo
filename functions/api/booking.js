@@ -101,10 +101,13 @@ function ownerEmailHtml({ firstname, lastname, email, phone, checkin, checkout, 
   ${message ? `<tr><td style="padding:6px 16px 6px 0;color:#888;vertical-align:top">Message</td><td style="padding:6px 0">${message}</td></tr>` : ''}
 </table>
 <p style="margin-top:24px">
-  <a href="${approveUrl}" style="background:#D6A87C;color:#fff;padding:14px 28px;text-decoration:none;font-weight:bold;font-family:sans-serif;display:inline-block">
-    ✓ Approuver la réservation
+  <a href="${approveUrl}" style="background:#4A5D44;color:#fff;padding:14px 28px;text-decoration:none;font-weight:bold;font-family:sans-serif;display:inline-block;margin-right:12px">
+    ✓ Approuver
+  </a>
+  <a href="${approveUrl}" style="background:#f0f0f0;color:#555;padding:14px 28px;text-decoration:none;font-weight:bold;font-family:sans-serif;display:inline-block;border:1px solid #ccc">
+    ✗ Refuser
   </a>
 </p>
-<p style="color:#999;font-size:12px;font-family:sans-serif">Ce lien est valable 7 jours.</p>
+<p style="color:#999;font-size:12px;font-family:sans-serif">Ces liens sont valables 24h.</p>
 `;
 }

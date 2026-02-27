@@ -6,10 +6,18 @@
     <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
     <title>{% if page.title %}{{ page.title }} | {{ site.data.property.name }}{% else %}{{ site.data.property.name }} | {{ site.data.property.tagline }}{% endif %}</title>
     <meta name="description" content="{{ site.data.property.description }}">
-    <meta property="og:title"       content="{{ site.data.property.name }}">
+    <link rel="canonical" href="{{ site.url }}{{ page.url }}">
+    <meta property="og:title"       content="{% if page.title %}{{ page.title }} | {{ site.data.property.name }}{% else %}{{ site.data.property.name }}{% endif %}">
     <meta property="og:description" content="{{ site.data.property.description }}">
-    <meta property="og:image"       content="{{ site.data.property.hero_image }}">
+    <meta property="og:image"       content="{{ site.url }}{{ site.data.property.hero_image }}">
     <meta property="og:type"        content="website">
+    <meta property="og:url"         content="{{ site.url }}{{ page.url }}">
+    <meta property="og:site_name"   content="{{ site.data.property.name }}">
+    <meta property="og:locale"      content="fr_BE">
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:title"       content="{% if page.title %}{{ page.title }} | {{ site.data.property.name }}{% else %}{{ site.data.property.name }}{% endif %}">
+    <meta name="twitter:description" content="{{ site.data.property.description }}">
+    <meta name="twitter:image"       content="{{ site.url }}{{ site.data.property.hero_image }}">
 
     <style>
         /* ── Self-hosted fonts ── */
@@ -91,6 +99,8 @@
     </script>
 
     <style>
+        html { scroll-behavior: smooth; }
+
         /* ── Scrollbar ── */
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
@@ -160,10 +170,16 @@
         input.form-input, textarea.form-input { -webkit-appearance: none; appearance: none; }
         /* Suppress tap highlight flash on Android/iOS */
         a, button { -webkit-tap-highlight-color: transparent; }
+        /* Keyboard focus ring — visible only on keyboard/tab nav, not mouse clicks */
+        a:focus-visible, button:focus-visible { outline: 2px solid #D6A87C; outline-offset: 3px; border-radius: 4px; }
+        /* Prevent image/icon drag and accidental text selection */
+        img, svg { user-select: none; -webkit-user-select: none; }
         /* No text selection or double-tap zoom on calendar cells */
         .cal-day { user-select: none; -webkit-user-select: none; touch-action: manipulation; }
-        /* iOS Safari: use svh so the hero never extends behind the retracted address bar */
+        /* Mobile browsers: avoid 100vh overflow from browser chrome
+           svh = stable (won't jump), dvh = dynamic (fills exactly the visible area) */
         @supports (height: 100svh) { header.h-screen { height: 100svh; } }
+        @supports (height: 100dvh) { header.h-screen { height: 100dvh; } }
 
         /* ── Amenity badge ── */
         .amenity-badge {

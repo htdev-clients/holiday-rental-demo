@@ -9,7 +9,7 @@ tagline:    "Chalet & Forêt — Ardennes Belges"
 subtitle:   "Ardennes Belges · Séjour nature"
 description: "Un chalet en bois dans les Ardennes belges — pour souffler, se promener, et profiter du temps qui passe différemment."
 
-hero_image:     "https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?q=80&w=1920&auto=format&fit=crop"
+hero_image:     "/assets/images/hero.jpg"
 hero_image_alt: "Chalet dans la forêt des Ardennes"
 
 # ── Capacity ────────────────────────────────────────────
@@ -66,11 +66,11 @@ concept:
       Grand salon avec une belle baie vitrée, un poêle à bois pour les soirées fraîches, et une cuisine
       complète pour cuisiner tranquillement. L'intérieur est simple et confortable — on n'a pas voulu
       en faire trop, juste ce qu'il faut pour se sentir vraiment chez soi.
-    image:       "https://images.unsplash.com/photo-1631630259742-c0f0b17c6c10?q=80&w=1170&auto=format&fit=crop"
+    image:       "/assets/images/bedroom-1.jpg"
     image_alt:   "Salon du chalet avec baie vitrée et poêle à bois"
-    image2:      "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?q=80&w=1170&auto=format&fit=crop"
+    image2:      "/assets/images/bedroom-2.jpg"
     image_alt2:  "Chambre cosy en bois avec literie blanche"
-    image3:      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?q=80&w=1170&auto=format&fit=crop"
+    image3:      "/assets/images/kitchen.jpg"
     image_alt3:  "Cuisine entièrement équipée du chalet"
     reverse:     false
     features:
@@ -86,11 +86,11 @@ concept:
       Le chalet donne directement sur un sentier balisé. En vingt minutes à pied, on rejoint la
       rivière. Autour, c'est la forêt des Ardennes — des cerfs le matin, le calme tout le temps.
       Idéal pour randonner, se promener, ou ne rien faire du tout.
-    image:       "https://images.unsplash.com/photo-1668900016730-75a72135f96d?q=80&w=1170&auto=format&fit=crop"
+    image:       "/assets/images/living-room.jpg"
     image_alt:   "Vue sur la forêt des Ardennes depuis le chalet"
-    image2:      "https://images.unsplash.com/photo-1508193638397-1c4234db14d8?q=80&w=1267&auto=format&fit=crop"
+    image2:      "/assets/images/forest.jpg"
     image_alt2:  "Terrasse en bois entourée de forêt"
-    image3:      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1170&auto=format&fit=crop"
+    image3:      "/assets/images/mountain.jpg"
     image_alt3:  "Sentier de randonnée en forêt ardennaise"
     reverse:     true
     features:
@@ -120,30 +120,22 @@ amenities:
 
 # ── Gallery ─────────────────────────────────────────────
 gallery:
-  - url:     "https://images.unsplash.com/photo-1510023060291-d519947861b0?q=80&w=1170&auto=format&fit=crop"
+  - url:     "/assets/images/gallery-1.jpg"
     alt:     "Rivière des Ardennes"
     caption: "Rivière à proximité"
-  - url:     "https://images.unsplash.com/photo-1491982883790-ead7c97a047e?q=80&w=1094&auto=format&fit=crop"
+  - url:     "/assets/images/gallery-2.jpg"
     alt:     "Brouillard matinal en forêt"
     caption: "Brouillard matinal"
-  - url:     "https://images.unsplash.com/photo-1549778892-101c88c767c7?q=80&w=1220&auto=format&fit=crop"
+  - url:     "/assets/images/gallery-3.jpg"
     alt:     "Le chalet sous la neige"
     caption: "Le chalet en hiver"
-  - url:     "https://images.unsplash.com/photo-1470748085385-5fbb3018c796?q=80&w=1124&auto=format&fit=crop"
+  - url:     "/assets/images/gallery-4.jpg"
     alt:     "Couleurs d'automne"
     caption: "Couleurs d'automne"
-  - url:     "https://images.unsplash.com/photo-1631630259742-c0f0b17c6c10?q=80&w=1170&auto=format&fit=crop"
+  - url:     "/assets/images/bedroom-1.jpg"
     alt:     "Salon chaleureux"
     caption: "Salon chaleureux"
 
-# ── Testimonials ────────────────────────────────────────
-testimonials:
-  - quote:  "On a coupé les téléphones dès le premier soir. Le poêle, les balades en forêt, les repas sans se presser — on est repartis complètement ressourcés. On revient l'année prochaine."
-    author: "Marc & Julie"
-    date:   "Août 2024"
-  - quote:  "Un chalet magnifique, parfaitement équipé et d'une propreté irréprochable. La forêt tout autour est envoûtante. Nos enfants ne voulaient plus repartir — et franchement, nous non plus."
-    author: "Sophie T."
-    date:   "Juillet 2024"
-  - quote:  "L'endroit idéal pour se ressourcer en couple. Le silence, la nature, la qualité des lieux... tout était parfait. On a passé les soirées au coin du feu avec une bouteille de vin — que demander de plus ?"
-    author: "Pierre & Camille"
-    date:   "Octobre 2024"
+# ── Booking ─────────────────────────────────────────────
+booking:
+  response_hours: 24   # Owner response time — must match TOKEN_TTL_HOURS in functions/api/approve.js

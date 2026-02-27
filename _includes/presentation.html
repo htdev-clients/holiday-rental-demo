@@ -54,6 +54,9 @@
             <!-- Main photo -->
             <div class="lg:col-span-7">
                 <img src="{{ interior.image }}" alt="{{ interior.image_alt }}"
+                    srcset="{{ interior.image }} 1170w"
+                    sizes="(min-width: 1024px) 58vw, 100vw"
+                    loading="lazy" decoding="async"
                     class="w-full h-72 lg:h-full object-cover hard-shadow">
             </div>
 
@@ -97,6 +100,9 @@
             <!-- Main photo -->
             <div class="lg:col-span-7 order-1 lg:order-2">
                 <img src="{{ exterior.image }}" alt="{{ exterior.image_alt }}"
+                    srcset="{{ exterior.image }} 1170w"
+                    sizes="(min-width: 1024px) 58vw, 100vw"
+                    loading="lazy" decoding="async"
                     class="w-full h-72 lg:h-full object-cover hard-shadow">
             </div>
 

@@ -32,7 +32,7 @@
                 {{ p.location.address_line2 }},<br>
                 {{ p.location.country }}
             </address>
-            <a href="{{ p.location.maps_url }}" target="_blank" rel="noopener"
+            <a href="{{ p.location.maps_url }}" target="_blank" rel="noopener noreferrer"
                class="inline-flex items-center gap-2 text-xs text-clay hover:text-white transition-colors uppercase tracking-widest">
                 <i data-lucide="map-pin" class="w-3 h-3"></i> Voir sur la carte
             </a>
@@ -44,7 +44,7 @@
             <div class="space-y-3 text-white/80 font-serif text-lg">
                 <a href="tel:{{ p.contact.phone | remove: ' ' }}" class="flex items-center gap-3 hover:text-clay transition-colors">
                     <i data-lucide="phone" class="w-4 h-4 text-clay"></i>
-                    {{ p.contact.phone }}
+                    <span dir="ltr">{{ p.contact.phone }}</span>
                 </a>
                 <a href="mailto:{{ p.contact.email }}" class="flex items-center gap-3 hover:text-clay transition-colors break-all">
                     <i data-lucide="mail" class="w-4 h-4 text-clay"></i>
