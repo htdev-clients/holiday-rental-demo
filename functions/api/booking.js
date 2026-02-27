@@ -48,6 +48,7 @@ export async function onRequestPost(context) {
     return jsonError('Trop de demandes. Veuillez réessayer dans 24h.', 429);
   }
 
+  const propertyName = env.PROPERTY_NAME || 'Le Refuge Sauvage';
   const nights = Math.round((co - ci) / 86400000);
   const id     = crypto.randomUUID();
   const token  = await signHmac(id, env.APPROVE_SECRET);
@@ -81,10 +82,34 @@ export async function onRequestPost(context) {
     html: ownerEmailHtml({ firstname, lastname, email, phone: data.phone, checkin, checkout, nights, guests, message: data.message, approveUrl }),
   });
 
+  // Email guest acknowledgment
+  await sendEmail(env.RESEND_API_KEY, {
+    from: env.FROM_EMAIL,
+    to: email.trim(),
+    subject: `Votre demande de réservation — ${propertyName}`,
+    html: guestAcknowledgmentHtml({ firstname, checkin, checkout, nights, guests, propertyName }),
+  });
+
   return new Response(JSON.stringify({ ok: true, id }), {
     status: 201,
     headers: { 'Content-Type': 'application/json' },
   });
+}
+
+function guestAcknowledgmentHtml({ firstname, checkin, checkout, nights, guests, propertyName }) {
+  return `
+<h2 style="color:#2C2520;font-family:Georgia,serif">Votre demande a bien été reçue</h2>
+<p style="font-family:sans-serif">Bonjour ${firstname},</p>
+<p style="font-family:sans-serif">Nous avons bien reçu votre demande de réservation pour ${propertyName}. Le propriétaire vous répondra dans les <strong>24h</strong>.</p>
+<table style="border-collapse:collapse;font-family:sans-serif;font-size:14px;margin:20px 0">
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Arrivée</td><td style="padding:6px 0">${checkin}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Départ</td><td style="padding:6px 0">${checkout}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Durée</td><td style="padding:6px 0">${nights} nuit${nights > 1 ? 's' : ''}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${guests}</td></tr>
+</table>
+<p style="font-family:sans-serif;color:#666;font-size:14px">Si vous ne recevez pas de réponse sous 24h, n'hésitez pas à nous contacter directement.</p>
+<p style="font-family:sans-serif;color:#999;font-size:12px;margin-top:16px">Cet email est un accusé de réception automatique — aucune réservation n'est encore confirmée.</p>
+`;
 }
 
 function ownerEmailHtml({ firstname, lastname, email, phone, checkin, checkout, nights, guests, message, approveUrl }) {

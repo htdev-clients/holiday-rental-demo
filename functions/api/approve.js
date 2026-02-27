@@ -188,96 +188,100 @@ ${ownerMessage ? `<p style="font-family:sans-serif;background:#f9f6f0;padding:14
 
 // ─── Pages ────────────────────────────────────────────────────────────────────
 
-function actionFormHtml({ booking, nights, propertyName, id, token }) {
+/** Shared HTML shell using the site design system (earth/clay/leaf/paper palette, Cormorant + Montserrat). */
+function pageShell({ title, propertyName, body, footerNote = '' }) {
   return `<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Répondre à la demande — ${propertyName}</title>
+  <title>${escapeHtml(title)} — ${escapeHtml(propertyName)}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@400;500;600&display=swap">
   <style>
-    body      { font-family: sans-serif; max-width: 560px; margin: 60px auto; padding: 0 24px; color: #2C2520; }
-    h1        { font-size: 1.4rem; margin-bottom: 4px; }
-    .sub      { color: #888; font-size: 0.9rem; margin-bottom: 28px; }
-    table     { border-collapse: collapse; font-size: 14px; margin-bottom: 28px; width: 100%; }
-    td        { padding: 6px 16px 6px 0; }
-    td:first-child { color: #888; white-space: nowrap; }
-    .guest-msg { background: #f9f6f0; padding: 10px 14px; border-left: 3px solid #D6A87C; font-size: 14px; margin-bottom: 28px; }
-    label     { display: block; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
-    .opt      { font-weight: normal; color: #999; }
-    textarea  { width: 100%; box-sizing: border-box; border: 1px solid #ddd; padding: 10px; font-size: 14px; font-family: sans-serif; resize: vertical; }
-    .actions  { display: flex; gap: 12px; margin-top: 20px; }
-    button    { flex: 1; padding: 14px 20px; font-size: 14px; font-weight: bold; font-family: sans-serif; border: none; cursor: pointer; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body    { font-family: 'Montserrat', sans-serif; background: #F2F0E9; color: #2C2520; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 16px; }
+    .card   { background: #FAF8F3; border: 1px solid #E5E2D9; width: 100%; max-width: 560px; padding: 40px; }
+    .brand  { font-family: 'Cormorant Garamond', serif; font-size: 0.85rem; letter-spacing: 0.12em; text-transform: uppercase; color: #D6A87C; margin-bottom: 28px; }
+    h1      { font-family: 'Cormorant Garamond', serif; font-size: 1.75rem; font-weight: 600; margin-bottom: 6px; line-height: 1.2; }
+    .sub    { font-size: 0.8rem; color: #999; margin-bottom: 28px; line-height: 1.5; }
+    table   { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 24px; }
+    td      { padding: 8px 0; border-bottom: 1px solid #E5E2D9; }
+    td:first-child { color: #999; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; width: 38%; }
+    .guest-msg { background: #F2F0E9; border-left: 3px solid #D6A87C; padding: 12px 16px; font-size: 13px; color: #555; margin-bottom: 24px; font-style: italic; }
+    label   { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: #888; margin-bottom: 8px; }
+    .opt    { font-weight: 400; text-transform: none; letter-spacing: 0; }
+    textarea { width: 100%; border: 1px solid #E5E2D9; background: #fff; padding: 12px; font-size: 13px; font-family: 'Montserrat', sans-serif; color: #2C2520; resize: vertical; line-height: 1.5; }
+    textarea:focus { outline: 2px solid #D6A87C; outline-offset: 0; border-color: #D6A87C; }
+    .actions { display: flex; gap: 12px; margin-top: 20px; }
+    button  { flex: 1; padding: 14px 20px; font-size: 11px; font-weight: 600; font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 0.07em; border: none; cursor: pointer; transition: opacity 0.15s; }
+    button:hover { opacity: 0.82; }
     .btn-approve { background: #4A5D44; color: #fff; }
-    .btn-approve:hover { background: #3a4c35; }
-    .btn-refuse  { background: #f0f0f0; color: #555; border: 1px solid #ccc; }
-    .btn-refuse:hover  { background: #e0e0e0; }
+    .btn-refuse  { background: #E5E2D9; color: #2C2520; }
+    .note   { font-size: 11px; color: #bbb; text-align: center; margin-top: 20px; }
   </style>
 </head>
 <body>
-  <h1>Demande de réservation</h1>
-  <p class="sub">Répondez à cette demande — un email sera envoyé automatiquement au voyageur.</p>
-  <table>
-    <tr><td>Voyageur</td><td><strong>${escapeHtml(booking.firstname)} ${escapeHtml(booking.lastname)}</strong></td></tr>
-    <tr><td>Email</td><td>${escapeHtml(booking.email)}</td></tr>
-    <tr><td>Arrivée</td><td>${booking.checkin}</td></tr>
-    <tr><td>Départ</td><td>${booking.checkout}</td></tr>
-    <tr><td>Durée</td><td>${nights} nuit${nights > 1 ? 's' : ''}</td></tr>
-    <tr><td>Voyageurs</td><td>${booking.guests}</td></tr>
-  </table>
-  ${booking.message ? `<div class="guest-msg">${escapeHtml(booking.message)}</div>` : ''}
-  <form method="POST" action="/api/approve">
-    <input type="hidden" name="id" value="${escapeHtml(id)}">
-    <input type="hidden" name="token" value="${escapeHtml(token)}">
-    <label for="owner_message">Message pour le voyageur <span class="opt">(optionnel)</span></label>
-    <textarea id="owner_message" name="owner_message" rows="4" placeholder="Instructions d'arrivée, informations complémentaires..."></textarea>
-    <div class="actions">
-      <button type="submit" name="action" value="approve" class="btn-approve">✓ Approuver</button>
-      <button type="submit" name="action" value="refuse" class="btn-refuse">✗ Refuser</button>
-    </div>
-  </form>
+  <div class="card">
+    <div class="brand">${escapeHtml(propertyName)}</div>
+    ${body}
+  </div>
+  ${footerNote ? `<p class="note">${footerNote}</p>` : ''}
 </body>
 </html>`;
+}
+
+function actionFormHtml({ booking, nights, propertyName, id, token }) {
+  const body = `
+    <h1>Demande de réservation</h1>
+    <p class="sub">Répondez à cette demande — un email sera envoyé automatiquement au voyageur.</p>
+    <table>
+      <tr><td>Voyageur</td><td><strong>${escapeHtml(booking.firstname)} ${escapeHtml(booking.lastname)}</strong></td></tr>
+      <tr><td>Email</td><td>${escapeHtml(booking.email)}</td></tr>
+      <tr><td>Arrivée</td><td>${booking.checkin}</td></tr>
+      <tr><td>Départ</td><td>${booking.checkout}</td></tr>
+      <tr><td>Durée</td><td>${nights} nuit${nights > 1 ? 's' : ''}</td></tr>
+      <tr><td>Voyageurs</td><td>${booking.guests}</td></tr>
+    </table>
+    ${booking.message ? `<div class="guest-msg">${escapeHtml(booking.message)}</div>` : ''}
+    <form method="POST" action="/api/approve">
+      <input type="hidden" name="id" value="${escapeHtml(id)}">
+      <input type="hidden" name="token" value="${escapeHtml(token)}">
+      <label for="owner_message">Message pour le voyageur <span class="opt">(optionnel)</span></label>
+      <textarea id="owner_message" name="owner_message" rows="4" placeholder="Instructions d'arrivée, informations complémentaires..."></textarea>
+      <div class="actions">
+        <button type="submit" name="action" value="approve" class="btn-approve">✓ Approuver</button>
+        <button type="submit" name="action" value="refuse" class="btn-refuse">✗ Refuser</button>
+      </div>
+    </form>`;
+  return pageShell({ title: 'Demande de réservation', propertyName, body, footerNote: 'Lien sécurisé · valable 24h' });
 }
 
 function successPageHtml(booking, propertyName, result) {
   const approved = result === 'approved';
-  return `<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>${approved ? 'Réservation approuvée' : 'Demande refusée'} — ${propertyName}</title>
-  <style>
-    body { font-family: sans-serif; max-width: 480px; margin: 80px auto; padding: 0 24px; text-align: center; color: #2C2520; }
-    h1   { color: ${approved ? '#4A5D44' : '#888'}; font-size: 1.5rem; }
-    p    { color: #666; line-height: 1.6; }
-  </style>
-</head>
-<body>
-  <h1>${approved ? '✓ Réservation approuvée' : '✓ Demande refusée'}</h1>
-  <p>${approved
+  const icon     = approved ? '✓' : '—';
+  const heading  = approved ? 'Réservation approuvée' : 'Demande refusée';
+  const detail   = approved
     ? `Un lien de paiement a été envoyé à <strong>${escapeHtml(booking.email)}</strong>.`
-    : `Un email de refus a été envoyé à <strong>${escapeHtml(booking.email)}</strong>.`
-  }</p>
-  <p>${escapeHtml(booking.firstname)} ${escapeHtml(booking.lastname)}<br>${booking.checkin} → ${booking.checkout}</p>
-</body>
-</html>`;
+    : `Un email de refus a été envoyé à <strong>${escapeHtml(booking.email)}</strong>.`;
+  const body = `
+    <h1 style="color:${approved ? '#4A5D44' : '#888'}">${icon} ${heading}</h1>
+    <p class="sub" style="margin-top:12px">${detail}</p>
+    <table style="margin-top:8px">
+      <tr><td>Voyageur</td><td>${escapeHtml(booking.firstname)} ${escapeHtml(booking.lastname)}</td></tr>
+      <tr><td>Dates</td><td>${booking.checkin} → ${booking.checkout}</td></tr>
+    </table>`;
+  return pageShell({ title: heading, propertyName, body });
 }
 
 function errorPage(message) {
-  return new Response(`<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <title>Erreur</title>
-  <style>body{font-family:sans-serif;max-width:480px;margin:80px auto;padding:0 24px;text-align:center;color:#2C2520}h1{color:#c0392b}</style>
-</head>
-<body>
-  <h1>Erreur</h1>
-  <p>${message}</p>
-</body>
-</html>`, { status: 400, headers: { 'Content-Type': 'text/html;charset=UTF-8' } });
+  const body = `
+    <h1 style="color:#c0392b">Une erreur est survenue</h1>
+    <p class="sub" style="margin-top:12px">${escapeHtml(message)}</p>`;
+  return new Response(
+    pageShell({ title: 'Erreur', propertyName: 'Le Refuge Sauvage', body }),
+    { status: 400, headers: { 'Content-Type': 'text/html;charset=UTF-8' } }
+  );
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
