@@ -128,18 +128,21 @@ async function createStripeSession({ booking, total, env, propertyName }) {
     // URLSearchParams must be built from an array of tuples to allow duplicate keys
     // (object literals silently drop duplicate keys — bancontact would override card)
     body: new URLSearchParams([
-      ['payment_method_types[]',                         'card'],
-      ['payment_method_types[]',                         'bancontact'],
-      ['line_items[0][price_data][currency]',            'eur'],
-      ['line_items[0][price_data][product_data][name]',  `${propertyName} — ${booking.checkin} au ${booking.checkout}`],
-      ['line_items[0][price_data][unit_amount]',         String(Math.round(total * 100))],
-      ['line_items[0][quantity]',                        '1'],
-      ['mode',                                           'payment'],
-      ['success_url',                                    `${env.SITE_URL}/reservation-confirmee`],
-      ['cancel_url',                                     `${env.SITE_URL}/#booking`],
-      ['customer_email',                                 booking.email],
-      ['metadata[booking_id]',                           booking.id],
-      ['metadata[property_id]',                          booking.property_id],
+      ['payment_method_types[]',                                     'card'],
+      ['payment_method_types[]',                                     'bancontact'],
+      ['line_items[0][price_data][currency]',                        'eur'],
+      ['line_items[0][price_data][product_data][name]',              `${propertyName} — ${booking.checkin} au ${booking.checkout}`],
+      ['line_items[0][price_data][product_data][description]',       `${booking.guests} voyageur${booking.guests > 1 ? 's' : ''} · Arrivée ${booking.checkin} · Départ ${booking.checkout}`],
+      ['line_items[0][price_data][unit_amount]',                     String(Math.round(total * 100))],
+      ['line_items[0][quantity]',                                    '1'],
+      ['mode',                                                       'payment'],
+      ['locale',                                                     'fr'],
+      ['success_url',                                                `${env.SITE_URL}/reservation-confirmee`],
+      ['cancel_url',                                                 `${env.SITE_URL}/#booking`],
+      ['customer_email',                                             booking.email],
+      ['metadata[booking_id]',                                       booking.id],
+      ['metadata[property_id]',                                      booking.property_id],
+      ['custom_text[submit][message]',                               'En cliquant sur Confirmer, vous acceptez les conditions générales de vente.'],
     ]),
   });
   if (!res.ok) throw new Error(await res.text());
@@ -219,6 +222,7 @@ function pageShell({ title, propertyName, body, footerNote = '' }) {
     .btn-approve { background: #4A5D44; color: #fff; }
     .btn-refuse  { background: #E5E2D9; color: #2C2520; }
     .note   { font-size: 11px; color: #bbb; text-align: center; margin-top: 20px; }
+    .warning { background: #FEF3C7; border-left: 4px solid #D97706; padding: 12px 16px; font-size: 13px; color: #92400E; margin-bottom: 20px; line-height: 1.5; }
   </style>
 </head>
 <body>
@@ -244,6 +248,7 @@ function actionFormHtml({ booking, nights, propertyName, id, token }) {
       <tr><td>Voyageurs</td><td>${booking.guests}</td></tr>
     </table>
     ${booking.message ? `<div class="guest-msg">${escapeHtml(booking.message)}</div>` : ''}
+    <div class="warning"><strong>⚠ Avant d'approuver :</strong> bloquez ces dates dans votre calendrier Airbnb pour éviter une double réservation.</div>
     <form method="POST" action="/api/approve">
       <input type="hidden" name="id" value="${escapeHtml(id)}">
       <input type="hidden" name="token" value="${escapeHtml(token)}">

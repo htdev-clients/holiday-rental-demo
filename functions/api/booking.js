@@ -107,7 +107,6 @@ function guestAcknowledgmentHtml({ firstname, checkin, checkout, nights, guests,
   <tr><td style="padding:6px 16px 6px 0;color:#888">Durée</td><td style="padding:6px 0">${nights} nuit${nights > 1 ? 's' : ''}</td></tr>
   <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${guests}</td></tr>
 </table>
-<p style="font-family:sans-serif;color:#666;font-size:14px">Si vous ne recevez pas de réponse sous 24h, n'hésitez pas à nous contacter directement.</p>
 <p style="font-family:sans-serif;color:#999;font-size:12px;margin-top:16px">Cet email est un accusé de réception automatique — aucune réservation n'est encore confirmée.</p>
 `;
 }
@@ -125,7 +124,10 @@ function ownerEmailHtml({ firstname, lastname, email, phone, checkin, checkout, 
   <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${guests}</td></tr>
   ${message ? `<tr><td style="padding:6px 16px 6px 0;color:#888;vertical-align:top">Message</td><td style="padding:6px 0">${message}</td></tr>` : ''}
 </table>
-<p style="margin-top:24px">
+<p style="margin-top:24px;padding:14px 16px;background:#FEF3C7;border-left:4px solid #D97706;font-family:sans-serif;font-size:14px;color:#92400E">
+  <strong>⚠ Avant d'approuver :</strong> bloquez ces dates dans votre calendrier Airbnb pour éviter une double réservation.
+</p>
+<p style="margin-top:16px">
   <a href="${approveUrl}" style="background:#4A5D44;color:#fff;padding:14px 28px;text-decoration:none;font-weight:bold;font-family:sans-serif;display:inline-block;margin-right:12px">
     ✓ Approuver
   </a>
