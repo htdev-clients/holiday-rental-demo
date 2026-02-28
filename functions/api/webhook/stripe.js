@@ -18,7 +18,7 @@ export async function onRequestPost(context) {
   }
 
   const event = JSON.parse(body);
-  const propertyName = env.PROPERTY_NAME || 'Le Refuge Sauvage';
+  const propertyName = env.PROPERTY_NAME || '[Nom du bien]';
 
   console.log(`[webhook] Stripe event received: ${event.type}`);
 
@@ -44,20 +44,25 @@ export async function onRequestPost(context) {
       const nights = Math.round((new Date(booking.checkout) - new Date(booking.checkin)) / 86400000);
       const total  = session.amount_total / 100; // Stripe stores in cents
 
-      await Promise.all([
-        sendEmail(env.RESEND_API_KEY, {
-          from:    env.FROM_EMAIL,
-          to:      booking.email,
-          subject: `Confirmation de votre réservation — ${propertyName}`,
-          html:    guestConfirmationHtml({ booking, nights, total, propertyName }),
-        }),
-        sendEmail(env.RESEND_API_KEY, {
-          from:    env.FROM_EMAIL,
-          to:      env.OWNER_EMAIL,
-          subject: `Paiement reçu — ${booking.firstname} ${booking.lastname}`,
-          html:    ownerConfirmationHtml({ booking, nights, total }),
-        }),
-      ]);
+      try {
+        await Promise.all([
+          sendEmail(env.RESEND_API_KEY, {
+            from:    env.FROM_EMAIL,
+            to:      booking.email,
+            subject: `Confirmation de votre réservation — ${propertyName}`,
+            html:    guestConfirmationHtml({ booking, nights, total, propertyName }),
+          }),
+          sendEmail(env.RESEND_API_KEY, {
+            from:    env.FROM_EMAIL,
+            to:      env.OWNER_EMAIL,
+            subject: `Paiement reçu — ${booking.firstname} ${booking.lastname}`,
+            html:    ownerConfirmationHtml({ booking, nights, total }),
+          }),
+        ]);
+      } catch (emailErr) {
+        // Log but return 200 — Stripe must not retry for email failures
+        console.error('[webhook] Failed to send confirmation emails:', emailErr);
+      }
     } else {
       console.error(`[webhook] checkout.session.completed: booking ${bookingId} not found in DB`);
     }

@@ -35,9 +35,13 @@ export async function sendEmail(apiKey, { from, to, subject, html }) {
       'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ from: from ?? 'Le Refuge Sauvage <noreply@refugesauvage.be>', to, subject, html }),
+    body: JSON.stringify({ from, to, subject, html }),
   });
-  if (!res.ok) console.error('Resend error:', await res.text());
+  if (!res.ok) {
+    const detail = await res.text();
+    console.error('Resend error:', detail);
+    throw new Error(`Email delivery failed (${res.status})`);
+  }
 }
 
 /**

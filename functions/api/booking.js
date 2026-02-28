@@ -48,7 +48,7 @@ export async function onRequestPost(context) {
     return jsonError('Trop de demandes. Veuillez réessayer dans 24h.', 429);
   }
 
-  const propertyName = env.PROPERTY_NAME || 'Le Refuge Sauvage';
+  const propertyName = env.PROPERTY_NAME || '[Nom du bien]';
   const nights = Math.round((co - ci) / 86400000);
   const id     = crypto.randomUUID();
   const token  = await signHmac(id, env.APPROVE_SECRET);
@@ -73,22 +73,30 @@ export async function onRequestPost(context) {
     return jsonError('Erreur serveur. Veuillez réessayer.', 500);
   }
 
-  // Email owner
+  // Email owner — log on failure (booking is in D1, visible in admin dashboard)
   const approveUrl = `${env.SITE_URL}/api/approve?id=${id}&token=${token}`;
-  await sendEmail(env.RESEND_API_KEY, {
-    from: env.FROM_EMAIL,
-    to: env.OWNER_EMAIL,
-    subject: `Nouvelle demande de réservation — ${firstname} ${lastname}`,
-    html: ownerEmailHtml({ firstname, lastname, email, phone: data.phone, checkin, checkout, nights, guests, message: data.message, approveUrl }),
-  });
+  try {
+    await sendEmail(env.RESEND_API_KEY, {
+      from: env.FROM_EMAIL,
+      to: env.OWNER_EMAIL,
+      subject: `Nouvelle demande de réservation — ${firstname} ${lastname}`,
+      html: ownerEmailHtml({ firstname, lastname, email, phone: data.phone, checkin, checkout, nights, guests, message: data.message, approveUrl }),
+    });
+  } catch (emailErr) {
+    console.error('[booking] Failed to notify owner:', emailErr);
+  }
 
-  // Email guest acknowledgment
-  await sendEmail(env.RESEND_API_KEY, {
-    from: env.FROM_EMAIL,
-    to: email.trim(),
-    subject: `Votre demande de réservation — ${propertyName}`,
-    html: guestAcknowledgmentHtml({ firstname, checkin, checkout, nights, guests, propertyName }),
-  });
+  // Email guest acknowledgment — best effort
+  try {
+    await sendEmail(env.RESEND_API_KEY, {
+      from: env.FROM_EMAIL,
+      to: email.trim(),
+      subject: `Votre demande de réservation — ${propertyName}`,
+      html: guestAcknowledgmentHtml({ firstname, checkin, checkout, nights, guests, propertyName }),
+    });
+  } catch (emailErr) {
+    console.error('[booking] Failed to send guest acknowledgment:', emailErr);
+  }
 
   return new Response(JSON.stringify({ ok: true, id }), {
     status: 201,
@@ -128,11 +136,8 @@ function ownerEmailHtml({ firstname, lastname, email, phone, checkin, checkout, 
   <strong>⚠ Avant d'approuver :</strong> bloquez ces dates dans votre calendrier Airbnb pour éviter une double réservation.
 </p>
 <p style="margin-top:16px">
-  <a href="${approveUrl}" style="background:#4A5D44;color:#fff;padding:14px 28px;text-decoration:none;font-weight:bold;font-family:sans-serif;display:inline-block;margin-right:12px">
-    ✓ Approuver
-  </a>
-  <a href="${approveUrl}" style="background:#f0f0f0;color:#555;padding:14px 28px;text-decoration:none;font-weight:bold;font-family:sans-serif;display:inline-block;border:1px solid #ccc">
-    ✗ Refuser
+  <a href="${approveUrl}" style="background:#4A5D44;color:#fff;padding:14px 28px;text-decoration:none;font-weight:bold;font-family:sans-serif;display:inline-block">
+    → Répondre à la demande
   </a>
 </p>
 <p style="color:#999;font-size:12px;font-family:sans-serif">Ces liens sont valables 24h.</p>

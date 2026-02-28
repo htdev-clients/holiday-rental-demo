@@ -36,7 +36,7 @@ export async function onRequestGet(context) {
     })
   );
 
-  const propertyName = env.PROPERTY_NAME || 'Le Refuge Sauvage';
+  const propertyName = env.PROPERTY_NAME || '[Nom du bien]';
   const perNight     = parseFloat(env.PRICE_PER_NIGHT) || 0;
   const siteUrl      = env.SITE_URL || '';
 

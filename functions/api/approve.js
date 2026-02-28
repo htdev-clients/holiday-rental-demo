@@ -1,7 +1,5 @@
 import { signHmac, calcTotal, sendEmail } from '../_shared/utils.js';
 
-const TOKEN_TTL_HOURS = 24; // Must match booking.response_hours in _data/property.yml
-const TOKEN_TTL_MS    = TOKEN_TTL_HOURS * 60 * 60 * 1000;
 
 /**
  * GET /api/approve?id=<booking_id>&token=<hmac>
@@ -13,24 +11,28 @@ export async function onRequestGet(context) {
   const id    = url.searchParams.get('id');
   const token = url.searchParams.get('token');
 
-  if (!id || !token) return errorPage('Lien invalide.');
+  const propertyName = env.PROPERTY_NAME || '[Nom du bien]';
+  const err = (msg) => errorPage(msg, propertyName);
+  const ttlHours = parseInt(env.RESPONSE_HOURS, 10) || 24;
+  const ttlMs = ttlHours * 60 * 60 * 1000;
+
+  if (!id || !token) return err('Lien invalide.');
 
   const expected = await signHmac(id, env.APPROVE_SECRET);
-  if (expected !== token) return errorPage('Lien invalide ou expiré.');
+  if (expected !== token) return err('Lien invalide ou expiré.');
 
   const booking = await env.DB.prepare('SELECT * FROM bookings WHERE id = ?').bind(id).first();
-  if (!booking) return errorPage('Réservation introuvable.');
+  if (!booking) return err('Réservation introuvable.');
   if (booking.status !== 'pending') {
-    return errorPage(`Cette réservation a déjà été traitée (statut : ${booking.status}).`);
+    return err(`Cette réservation a déjà été traitée (statut : ${booking.status}).`);
   }
 
   const createdAt = new Date(booking.created_at + 'Z');
-  if (Date.now() - createdAt.getTime() > TOKEN_TTL_MS) {
-    return errorPage(`Ce lien a expiré (${TOKEN_TTL_HOURS}h). Veuillez contacter le voyageur directement.`);
+  if (Date.now() - createdAt.getTime() > ttlMs) {
+    return err(`Ce lien a expiré (${ttlHours}h). Veuillez contacter le voyageur directement.`);
   }
 
   const nights = Math.round((new Date(booking.checkout) - new Date(booking.checkin)) / 86400000);
-  const propertyName = env.PROPERTY_NAME || 'Le Refuge Sauvage';
 
   return new Response(actionFormHtml({ booking, nights, propertyName, id, token }), {
     headers: { 'Content-Type': 'text/html;charset=UTF-8' },
@@ -44,11 +46,16 @@ export async function onRequestGet(context) {
 export async function onRequestPost(context) {
   const { request, env } = context;
 
+  const propertyName = env.PROPERTY_NAME || '[Nom du bien]';
+  const err = (msg) => errorPage(msg, propertyName);
+  const ttlHours = parseInt(env.RESPONSE_HOURS, 10) || 24;
+  const ttlMs = ttlHours * 60 * 60 * 1000;
+
   let formData;
   try {
     formData = await request.formData();
   } catch {
-    return errorPage('Requête invalide.');
+    return err('Requête invalide.');
   }
 
   const id           = formData.get('id');
@@ -56,24 +63,23 @@ export async function onRequestPost(context) {
   const action       = formData.get('action');
   const ownerMessage = formData.get('owner_message')?.trim() || null;
 
-  if (!id || !token || !['approve', 'refuse'].includes(action)) return errorPage('Requête invalide.');
+  if (!id || !token || !['approve', 'refuse'].includes(action)) return err('Requête invalide.');
 
   const expected = await signHmac(id, env.APPROVE_SECRET);
-  if (expected !== token) return errorPage('Lien invalide ou expiré.');
+  if (expected !== token) return err('Lien invalide ou expiré.');
 
   const booking = await env.DB.prepare('SELECT * FROM bookings WHERE id = ?').bind(id).first();
-  if (!booking) return errorPage('Réservation introuvable.');
+  if (!booking) return err('Réservation introuvable.');
   if (booking.status !== 'pending') {
-    return errorPage(`Cette réservation a déjà été traitée (statut : ${booking.status}).`);
+    return err(`Cette réservation a déjà été traitée (statut : ${booking.status}).`);
   }
 
   const createdAt = new Date(booking.created_at + 'Z');
-  if (Date.now() - createdAt.getTime() > TOKEN_TTL_MS) {
-    return errorPage(`Ce lien a expiré (${TOKEN_TTL_HOURS}h). Veuillez contacter le voyageur directement.`);
+  if (Date.now() - createdAt.getTime() > ttlMs) {
+    return err(`Ce lien a expiré (${ttlHours}h). Veuillez contacter le voyageur directement.`);
   }
 
   const nights       = Math.round((new Date(booking.checkout) - new Date(booking.checkin)) / 86400000);
-  const propertyName = env.PROPERTY_NAME || 'Le Refuge Sauvage';
 
   if (action === 'approve') {
     const total = calcTotal(nights, parseFloat(env.PRICE_PER_NIGHT));
@@ -82,9 +88,9 @@ export async function onRequestPost(context) {
     try {
       const session = await createStripeSession({ booking, total, env, propertyName });
       paymentUrl = session.url;
-    } catch (err) {
-      console.error('Stripe error:', err);
-      return errorPage('Erreur lors de la création du lien de paiement. Veuillez réessayer.');
+    } catch (stripeErr) {
+      console.error('Stripe error:', stripeErr);
+      return err('Erreur lors de la création du lien de paiement. Veuillez réessayer.');
     }
 
     // Email guest before updating status so the owner can retry if this fails
@@ -279,12 +285,12 @@ function successPageHtml(booking, propertyName, result) {
   return pageShell({ title: heading, propertyName, body });
 }
 
-function errorPage(message) {
+function errorPage(message, propertyName = '[Nom du bien]') {
   const body = `
     <h1 style="color:#c0392b">Une erreur est survenue</h1>
     <p class="sub" style="margin-top:12px">${escapeHtml(message)}</p>`;
   return new Response(
-    pageShell({ title: 'Erreur', propertyName: 'Le Refuge Sauvage', body }),
+    pageShell({ title: 'Erreur', propertyName, body }),
     { status: 400, headers: { 'Content-Type': 'text/html;charset=UTF-8' } }
   );
 }
