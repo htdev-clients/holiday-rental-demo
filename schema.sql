@@ -5,7 +5,7 @@
 CREATE TABLE IF NOT EXISTS bookings (
   id          TEXT    PRIMARY KEY,
   property_id TEXT    NOT NULL,
-  status      TEXT    NOT NULL DEFAULT 'pending', -- pending | approved | paid | cancelled
+  status      TEXT    NOT NULL DEFAULT 'pending', -- pending | approved | paid | rejected | cancelled
   checkin     TEXT    NOT NULL,
   checkout    TEXT    NOT NULL,
   guests      INTEGER NOT NULL,
@@ -19,3 +19,4 @@ CREATE TABLE IF NOT EXISTS bookings (
 
 CREATE INDEX IF NOT EXISTS idx_bookings_property ON bookings (property_id);
 CREATE INDEX IF NOT EXISTS idx_bookings_status   ON bookings (status);
+CREATE INDEX IF NOT EXISTS idx_bookings_email    ON bookings (email);

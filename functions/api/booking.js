@@ -1,4 +1,4 @@
-import { signHmac, sendEmail, jsonError } from '../_shared/utils.js';
+import { signHmac, sendEmail, jsonError, escapeHtml } from '../_shared/utils.js';
 
 /**
  * POST /api/booking
@@ -37,6 +37,13 @@ export async function onRequestPost(context) {
     return jsonError('Adresse email invalide.', 400);
   }
 
+  // Validate guests count
+  const guestsInt = parseInt(guests, 10);
+  const maxGuests = parseInt(env.MAX_GUESTS, 10) || 20;
+  if (!Number.isInteger(guestsInt) || guestsInt < 1 || guestsInt > maxGuests) {
+    return jsonError('Nombre de voyageurs invalide.', 400);
+  }
+
   // Rate limiting: max 3 pending bookings per email in the last 24 hours
   const recentCount = await env.DB
     .prepare(`SELECT COUNT(*) AS n FROM bookings
@@ -63,7 +70,7 @@ export async function onRequestPost(context) {
     `)
     .bind(
       id, env.PROPERTY_ID,
-      checkin, checkout, parseInt(guests),
+      checkin, checkout, guestsInt,
       firstname.trim(), lastname.trim(), email.trim(),
       data.phone?.trim() || null,
       data.message?.trim() || null
@@ -108,13 +115,13 @@ export async function onRequestPost(context) {
 function guestAcknowledgmentHtml({ firstname, checkin, checkout, nights, guests, propertyName, ttlHours }) {
   return `
 <h2 style="color:#2C2520;font-family:Georgia,serif">Votre demande a bien été reçue</h2>
-<p style="font-family:sans-serif">Bonjour ${firstname},</p>
-<p style="font-family:sans-serif">Nous avons bien reçu votre demande de réservation pour ${propertyName}. Le propriétaire vous répondra dans les <strong>${ttlHours}h</strong>.</p>
+<p style="font-family:sans-serif">Bonjour ${escapeHtml(firstname)},</p>
+<p style="font-family:sans-serif">Nous avons bien reçu votre demande de réservation pour ${escapeHtml(propertyName)}. Le propriétaire vous répondra dans les <strong>${escapeHtml(ttlHours)}h</strong>.</p>
 <table style="border-collapse:collapse;font-family:sans-serif;font-size:14px;margin:20px 0">
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Arrivée</td><td style="padding:6px 0">${checkin}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Départ</td><td style="padding:6px 0">${checkout}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Arrivée</td><td style="padding:6px 0">${escapeHtml(checkin)}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Départ</td><td style="padding:6px 0">${escapeHtml(checkout)}</td></tr>
   <tr><td style="padding:6px 16px 6px 0;color:#888">Durée</td><td style="padding:6px 0">${nights} nuit${nights > 1 ? 's' : ''}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${guests}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${escapeHtml(guests)}</td></tr>
 </table>
 <p style="font-family:sans-serif;color:#999;font-size:12px;margin-top:16px">Cet email est un accusé de réception automatique — aucune réservation n'est encore confirmée.</p>
 `;
@@ -124,14 +131,14 @@ function ownerEmailHtml({ firstname, lastname, email, phone, checkin, checkout, 
   return `
 <h2 style="color:#2C2520">Nouvelle demande de réservation</h2>
 <table style="border-collapse:collapse;font-family:sans-serif;font-size:14px">
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageur</td><td style="padding:6px 0"><strong>${firstname} ${lastname}</strong></td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Email</td><td style="padding:6px 0">${email}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Téléphone</td><td style="padding:6px 0">${phone || '—'}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Arrivée</td><td style="padding:6px 0">${checkin}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Départ</td><td style="padding:6px 0">${checkout}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageur</td><td style="padding:6px 0"><strong>${escapeHtml(firstname)} ${escapeHtml(lastname)}</strong></td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Email</td><td style="padding:6px 0">${escapeHtml(email)}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Téléphone</td><td style="padding:6px 0">${escapeHtml(phone) || '—'}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Arrivée</td><td style="padding:6px 0">${escapeHtml(checkin)}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Départ</td><td style="padding:6px 0">${escapeHtml(checkout)}</td></tr>
   <tr><td style="padding:6px 16px 6px 0;color:#888">Durée</td><td style="padding:6px 0">${nights} nuit${nights > 1 ? 's' : ''}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${guests}</td></tr>
-  ${message ? `<tr><td style="padding:6px 16px 6px 0;color:#888;vertical-align:top">Message</td><td style="padding:6px 0">${message}</td></tr>` : ''}
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${escapeHtml(guests)}</td></tr>
+  ${message ? `<tr><td style="padding:6px 16px 6px 0;color:#888;vertical-align:top">Message</td><td style="padding:6px 0">${escapeHtml(message)}</td></tr>` : ''}
 </table>
 <p style="margin-top:24px;padding:14px 16px;background:#FEF3C7;border-left:4px solid #D97706;font-family:sans-serif;font-size:14px;color:#92400E">
   <strong>⚠ Avant d'approuver :</strong> bloquez ces dates dans votre calendrier Airbnb pour éviter une double réservation.

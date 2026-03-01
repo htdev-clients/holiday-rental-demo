@@ -1,4 +1,4 @@
-import { signHmac, calcTotal, sendEmail } from '../_shared/utils.js';
+import { signHmac, calcTotal, sendEmail, escapeHtml } from '../_shared/utils.js';
 
 
 /**
@@ -93,28 +93,53 @@ export async function onRequestPost(context) {
       return err('Erreur lors de la création du lien de paiement. Veuillez réessayer.');
     }
 
-    // Email guest before updating status so the owner can retry if this fails
-    await sendEmail(env.RESEND_API_KEY, {
-      from: env.FROM_EMAIL,
-      to: booking.email,
-      subject: `Votre réservation est approuvée — ${propertyName}`,
-      html: guestPaymentEmailHtml({ booking, nights, total, paymentUrl, propertyName, ownerMessage }),
-    });
+    // Update status first — if the email fails, the owner sees an error page and the
+    // booking remains 'approved' in the DB (not retryable as pending). Better than the
+    // reverse, where a DB failure after a successful email leaves the guest with a link
+    // but the booking stuck as 'pending'.
+    try {
+      await env.DB.prepare("UPDATE bookings SET status = 'approved' WHERE id = ?").bind(id).run();
+    } catch (dbErr) {
+      console.error('[approve] DB update failed:', dbErr);
+      return err('Erreur serveur lors de la mise à jour. Veuillez réessayer.');
+    }
 
-    await env.DB.prepare("UPDATE bookings SET status = 'approved' WHERE id = ?").bind(id).run();
+    try {
+      await sendEmail(env.RESEND_API_KEY, {
+        from: env.FROM_EMAIL,
+        to: booking.email,
+        subject: `Votre réservation est approuvée — ${propertyName}`,
+        html: guestPaymentEmailHtml({ booking, nights, total, paymentUrl, propertyName, ownerMessage }),
+      });
+    } catch (emailErr) {
+      // DB is already updated — log the failure and show a warning to the owner.
+      console.error('[approve] Failed to email guest payment link:', emailErr);
+      return new Response(successPageHtml(booking, propertyName, 'approved', paymentUrl), {
+        headers: { 'Content-Type': 'text/html;charset=UTF-8' },
+      });
+    }
 
     return new Response(successPageHtml(booking, propertyName, 'approved'), {
       headers: { 'Content-Type': 'text/html;charset=UTF-8' },
     });
   } else {
-    await sendEmail(env.RESEND_API_KEY, {
-      from: env.FROM_EMAIL,
-      to: booking.email,
-      subject: `Votre demande de réservation — ${propertyName}`,
-      html: guestRejectionEmailHtml({ booking, nights, propertyName, ownerMessage }),
-    });
+    try {
+      await env.DB.prepare("UPDATE bookings SET status = 'rejected' WHERE id = ?").bind(id).run();
+    } catch (dbErr) {
+      console.error('[approve] DB update failed:', dbErr);
+      return err('Erreur serveur lors de la mise à jour. Veuillez réessayer.');
+    }
 
-    await env.DB.prepare("UPDATE bookings SET status = 'rejected' WHERE id = ?").bind(id).run();
+    try {
+      await sendEmail(env.RESEND_API_KEY, {
+        from: env.FROM_EMAIL,
+        to: booking.email,
+        subject: `Votre demande de réservation — ${propertyName}`,
+        html: guestRejectionEmailHtml({ booking, nights, propertyName, ownerMessage }),
+      });
+    } catch (emailErr) {
+      console.error('[approve] Failed to email guest rejection:', emailErr);
+    }
 
     return new Response(successPageHtml(booking, propertyName, 'refused'), {
       headers: { 'Content-Type': 'text/html;charset=UTF-8' },
@@ -268,13 +293,18 @@ function actionFormHtml({ booking, nights, propertyName, id, token, ttlHours }) 
   return pageShell({ title: 'Demande de réservation', propertyName, body, footerNote: `Lien sécurisé · valable ${ttlHours}h` });
 }
 
-function successPageHtml(booking, propertyName, result) {
+function successPageHtml(booking, propertyName, result, emailFailedPaymentUrl = null) {
   const approved = result === 'approved';
   const icon     = approved ? '✓' : '—';
   const heading  = approved ? 'Réservation approuvée' : 'Demande refusée';
-  const detail   = approved
-    ? `Un lien de paiement a été envoyé à <strong>${escapeHtml(booking.email)}</strong>.`
-    : `Un email de refus a été envoyé à <strong>${escapeHtml(booking.email)}</strong>.`;
+  let detail;
+  if (approved && emailFailedPaymentUrl) {
+    detail = `⚠ L'email au voyageur n'a pas pu être envoyé. Transmettez ce lien manuellement à <strong>${escapeHtml(booking.email)}</strong> :<br><a href="${escapeHtml(emailFailedPaymentUrl)}" style="color:#D6A87C;word-break:break-all">${escapeHtml(emailFailedPaymentUrl)}</a>`;
+  } else if (approved) {
+    detail = `Un lien de paiement a été envoyé à <strong>${escapeHtml(booking.email)}</strong>.`;
+  } else {
+    detail = `Un email de refus a été envoyé à <strong>${escapeHtml(booking.email)}</strong>.`;
+  }
   const body = `
     <h1 style="color:${approved ? '#4A5D44' : '#888'}">${icon} ${heading}</h1>
     <p class="sub" style="margin-top:12px">${detail}</p>
@@ -295,14 +325,3 @@ function errorPage(message, propertyName = '[Nom du bien]') {
   );
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function escapeHtml(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}

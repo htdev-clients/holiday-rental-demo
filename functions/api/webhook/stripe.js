@@ -1,4 +1,4 @@
-import { sendEmail } from '../../_shared/utils.js';
+import { sendEmail, escapeHtml } from '../../_shared/utils.js';
 
 /**
  * POST /api/webhook/stripe
@@ -97,13 +97,13 @@ async function verifyStripeSignature(body, header, secret) {
 function guestConfirmationHtml({ booking, nights, total, propertyName }) {
   return `
 <h2 style="color:#4A5D44">Votre réservation est confirmée !</h2>
-<p style="font-family:sans-serif">Bonjour ${booking.firstname},</p>
-<p style="font-family:sans-serif">Votre paiement a bien été reçu. Votre séjour à ${propertyName} est confirmé.</p>
+<p style="font-family:sans-serif">Bonjour ${escapeHtml(booking.firstname)},</p>
+<p style="font-family:sans-serif">Votre paiement a bien été reçu. Votre séjour à ${escapeHtml(propertyName)} est confirmé.</p>
 <table style="border-collapse:collapse;font-family:sans-serif;font-size:14px">
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Arrivée</td><td style="padding:6px 0">${booking.checkin}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Départ</td><td style="padding:6px 0">${booking.checkout}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Arrivée</td><td style="padding:6px 0">${escapeHtml(booking.checkin)}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Départ</td><td style="padding:6px 0">${escapeHtml(booking.checkout)}</td></tr>
   <tr><td style="padding:6px 16px 6px 0;color:#888">Durée</td><td style="padding:6px 0">${nights} nuit${nights > 1 ? 's' : ''}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${booking.guests}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${escapeHtml(booking.guests)}</td></tr>
   <tr><td style="padding:6px 16px 6px 0;color:#888">Total payé</td><td style="padding:6px 0"><strong>${total.toLocaleString('fr-BE')} €</strong></td></tr>
 </table>
 <p style="font-family:sans-serif;margin-top:16px">Nous vous souhaitons un excellent séjour !</p>
@@ -113,13 +113,13 @@ function guestConfirmationHtml({ booking, nights, total, propertyName }) {
 function ownerConfirmationHtml({ booking, nights, total }) {
   return `
 <h2 style="color:#2C2520">Paiement reçu ✓</h2>
-<p style="font-family:sans-serif">La réservation de <strong>${booking.firstname} ${booking.lastname}</strong> a été payée.</p>
+<p style="font-family:sans-serif">La réservation de <strong>${escapeHtml(booking.firstname)} ${escapeHtml(booking.lastname)}</strong> a été payée.</p>
 <table style="border-collapse:collapse;font-family:sans-serif;font-size:14px">
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Email</td><td style="padding:6px 0">${booking.email}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Arrivée</td><td style="padding:6px 0">${booking.checkin}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Départ</td><td style="padding:6px 0">${booking.checkout}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Email</td><td style="padding:6px 0">${escapeHtml(booking.email)}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Arrivée</td><td style="padding:6px 0">${escapeHtml(booking.checkin)}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Départ</td><td style="padding:6px 0">${escapeHtml(booking.checkout)}</td></tr>
   <tr><td style="padding:6px 16px 6px 0;color:#888">Durée</td><td style="padding:6px 0">${nights} nuit${nights > 1 ? 's' : ''}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${booking.guests}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${escapeHtml(booking.guests)}</td></tr>
   <tr><td style="padding:6px 16px 6px 0;color:#888">Total</td><td style="padding:6px 0"><strong>${total.toLocaleString('fr-BE')} €</strong></td></tr>
 </table>
 `;

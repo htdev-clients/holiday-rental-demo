@@ -45,6 +45,20 @@ export async function sendEmail(apiKey, { from, to, subject, html }) {
 }
 
 /**
+ * Escape a string for safe HTML output.
+ * Use on every piece of user-supplied data inserted into an HTML template.
+ */
+export function escapeHtml(str) {
+  if (!str && str !== 0) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/**
  * Return a JSON error response.
  */
 export function jsonError(message, status = 400) {

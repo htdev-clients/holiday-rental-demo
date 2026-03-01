@@ -1,4 +1,4 @@
-import { signHmac } from '../../_shared/utils.js';
+import { signHmac, escapeHtml } from '../../_shared/utils.js';
 
 /**
  * GET /api/admin/bookings?token=<hmac>
@@ -118,13 +118,6 @@ function bookingRows(bookings, perNight, siteUrl, approveTokens) {
       <td style="padding:10px 12px">${statusBadge(b.status)}${pendingLink}</td>
     </tr>`;
   }).join('');
-}
-
-function escapeHtml(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
 // ─── Pages ────────────────────────────────────────────────────────────────────

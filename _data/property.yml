@@ -8,6 +8,7 @@ short_name: "Le Refuge"
 tagline:    "Chalet & Forêt — Ardennes Belges"
 subtitle:   "Ardennes Belges · Séjour nature"
 description: "Un chalet en bois dans les Ardennes belges — pour souffler, se promener, et profiter du temps qui passe différemment."
+footer_tagline: "Chalet en plein cœur des Ardennes Belges. Une retraite sauvage, loin du bruit du monde."
 
 hero_image:     "/assets/images/hero.jpg"
 hero_image_alt: "Chalet dans la forêt des Ardennes"
@@ -40,9 +41,9 @@ location:
 
 # ── Contact ─────────────────────────────────────────────
 contact:
-  owner_name: "Prénom Nom"
+  owner_name: "Laurent Marchal"
   email:      "bonjour@refugesauvage.be"
-  phone:      "+32 123 45 67 89"
+  phone:      "+32 475 12 34 56"
 
 # ── Social ──────────────────────────────────────────────
 social:
