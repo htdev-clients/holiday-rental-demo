@@ -37,6 +37,7 @@ location:
   address_line1: "Lieu-dit Le Bois Clair"
   address_line2: "6900 Marche-en-Famenne"
   country:       "Belgique"
+  country_code:  "BE"
   region:        "Ardennes Belges"
   maps_url:      "https://maps.google.com"
 

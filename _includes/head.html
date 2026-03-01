@@ -76,6 +76,9 @@
 
     <script>
         tailwind.config = {
+            future: {
+                hoverOnlyWhenSupported: true,
+            },
             theme: {
                 extend: {
                     colors: {
@@ -323,5 +326,33 @@
         .legal-btn:hover { background: #D6A87C; color: white; }
         .legal-btn:disabled { opacity: 0.5; cursor: default; }
     </style>
+    {% endif %}
+
+    {% if page.url == "/" %}
+    {% assign p = site.data.property %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LodgingBusiness",
+      "name": "{{ p.name }}",
+      "description": "{{ p.description }}",
+      "url": "{{ site.url }}",
+      "telephone": "{{ p.contact.phone | remove: ' ' }}",
+      "email": "{{ p.contact.email }}",
+      "image": "{{ site.url }}{{ p.hero_image }}",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "{{ p.location.address_line1 }}",
+        "addressLocality": "{{ p.location.address_line2 }}",
+        "addressCountry": "{{ p.location.country_code }}"
+      },
+      "priceRange": "{{ p.pricing.per_night }} {{ p.pricing.currency }} / nuit",
+      "numberOfRooms": {{ p.capacity.bedrooms }},
+      "occupancy": {
+        "@type": "QuantitativeValue",
+        "maxValue": {{ p.capacity.guests }}
+      }
+    }
+    </script>
     {% endif %}
 </head>

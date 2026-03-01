@@ -6,6 +6,31 @@ baseurl: ""
 url: "https://holiday-rental-template.pages.dev"
 
 markdown: kramdown
+
+# ── jekyll-picture-tag ──────────────────────────────────
+picture:
+  output: "generated"
+  presets:
+    # Full-width hero image
+    hero:
+      formats: [webp, original]
+      widths: [480, 900, 1440, 1920]
+      sizes:
+        fallback: 100vw
+    # Presentation section (interior/exterior, 58 vw on desktop)
+    content:
+      formats: [webp, original]
+      widths: [480, 800, 1170]
+      sizes:
+        "(min-width: 1024px)": 58vw
+        fallback: 100vw
+    # Horizontal gallery cards
+    gallery:
+      formats: [webp, original]
+      widths: [400, 800]
+      sizes:
+        "(min-width: 768px)": 38vw
+        fallback: 85vw
 permalink: pretty
 
 plugins:

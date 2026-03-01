@@ -1,12 +1,7 @@
 {% assign p = site.data.property %}
 <header class="relative w-full h-screen overflow-hidden">
-    <img src="{{ p.hero_image }}"
-         alt="{{ p.hero_image_alt }}"
-         srcset="{{ p.hero_image }} 1920w"
-         sizes="100vw"
-         fetchpriority="high"
-         decoding="async"
-         class="absolute inset-0 w-full h-full object-cover">
+    {% assign hero_src = p.hero_image | remove_first: "/" %}
+    {% picture hero {{ hero_src }} alt="{{ p.hero_image_alt }}" class="w-full h-full object-cover" fetchpriority="high" decoding="async" --picture class="absolute inset-0 w-full h-full" %}
     <div class="absolute inset-0 bg-gradient-to-t from-earth/90 via-earth/30 to-transparent"></div>
 
     <div class="absolute bottom-0 left-0 w-full p-8 md:p-20">
