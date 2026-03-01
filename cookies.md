@@ -6,8 +6,6 @@ permalink: /cookies/
 
 # Politique de Cookies
 
-<p class="legal-meta">Dernière mise à jour : 25 février 2026</p>
-
 ## 1. Qu'est-ce qu'un cookie ?
 
 Un cookie est un petit fichier texte déposé sur votre terminal (ordinateur, téléphone, tablette) lors de la visite d'un site web. Il permet au site de mémoriser certaines informations relatives à votre navigation pour améliorer votre expérience ou répondre à des obligations légales.

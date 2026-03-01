@@ -6,8 +6,6 @@ permalink: /confidentialite/
 
 # Politique de Confidentialité
 
-<p class="legal-meta">Dernière mise à jour : 25 février 2026</p>
-
 ## 1. Responsable du traitement
 
 Les données personnelles collectées via ce site sont traitées par :
@@ -41,7 +39,7 @@ Nous ne collectons et ne conservons **aucune donnée bancaire**. Les paiements s
 Vos données ne sont jamais vendues ni cédées à des tiers à des fins commerciales. Elles peuvent être transmises aux sous-traitants techniques suivants, dans le strict cadre de l'exécution du service :
 
 - **Stripe** — traitement sécurisé des paiements en ligne
-- **Prestataire d'e-mail transactionnel** (Resend / Mailgun) — envoi des confirmations et notifications
+- **Resend** — envoi des confirmations et notifications par e-mail
 
 Ces sous-traitants sont soumis à des obligations contractuelles de confidentialité et n'utilisent vos données qu'aux fins pour lesquelles elles leur sont transmises.
 
@@ -49,7 +47,7 @@ Ces sous-traitants sont soumis à des obligations contractuelles de confidential
 
 | Catégorie de données | Durée de conservation |
 |---|---|
-| Données de réservation (identité, séjour) | 7 ans (obligation comptable belge) |
+| Données de réservation (identité, séjour) | *[À compléter selon obligation légale applicable]* |
 | Données de paiement | Non conservées — traitées exclusivement par Stripe |
 | Demandes sans suite (annulées ou refusées) | 6 mois |
 
@@ -68,8 +66,7 @@ Pour exercer l'un de ces droits, contactez-nous par e-mail à [{{ site.data.prop
 
 Nous nous engageons à répondre dans un délai maximum d'**un mois** à compter de la réception de votre demande.
 
-En cas de réponse insatisfaisante ou de litige, vous avez le droit d'introduire une réclamation auprès de l'**Autorité de Protection des Données (APD)** :
-[www.autoriteprotectiondonnees.be](https://www.autoriteprotectiondonnees.be) — Rue de la Presse 35, 1000 Bruxelles.
+En cas de réponse insatisfaisante ou de litige, vous avez le droit d'introduire une réclamation auprès de l'autorité de protection des données compétente dans votre pays de résidence.
 
 ## 7. Cookies
 
