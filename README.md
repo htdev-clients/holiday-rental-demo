@@ -49,7 +49,7 @@ holiday-rental-template/
 │   └── scripts.html         # All JavaScript (mobile menu, calendar, form, gallery)
 ├── functions/
 │   ├── _shared/
-│   │   └── utils.js         # Shared helpers: signHmac, sendEmail, calcTotal, jsonError
+│   │   └── utils.js         # Shared helpers: signHmac, sendEmail, calcTotal, jsonError, escapeHtml
 │   └── api/
 │       ├── booking.js       # POST /api/booking — save to D1, email owner
 │       ├── approve.js       # GET  /api/approve — validate token, Stripe session, email guest
@@ -142,8 +142,10 @@ All content is in **`_data/property.yml`** — no HTML editing needed for:
 | Endpoint | File | Purpose |
 |---|---|---|
 | `POST /api/booking` | `functions/api/booking.js` | Validate form, save to D1, email owner approval link |
-| `GET /api/approve` | `functions/api/approve.js` | Verify HMAC token, create Stripe Checkout session, email guest |
+| `GET /api/approve` | `functions/api/approve.js` | Verify HMAC token, show owner action form |
+| `POST /api/approve` | `functions/api/approve.js` | Process approve/refuse decision, create Stripe session, email guest |
 | `POST /api/webhook/stripe` | `functions/api/webhook/stripe.js` | Verify signature, mark booking paid, send confirmation emails |
+| `GET /api/admin/bookings` | `functions/api/admin/bookings.js` | Owner dashboard — list all bookings; token = HMAC("admin-bookings", APPROVE_SECRET) — generate with `npm run admin-url` |
 
 ### Infrastructure (already provisioned)
 
@@ -155,7 +157,7 @@ All content is in **`_data/property.yml`** — no HTML editing needed for:
 ### Per-project setup (new client)
 
 1. Duplicate this repo
-2. Update `wrangler.toml`: `PROPERTY_ID`, `PROPERTY_NAME`, `OWNER_EMAIL`, `FROM_EMAIL`, `SITE_URL`, `ICAL_URL` (from Airbnb export)
+2. Update `wrangler.toml`: `PROPERTY_ID`, `PROPERTY_NAME`, `OWNER_EMAIL`, `FROM_EMAIL`, `SITE_URL`, `ICAL_URL` (from Airbnb export), `PRICE_PER_NIGHT`, `RESPONSE_HOURS`, `MAX_GUESTS`
 3. Copy `.dev.vars.example` → `.dev.vars`, fill in secrets
 4. Create `secrets.json` with secret values, run `npm run deploy:secrets`
 5. In Cloudflare Pages dashboard, bind D1 database (`DB` → `holiday-rentals-db`)
@@ -178,6 +180,8 @@ npm run dev                     # wrangler pages dev on :8788
 | `FROM_EMAIL` | `wrangler.toml` | Sender address — `onboarding@resend.dev` until domain verified |
 | `ICAL_URL` | `wrangler.toml` | Airbnb iCal export URL — Airbnb › Listing › Availability › Export Calendar |
 | `PRICE_PER_NIGHT` | `wrangler.toml` | Nightly rate — used server-side to calculate Stripe amount |
+| `RESPONSE_HOURS` | `wrangler.toml` | Hours owner has to respond — must match `booking.response_hours` in `property.yml` |
+| `MAX_GUESTS` | `wrangler.toml` | Max guests allowed — must match `capacity.guests` in `property.yml` |
 | `SITE_URL` | `wrangler.toml` | Base URL for approve links and Stripe redirects |
 | `RESEND_API_KEY` | `secrets.json` | Resend transactional email API key |
 | `STRIPE_SECRET_KEY` | `secrets.json` | `sk_test_...` for dev, `sk_live_...` for production |
