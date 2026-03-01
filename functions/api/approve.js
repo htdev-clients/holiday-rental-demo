@@ -34,7 +34,7 @@ export async function onRequestGet(context) {
 
   const nights = Math.round((new Date(booking.checkout) - new Date(booking.checkin)) / 86400000);
 
-  return new Response(actionFormHtml({ booking, nights, propertyName, id, token }), {
+  return new Response(actionFormHtml({ booking, nights, propertyName, id, token, ttlHours }), {
     headers: { 'Content-Type': 'text/html;charset=UTF-8' },
   });
 }
@@ -241,7 +241,7 @@ function pageShell({ title, propertyName, body, footerNote = '' }) {
 </html>`;
 }
 
-function actionFormHtml({ booking, nights, propertyName, id, token }) {
+function actionFormHtml({ booking, nights, propertyName, id, token, ttlHours }) {
   const body = `
     <h1>Demande de réservation</h1>
     <p class="sub">Répondez à cette demande — un email sera envoyé automatiquement au voyageur.</p>
@@ -265,7 +265,7 @@ function actionFormHtml({ booking, nights, propertyName, id, token }) {
         <button type="submit" name="action" value="refuse" class="btn-refuse">✗ Refuser</button>
       </div>
     </form>`;
-  return pageShell({ title: 'Demande de réservation', propertyName, body, footerNote: 'Lien sécurisé · valable 24h' });
+  return pageShell({ title: 'Demande de réservation', propertyName, body, footerNote: `Lien sécurisé · valable ${ttlHours}h` });
 }
 
 function successPageHtml(booking, propertyName, result) {

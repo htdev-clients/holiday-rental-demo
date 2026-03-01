@@ -27,9 +27,7 @@ Les présentes Conditions Générales de Vente (CGV) régissent les relations co
 La réservation est initiée par l'envoi du formulaire de demande disponible sur le site. Elle ne devient ferme et définitive qu'après :
 
 - réception de l'acceptation écrite du propriétaire, et
-- paiement de l'acompte dans le délai imparti (voir article 5).
-
-Pour toute demande reçue moins de 14 jours avant la date d'arrivée, le paiement intégral est requis immédiatement lors de la confirmation.
+- paiement intégral du montant dans le délai imparti (voir article 5).
 
 ## 4. Tarifs
 
@@ -37,9 +35,7 @@ Les tarifs sont indiqués en euros (€), toutes taxes comprises. Sauf mention c
 
 ## 5. Conditions de paiement
 
-Un acompte de **30 %** du montant total est exigible dans les **72 heures** suivant la confirmation de la réservation.
-
-Le solde est dû au plus tard **30 jours** avant la date d'arrivée. Pour les réservations effectuées moins de 30 jours avant l'arrivée, la totalité du montant est due immédiatement.
+La **totalité du montant** est due dans les **72 heures** suivant la confirmation de la réservation.
 
 Le paiement s'effectue exclusivement par voie électronique sécurisée (Stripe). Aucune donnée bancaire n'est conservée par le prestataire.
 
@@ -47,7 +43,7 @@ Le paiement s'effectue exclusivement par voie électronique sécurisée (Stripe)
 
 Toute annulation doit être notifiée par écrit à [{{ site.data.property.contact.email }}](mailto:{{ site.data.property.contact.email }}).
 
-| Délai avant l'arrivée | Remboursement de l'acompte |
+| Délai avant l'arrivée | Remboursement du montant payé |
 |---|---|
 | Plus de 60 jours | 100 % |
 | Entre 30 et 60 jours | 50 % |
@@ -59,7 +55,7 @@ En cas de non-présentation sans annulation préalable, aucun remboursement ne s
 
 En cas d'annulation par le propriétaire pour un motif de force majeure (sinistre, catastrophe naturelle, etc.), le Locataire sera intégralement remboursé des sommes versées, sans autre indemnité.
 
-En cas d'annulation pour tout autre motif imputable au propriétaire, le Locataire sera remboursé du double de l'acompte versé.
+En cas d'annulation pour tout autre motif imputable au propriétaire, le Locataire sera intégralement remboursé des sommes versées, augmentées d'une indemnité équivalente.
 
 ## 8. Arrivée et départ
 

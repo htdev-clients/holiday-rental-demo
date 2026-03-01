@@ -11,6 +11,8 @@ OWNER_EMAIL     = "harold.taeter@gmail.com"
 PRICE_PER_NIGHT  = "150"
 # Hours the owner has to respond — must match booking.response_hours in _data/property.yml
 RESPONSE_HOURS   = "24"
+# Deployed URL — must match url in _config.yml.
+# Update both when switching from the Cloudflare Pages domain to a custom domain.
 SITE_URL        = "https://holiday-rental-template.pages.dev"
 # Sender address — use onboarding@resend.dev until client domain is verified with Resend
 FROM_EMAIL      = "onboarding@resend.dev"

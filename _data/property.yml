@@ -138,4 +138,4 @@ gallery:
 
 # ── Booking ─────────────────────────────────────────────
 booking:
-  response_hours: 24   # Owner response time — must match TOKEN_TTL_HOURS in functions/api/approve.js
+  response_hours: 24   # Owner response time — must match RESPONSE_HOURS in wrangler.toml

@@ -49,6 +49,7 @@ export async function onRequestPost(context) {
   }
 
   const propertyName = env.PROPERTY_NAME || '[Nom du bien]';
+  const ttlHours = parseInt(env.RESPONSE_HOURS, 10) || 24;
   const nights = Math.round((co - ci) / 86400000);
   const id     = crypto.randomUUID();
   const token  = await signHmac(id, env.APPROVE_SECRET);
@@ -80,7 +81,7 @@ export async function onRequestPost(context) {
       from: env.FROM_EMAIL,
       to: env.OWNER_EMAIL,
       subject: `Nouvelle demande de réservation — ${firstname} ${lastname}`,
-      html: ownerEmailHtml({ firstname, lastname, email, phone: data.phone, checkin, checkout, nights, guests, message: data.message, approveUrl }),
+      html: ownerEmailHtml({ firstname, lastname, email, phone: data.phone, checkin, checkout, nights, guests, message: data.message, approveUrl, ttlHours }),
     });
   } catch (emailErr) {
     console.error('[booking] Failed to notify owner:', emailErr);
@@ -92,7 +93,7 @@ export async function onRequestPost(context) {
       from: env.FROM_EMAIL,
       to: email.trim(),
       subject: `Votre demande de réservation — ${propertyName}`,
-      html: guestAcknowledgmentHtml({ firstname, checkin, checkout, nights, guests, propertyName }),
+      html: guestAcknowledgmentHtml({ firstname, checkin, checkout, nights, guests, propertyName, ttlHours }),
     });
   } catch (emailErr) {
     console.error('[booking] Failed to send guest acknowledgment:', emailErr);
@@ -104,11 +105,11 @@ export async function onRequestPost(context) {
   });
 }
 
-function guestAcknowledgmentHtml({ firstname, checkin, checkout, nights, guests, propertyName }) {
+function guestAcknowledgmentHtml({ firstname, checkin, checkout, nights, guests, propertyName, ttlHours }) {
   return `
 <h2 style="color:#2C2520;font-family:Georgia,serif">Votre demande a bien été reçue</h2>
 <p style="font-family:sans-serif">Bonjour ${firstname},</p>
-<p style="font-family:sans-serif">Nous avons bien reçu votre demande de réservation pour ${propertyName}. Le propriétaire vous répondra dans les <strong>24h</strong>.</p>
+<p style="font-family:sans-serif">Nous avons bien reçu votre demande de réservation pour ${propertyName}. Le propriétaire vous répondra dans les <strong>${ttlHours}h</strong>.</p>
 <table style="border-collapse:collapse;font-family:sans-serif;font-size:14px;margin:20px 0">
   <tr><td style="padding:6px 16px 6px 0;color:#888">Arrivée</td><td style="padding:6px 0">${checkin}</td></tr>
   <tr><td style="padding:6px 16px 6px 0;color:#888">Départ</td><td style="padding:6px 0">${checkout}</td></tr>
@@ -119,7 +120,7 @@ function guestAcknowledgmentHtml({ firstname, checkin, checkout, nights, guests,
 `;
 }
 
-function ownerEmailHtml({ firstname, lastname, email, phone, checkin, checkout, nights, guests, message, approveUrl }) {
+function ownerEmailHtml({ firstname, lastname, email, phone, checkin, checkout, nights, guests, message, approveUrl, ttlHours }) {
   return `
 <h2 style="color:#2C2520">Nouvelle demande de réservation</h2>
 <table style="border-collapse:collapse;font-family:sans-serif;font-size:14px">
@@ -140,6 +141,6 @@ function ownerEmailHtml({ firstname, lastname, email, phone, checkin, checkout, 
     → Répondre à la demande
   </a>
 </p>
-<p style="color:#999;font-size:12px;font-family:sans-serif">Ces liens sont valables 24h.</p>
+<p style="color:#999;font-size:12px;font-family:sans-serif">Ces liens sont valables ${ttlHours}h.</p>
 `;
 }
