@@ -2,9 +2,6 @@ name = "refuge-sauvage"
 compatibility_date = "2024-09-23"
 pages_build_output_dir = "_site"
 
-[build]
-command = "npm ci && npm run build:css && bundle exec jekyll build"
-
 # Non-secret per-project config — safe to commit.
 # Secrets (API keys etc.) go in secrets.json (gitignored) → `npm run deploy:secrets`
 [vars]
