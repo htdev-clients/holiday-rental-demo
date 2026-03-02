@@ -152,7 +152,7 @@ amenities:
   - { icon: "utensils",         label: "Cuisine équipée",      label_en: "Equipped kitchen" }
   - { icon: "coffee",           label: "Cafetière & thé",      label_en: "Coffee maker & tea" }
   - { icon: "microwave",        label: "Micro-ondes",          label_en: "Microwave" }
-  - { icon: "wine",             label: "Lave-vaisselle",       label_en: "Dishwasher" }
+  - { icon: "sparkles",         label: "Lave-vaisselle",       label_en: "Dishwasher" }
   - { icon: "flame",            label: "Poêle scandinave",     label_en: "Scandinavian stove" }
   - { icon: "trees",            label: "Terrasse en bois",     label_en: "Wooden terrace" }
   - { icon: "tent",             label: "Barbecue extérieur",   label_en: "Outdoor barbecue" }

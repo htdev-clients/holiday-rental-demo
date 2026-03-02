@@ -61,6 +61,15 @@ booking:
   success_title:    "Request sent!"
   success_msg:      "Thank you for your request. The owner will review it and send you a secure payment link within HOURSh."
   spam_note:        "Please check your spam folder if you do not receive an email."
+  night_singular:   "night"
+  night_plural:     "nights"
+  btn_sending:      "Sending…"
+  error_network:    "Network error. Please check your connection and try again."
+  error_generic:    "An error occurred. Please try again."
+
+calendar:
+  months: ["January","February","March","April","May","June","July","August","September","October","November","December"]
+  days:   ["Mo","Tu","We","Th","Fr","Sa","Su"]
 
 footer:
   address_heading: "Address"

@@ -61,6 +61,15 @@ booking:
   success_title:    "Demande envoyée !"
   success_msg:      "Merci pour votre demande. Le propriétaire l'examinera et vous enverra un lien de paiement sécurisé sous HOURSh."
   spam_note:        "Pensez à vérifier vos spams si vous ne recevez pas d'email."
+  night_singular:   "nuit"
+  night_plural:     "nuits"
+  btn_sending:      "Envoi en cours…"
+  error_network:    "Erreur réseau. Vérifiez votre connexion et réessayez."
+  error_generic:    "Une erreur est survenue. Veuillez réessayer."
+
+calendar:
+  months: ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"]
+  days:   ["Lu","Ma","Me","Je","Ve","Sa","Di"]
 
 footer:
   address_heading: "Adresse"

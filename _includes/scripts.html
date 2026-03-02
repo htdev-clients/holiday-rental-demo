@@ -1,3 +1,4 @@
+{% assign t = site.data.i18n[site.active_lang] %}
 <script>
     // ── Icons ──────────────────────────────────────────────────
     lucide.createIcons();
@@ -62,7 +63,15 @@
     // If ICAL_URL is not configured or the fetch fails, stays empty — safe default.
     let BOOKED_DATES = new Set();
 
-    const PER_NIGHT = {{ site.data.property.pricing.per_night }};
+    const PER_NIGHT   = {{ site.data.property.pricing.per_night }};
+    const MONTH_NAMES = {{ t.calendar.months | jsonify }};
+    const DAY_NAMES   = {{ t.calendar.days | jsonify }};
+    const NIGHT_S     = {{ t.booking.night_singular | jsonify }};
+    const NIGHT_P     = {{ t.booking.night_plural | jsonify }};
+    const BTN_SENDING = {{ t.booking.btn_sending | jsonify }};
+    const BTN_SUBMIT  = {{ t.booking.submit | jsonify }};
+    const ERR_NETWORK = {{ t.booking.error_network | jsonify }};
+    const ERR_GENERIC = {{ t.booking.error_generic | jsonify }};
 
     let selectedStart = null, selectedEnd = null;
     let calYear, calMonth;
@@ -106,9 +115,6 @@
         const firstDay    = new Date(year, month, 1).getDay();
         const startOffset = (firstDay + 6) % 7; // Mon = 0
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const monthNames  = ['Janvier','Février','Mars','Avril','Mai','Juin',
-                             'Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
-        const dayNames    = ['Lu','Ma','Me','Je','Ve','Sa','Di'];
 
         // Compute the first booked date after selectedStart so we can block everything past it
         const phase = getPhase();
@@ -126,13 +132,13 @@
         // Header
         html += `<div class="flex items-center justify-between mb-4">`;
         html += `<button onclick="shiftCalendar(-1)" class="p-1 hover:text-clay transition-colors" aria-label="Mois précédent"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>`;
-        html += `<span class="font-serif text-lg text-earth">${monthNames[month]} ${year}</span>`;
+        html += `<span class="font-serif text-lg text-earth">${MONTH_NAMES[month]} ${year}</span>`;
         html += `<button onclick="shiftCalendar(1)"  class="p-1 hover:text-clay transition-colors" aria-label="Mois suivant"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>`;
         html += `</div>`;
 
         // Day names
         html += `<div class="grid grid-cols-7 gap-1 mb-2">`;
-        dayNames.forEach(d => {
+        DAY_NAMES.forEach(d => {
             html += `<div class="cal-day text-center text-xs font-bold text-gray-400 uppercase">${d}</div>`;
         });
         html += `</div>`;
@@ -271,7 +277,7 @@
         if (ci && co) {
             const n = calcNights(ci, co);
             if (n > 0) {
-                nightsEl.textContent = `${n} nuit${n > 1 ? 's' : ''}`;
+                nightsEl.textContent = `${n} ${n > 1 ? NIGHT_P : NIGHT_S}`;
                 promptEl.classList.add('opacity-0', 'pointer-events-none');
                 summaryEl.classList.remove('opacity-0', 'pointer-events-none');
                 totalEl.textContent = calcTotal(n).toLocaleString('fr-BE') + ' €';
@@ -334,7 +340,7 @@
 
         const btn = document.getElementById('submit-btn');
         btn.disabled = true;
-        btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>&nbsp;Envoi en cours…';
+        btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>&nbsp;${BTN_SENDING}`;
         lucide.createIcons();
 
         const data = Object.fromEntries(new FormData(form));
@@ -347,19 +353,19 @@
             });
         } catch {
             btn.disabled = false;
-            btn.innerHTML = '<i data-lucide="send" class="w-4 h-4"></i>&nbsp;Envoyer ma demande';
+            btn.innerHTML = `<i data-lucide="send" class="w-4 h-4"></i>&nbsp;${BTN_SUBMIT}`;
             lucide.createIcons();
-            errorEl.textContent = 'Erreur réseau. Vérifiez votre connexion et réessayez.';
+            errorEl.textContent = ERR_NETWORK;
             errorEl.classList.remove('hidden');
             return;
         }
 
         if (!res.ok) {
             btn.disabled = false;
-            btn.innerHTML = '<i data-lucide="send" class="w-4 h-4"></i>&nbsp;Envoyer ma demande';
+            btn.innerHTML = `<i data-lucide="send" class="w-4 h-4"></i>&nbsp;${BTN_SUBMIT}`;
             lucide.createIcons();
             const { error } = await res.json().catch(() => ({}));
-            errorEl.textContent = error || 'Une erreur est survenue. Veuillez réessayer.';
+            errorEl.textContent = error || ERR_GENERIC;
             errorEl.classList.remove('hidden');
             return;
         }
