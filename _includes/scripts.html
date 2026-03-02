@@ -1,5 +1,14 @@
 {% assign t = site.data.i18n[site.active_lang] %}
 <script>
+    // ── Language Switcher ───────────────────────────────────────
+    (function() {
+        var p = window.location.pathname;
+        var frPath = p.replace(/^\/en(\/|$)/, '/') || '/';
+        var enPath = /^\/en(\/|$)/.test(p) ? p : ('/en' + p);
+        document.querySelectorAll('[data-lang-switch="fr"]').forEach(function(a) { a.href = frPath; });
+        document.querySelectorAll('[data-lang-switch="en"]').forEach(function(a) { a.href = enPath; });
+    })();
+
     // ── Icons ──────────────────────────────────────────────────
     lucide.createIcons();
 

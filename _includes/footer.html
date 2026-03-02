@@ -9,8 +9,6 @@
   {% assign privacy_path = '/confidentialite' %}
   {% assign cookies_path = '/cookies' %}
 {% endif %}
-{% assign switch_to_fr = site.url | append: page.url %}
-{% assign switch_to_en = site.url | append: '/en' | append: page.url %}
 <footer id="contact" class="bg-[#1f1a16] text-stone">
     <div class="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-3 gap-12">
 
@@ -80,8 +78,8 @@
                 <a href="{{ privacy_path }}" class="hover:text-white transition-colors">{{ t.footer.privacy }}</a>
                 <a href="{{ cookies_path }}" class="hover:text-white transition-colors">{{ t.footer.cookies }}</a>
                 <span class="text-white/30">|</span>
-                <a href="{{ switch_to_fr }}" class="{% if site.active_lang == 'fr' %}text-clay{% else %}hover:text-white{% endif %} transition-colors">FR</a>
-                <a href="{{ switch_to_en }}" class="{% if site.active_lang == 'en' %}text-clay{% else %}hover:text-white{% endif %} transition-colors">EN</a>
+                <a href="#" data-lang-switch="fr" class="{% if site.active_lang == 'fr' %}text-clay{% else %}hover:text-white{% endif %} transition-colors">FR</a>
+                <a href="#" data-lang-switch="en" class="{% if site.active_lang == 'en' %}text-clay{% else %}hover:text-white{% endif %} transition-colors">EN</a>
             </div>
         </div>
     </div>
