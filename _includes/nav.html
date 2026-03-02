@@ -1,20 +1,17 @@
 {% assign t = site.data.i18n[site.active_lang] %}
-{% assign home_url = '/' %}
-{% if site.active_lang == 'en' %}{% assign home_url = '/en/' %}{% endif %}
-{% if page.url == home_url %}
-  {% assign hp = '' %}
+{% if page.url == '/' %}
+  {% assign hp        = '' %}
   {% assign logo_href = '#' %}
 {% else %}
-  {% assign hp = home_url %}
-  {% assign logo_href = home_url %}
+  {% if site.active_lang == 'en' %}
+    {% assign hp = '/en/' %}
+  {% else %}
+    {% assign hp = '/' %}
+  {% endif %}
+  {% assign logo_href = hp %}
 {% endif %}
-{% if site.active_lang == 'en' %}
-  {% assign switch_to_fr = page.url | remove_first: '/en' %}
-  {% assign switch_to_en = page.url %}
-{% else %}
-  {% assign switch_to_fr = page.url %}
-  {% assign switch_to_en = '/en' | append: page.url %}
-{% endif %}
+{% assign switch_to_fr = site.url | append: page.url %}
+{% assign switch_to_en = site.url | append: '/en' | append: page.url %}
 
 <!-- ── Mobile Menu Overlay ── -->
 <div id="mobile-menu" class="fixed inset-0 z-[60] bg-earth/97 backdrop-blur-md flex flex-col justify-center items-center gap-8 menu-hidden">

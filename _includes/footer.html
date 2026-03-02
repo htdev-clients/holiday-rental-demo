@@ -1,17 +1,16 @@
 {% assign p = site.data.property %}
 {% assign t = site.data.i18n[site.active_lang] %}
 {% if site.active_lang == 'en' %}
-  {% assign switch_to_fr = page.url | remove_first: '/en' %}
   {% assign cgv_path = '/en/cgv' %}
   {% assign privacy_path = '/en/confidentialite' %}
   {% assign cookies_path = '/en/cookies' %}
 {% else %}
-  {% assign switch_to_fr = page.url %}
   {% assign cgv_path = '/cgv' %}
   {% assign privacy_path = '/confidentialite' %}
   {% assign cookies_path = '/cookies' %}
 {% endif %}
-{% assign switch_to_en = '/en' | append: switch_to_fr %}
+{% assign switch_to_fr = site.url | append: page.url %}
+{% assign switch_to_en = site.url | append: '/en' | append: page.url %}
 <footer id="contact" class="bg-[#1f1a16] text-stone">
     <div class="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-3 gap-12">
 
