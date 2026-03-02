@@ -10,3 +10,4 @@ node_modules/
 .env.*
 .dev.vars
 secrets.json
+assets/css/tailwind.css

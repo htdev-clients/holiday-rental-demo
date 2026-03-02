@@ -6,8 +6,10 @@ layout: default
 <main class="min-h-screen bg-paper">
     <div class="pt-32 pb-24">
         <div class="max-w-3xl mx-auto px-6">
-            <a href="/" class="legal-back">
-                <i data-lucide="arrow-left" class="w-3 h-3"></i>&nbsp;Retour à l'accueil
+            {% assign t = site.data.i18n[site.active_lang] %}
+            {% assign home_url = '/' %}{% if site.active_lang == 'en' %}{% assign home_url = '/en/' %}{% endif %}
+            <a href="{{ home_url }}" class="legal-back">
+                <i data-lucide="arrow-left" class="w-3 h-3"></i>&nbsp;{{ t.legal.back }}
             </a>
             <article class="legal-content">
                 {{ content }}

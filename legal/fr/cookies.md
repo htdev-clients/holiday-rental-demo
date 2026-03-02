@@ -1,5 +1,6 @@
 ---
 layout: legal
+lang: fr
 title: Politique de Cookies
 permalink: /cookies/
 ---

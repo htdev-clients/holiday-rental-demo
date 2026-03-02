@@ -1,5 +1,6 @@
 ---
 layout: legal
+lang: fr
 title: Conditions Générales de Vente
 permalink: /cgv/
 ---
@@ -8,7 +9,7 @@ permalink: /cgv/
 
 ## 1. Identification du prestataire
 
-**{{ site.data.property.contact.owner_name }}**, propriétaire de **{{ site.data.property.name }}** — {{ site.data.property.location.address_line1 }}, {{ site.data.property.location.address_line2 }}, {{ site.data.property.location.country }}
+**{{ site.data.property.contact.owner_name }}**, propriétaire de **{{ site.data.property.name }}** — {{ site.data.property.location.address_line1 }}, {{ site.data.property.location.address_line2 }}, {{ site.data.property.location.country.fr }}
 
 Enregistrement touristique : {{ site.data.property.compliance.registration_number }} — {{ site.data.property.compliance.registration_body }}
 

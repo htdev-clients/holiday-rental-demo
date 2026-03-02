@@ -33,8 +33,28 @@ picture:
         fallback: 85vw
 permalink: pretty
 
+# ── jekyll-polyglot ─────────────────────────────────────
+languages: ["fr", "en"]
+default_lang: "fr"
+exclude_from_localization:
+  - "assets"
+  - "generated"
+  - "functions"
+  - "scripts"
+  - "robots.txt"
+  - "sitemap.xml"
+  - "CLAUDE.md"
+  - "README.md"
+  - "wrangler.toml"
+  - "schema.sql"
+  - "package.json"
+  - "package-lock.json"
+  - "secrets.json"
+parallel_localization: false
+
 plugins:
   - jekyll-sitemap
+  - jekyll-polyglot
 
 exclude:
   - Gemfile
@@ -43,3 +63,6 @@ exclude:
   - vendor/
   - .git/
   - example.html
+  - secrets.json
+  - .dev.vars
+  - "*.sh"

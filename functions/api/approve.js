@@ -1,4 +1,5 @@
 import { signHmac, calcTotal, sendEmail, escapeHtml } from '../_shared/utils.js';
+import { t as emailT } from '../_shared/email-translations.js';
 
 
 /**
@@ -79,14 +80,15 @@ export async function onRequestPost(context) {
     return err(`Ce lien a expiré (${ttlHours}h). Veuillez contacter le voyageur directement.`);
   }
 
-  const nights       = Math.round((new Date(booking.checkout) - new Date(booking.checkin)) / 86400000);
+  const nights = Math.round((new Date(booking.checkout) - new Date(booking.checkin)) / 86400000);
+  const T = emailT(booking.lang);
 
   if (action === 'approve') {
     const total = calcTotal(nights, parseFloat(env.PRICE_PER_NIGHT));
 
     let paymentUrl;
     try {
-      const session = await createStripeSession({ booking, total, env, propertyName });
+      const session = await createStripeSession({ booking, total, env, propertyName, T });
       paymentUrl = session.url;
     } catch (stripeErr) {
       console.error('Stripe error:', stripeErr);
@@ -108,8 +110,8 @@ export async function onRequestPost(context) {
       await sendEmail(env.RESEND_API_KEY, {
         from: env.FROM_EMAIL,
         to: booking.email,
-        subject: `Votre réservation est approuvée — ${propertyName}`,
-        html: guestPaymentEmailHtml({ booking, nights, total, paymentUrl, propertyName, ownerMessage }),
+        subject: T.pay_subject(propertyName),
+        html: guestPaymentEmailHtml({ booking, nights, total, paymentUrl, propertyName, ownerMessage, T }),
       });
     } catch (emailErr) {
       // DB is already updated — log the failure and show a warning to the owner.
@@ -134,8 +136,8 @@ export async function onRequestPost(context) {
       await sendEmail(env.RESEND_API_KEY, {
         from: env.FROM_EMAIL,
         to: booking.email,
-        subject: `Votre demande de réservation — ${propertyName}`,
-        html: guestRejectionEmailHtml({ booking, nights, propertyName, ownerMessage }),
+        subject: T.rej_subject(propertyName),
+        html: guestRejectionEmailHtml({ booking, nights, propertyName, ownerMessage, T }),
       });
     } catch (emailErr) {
       console.error('[approve] Failed to email guest rejection:', emailErr);
@@ -149,7 +151,7 @@ export async function onRequestPost(context) {
 
 // ─── Stripe ───────────────────────────────────────────────────────────────────
 
-async function createStripeSession({ booking, total, env, propertyName }) {
+async function createStripeSession({ booking, total, env, propertyName, T }) {
   const res = await fetch('https://api.stripe.com/v1/checkout/sessions', {
     method: 'POST',
     headers: {
@@ -162,18 +164,18 @@ async function createStripeSession({ booking, total, env, propertyName }) {
       ['payment_method_types[]',                                     'card'],
       ['payment_method_types[]',                                     'bancontact'],
       ['line_items[0][price_data][currency]',                        'eur'],
-      ['line_items[0][price_data][product_data][name]',              `${propertyName} — ${booking.checkin} au ${booking.checkout}`],
-      ['line_items[0][price_data][product_data][description]',       `${booking.guests} voyageur${booking.guests > 1 ? 's' : ''} · Arrivée ${booking.checkin} · Départ ${booking.checkout}`],
+      ['line_items[0][price_data][product_data][name]',              `${propertyName} — ${booking.checkin} → ${booking.checkout}`],
+      ['line_items[0][price_data][product_data][description]',       T.pay_stripe_desc(booking.guests)],
       ['line_items[0][price_data][unit_amount]',                     String(Math.round(total * 100))],
       ['line_items[0][quantity]',                                    '1'],
       ['mode',                                                       'payment'],
-      ['locale',                                                     'fr'],
-      ['success_url',                                                `${env.SITE_URL}/reservation-confirmee`],
+      ['locale',                                                     T.pay_locale],
+      ['success_url',                                                `${env.SITE_URL}${T.success_path}`],
       ['cancel_url',                                                 `${env.SITE_URL}/#booking`],
       ['customer_email',                                             booking.email],
       ['metadata[booking_id]',                                       booking.id],
       ['metadata[property_id]',                                      booking.property_id],
-      ['custom_text[submit][message]',                               'En cliquant sur Confirmer, vous acceptez les conditions générales de vente.'],
+      ['custom_text[submit][message]',                               T.pay_stripe_note],
     ]),
   });
   if (!res.ok) throw new Error(await res.text());
@@ -182,41 +184,41 @@ async function createStripeSession({ booking, total, env, propertyName }) {
 
 // ─── Email templates ──────────────────────────────────────────────────────────
 
-function guestPaymentEmailHtml({ booking, nights, total, paymentUrl, propertyName, ownerMessage }) {
+function guestPaymentEmailHtml({ booking, nights, total, paymentUrl, propertyName, ownerMessage, T }) {
   return `
-<h2 style="color:#2C2520">Votre réservation est approuvée !</h2>
-<p style="font-family:sans-serif">Bonjour ${booking.firstname},</p>
-<p style="font-family:sans-serif">Le propriétaire de ${propertyName} a approuvé votre demande de réservation.</p>
+<h2 style="color:#2C2520">${T.pay_heading}</h2>
+<p style="font-family:sans-serif">${T.pay_greeting(booking.firstname)}</p>
+<p style="font-family:sans-serif">${T.pay_body(propertyName)}</p>
 ${ownerMessage ? `<p style="font-family:sans-serif;background:#f9f6f0;padding:14px 18px;border-left:3px solid #D6A87C;margin:16px 0;font-style:italic">${escapeHtml(ownerMessage)}</p>` : ''}
 <table style="border-collapse:collapse;font-family:sans-serif;font-size:14px">
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Arrivée</td><td style="padding:6px 0">${booking.checkin}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Départ</td><td style="padding:6px 0">${booking.checkout}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Durée</td><td style="padding:6px 0">${nights} nuit${nights > 1 ? 's' : ''}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${booking.guests}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Total</td><td style="padding:6px 0"><strong>${total.toLocaleString('fr-BE')} €</strong></td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.pay_col_checkin}</td><td style="padding:6px 0">${booking.checkin}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.pay_col_checkout}</td><td style="padding:6px 0">${booking.checkout}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.pay_col_nights}</td><td style="padding:6px 0">${T.pay_nights(nights)}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.pay_col_guests}</td><td style="padding:6px 0">${booking.guests}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.pay_col_total}</td><td style="padding:6px 0"><strong>${total.toLocaleString('fr-BE')} €</strong></td></tr>
 </table>
 <p style="margin-top:24px">
   <a href="${paymentUrl}" style="background:#D6A87C;color:#fff;padding:14px 28px;text-decoration:none;font-weight:bold;font-family:sans-serif;display:inline-block">
-    Payer maintenant
+    ${T.pay_cta}
   </a>
 </p>
-<p style="color:#999;font-size:12px;font-family:sans-serif">Ce lien de paiement est valable 24h.</p>
+<p style="color:#999;font-size:12px;font-family:sans-serif">${T.pay_link_expiry}</p>
 `;
 }
 
-function guestRejectionEmailHtml({ booking, nights, propertyName, ownerMessage }) {
+function guestRejectionEmailHtml({ booking, nights, propertyName, ownerMessage, T }) {
   return `
-<h2 style="color:#2C2520">Votre demande de réservation</h2>
-<p style="font-family:sans-serif">Bonjour ${booking.firstname},</p>
-<p style="font-family:sans-serif">Après examen de votre demande, le propriétaire de ${propertyName} n'est malheureusement pas en mesure d'accepter votre séjour pour les dates suivantes :</p>
+<h2 style="color:#2C2520">${T.rej_heading}</h2>
+<p style="font-family:sans-serif">${T.rej_greeting(booking.firstname)}</p>
+<p style="font-family:sans-serif">${T.rej_body(propertyName)}</p>
 <table style="border-collapse:collapse;font-family:sans-serif;font-size:14px">
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Arrivée</td><td style="padding:6px 0">${booking.checkin}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Départ</td><td style="padding:6px 0">${booking.checkout}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Durée</td><td style="padding:6px 0">${nights} nuit${nights > 1 ? 's' : ''}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${booking.guests}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.rej_col_checkin}</td><td style="padding:6px 0">${booking.checkin}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.rej_col_checkout}</td><td style="padding:6px 0">${booking.checkout}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.rej_col_nights}</td><td style="padding:6px 0">${T.rej_nights(nights)}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.rej_col_guests}</td><td style="padding:6px 0">${booking.guests}</td></tr>
 </table>
 ${ownerMessage ? `<p style="font-family:sans-serif;background:#f9f6f0;padding:14px 18px;border-left:3px solid #D6A87C;margin:16px 0;font-style:italic">${escapeHtml(ownerMessage)}</p>` : ''}
-<p style="font-family:sans-serif;color:#666">N'hésitez pas à consulter d'autres disponibilités sur notre site.</p>
+<p style="font-family:sans-serif;color:#666">${T.rej_footer}</p>
 `;
 }
 
@@ -324,4 +326,3 @@ function errorPage(message, propertyName = '[Nom du bien]') {
     { status: 400, headers: { 'Content-Type': 'text/html;charset=UTF-8' } }
   );
 }
-

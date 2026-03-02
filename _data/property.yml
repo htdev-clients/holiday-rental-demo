@@ -1,18 +1,37 @@
 # ─────────────────────────────────────────────────────────
 # Property data — Le Refuge Sauvage
 # Edit this file to update all content across the site.
+# Translatable fields have fr/en sub-keys.
+# Array items use label_en / text_en / alt_en etc. for English variants.
 # ─────────────────────────────────────────────────────────
 
 name:       "Le Refuge Sauvage"
 short_name: "Le Refuge"
-tagline:    "Chalet & Forêt — Ardennes Belges"
-subtitle:   "Ardennes Belges · Séjour nature"
-description: "Un chalet en bois dans les Ardennes belges — pour souffler, se promener, et profiter du temps qui passe différemment."
-intro: "Le Refuge Sauvage se trouve au cœur des Ardennes belges, entouré d'environ deux hectares de forêt. C'est un endroit calme et confortable, loin de l'agitation du quotidien."
-footer_tagline: "Chalet en plein cœur des Ardennes Belges. Une retraite sauvage, loin du bruit du monde."
+
+tagline:
+  fr: "Chalet & Forêt — Ardennes Belges"
+  en: "Chalet & Forest — Belgian Ardennes"
+
+subtitle:
+  fr: "Ardennes Belges · Séjour nature"
+  en: "Belgian Ardennes · Nature retreat"
+
+description:
+  fr: "Un chalet en bois dans les Ardennes belges — pour souffler, se promener, et profiter du temps qui passe différemment."
+  en: "A timber chalet in the Belgian Ardennes — to unwind, hike, and enjoy time passing at a different pace."
+
+intro:
+  fr: "Le Refuge Sauvage se trouve au cœur des Ardennes belges, entouré d'environ deux hectares de forêt. C'est un endroit calme et confortable, loin de l'agitation du quotidien."
+  en: "Le Refuge Sauvage sits at the heart of the Belgian Ardennes, surrounded by some two hectares of forest. It is a calm and comfortable place, far from the hustle of everyday life."
+
+footer_tagline:
+  fr: "Chalet en plein cœur des Ardennes Belges. Une retraite sauvage, loin du bruit du monde."
+  en: "A chalet in the heart of the Belgian Ardennes. A wild retreat, far from the noise of the world."
 
 hero_image:     "/assets/images/hero.jpg"
-hero_image_alt: "Chalet dans la forêt des Ardennes"
+hero_image_alt:
+  fr: "Chalet dans la forêt des Ardennes"
+  en: "Chalet in the Ardennes forest"
 
 # ── Capacity ────────────────────────────────────────────
 capacity:
@@ -30,13 +49,17 @@ checkout_time: "11h00"
 pricing:
   per_night: 150
   currency:  "€"
-  note:      "Taxe de séjour & frais de ménage inclus"
+  note:
+    fr: "Taxe de séjour & frais de ménage inclus"
+    en: "Tourist tax & cleaning fees included"
 
 # ── Location ────────────────────────────────────────────
 location:
   address_line1: "Lieu-dit Le Bois Clair"
   address_line2: "6900 Marche-en-Famenne"
-  country:       "Belgique"
+  country:
+    fr: "Belgique"
+    en: "Belgium"
   country_code:  "BE"
   region:        "Ardennes Belges"
   maps_url:      "https://maps.google.com"
@@ -64,80 +87,108 @@ compliance:
 concept:
   - number:      "01"
     label:       "L'Intérieur"
+    label_en:    "The Interior"
     title:       "Chaleureux et bien équipé"
+    title_en:    "Warm and well-equipped"
     description: >
       Grand salon avec une belle baie vitrée, un poêle à bois pour les soirées fraîches, et une cuisine
       complète pour cuisiner tranquillement. L'intérieur est simple et confortable — on n'a pas voulu
       en faire trop, juste ce qu'il faut pour se sentir vraiment chez soi.
-    image:       "/assets/images/bedroom-1.jpg"
-    image_alt:   "Salon du chalet avec baie vitrée et poêle à bois"
-    image2:      "/assets/images/bedroom-2.jpg"
-    image_alt2:  "Chambre cosy en bois avec literie blanche"
-    image3:      "/assets/images/kitchen.jpg"
-    image_alt3:  "Cuisine entièrement équipée du chalet"
-    reverse:     false
+    description_en: >
+      Spacious living room with large glazed doors, a wood stove for cooler evenings, and a fully equipped
+      kitchen for cooking at your own pace. The interior is simple and comfortable — nothing overdone,
+      just what you need to feel truly at home.
+    image:        "/assets/images/bedroom-1.jpg"
+    image_alt:    "Salon du chalet avec baie vitrée et poêle à bois"
+    image_alt_en: "Chalet living room with glass wall and wood stove"
+    image2:       "/assets/images/bedroom-2.jpg"
+    image_alt2:   "Chambre cosy en bois avec literie blanche"
+    image_alt2_en: "Cosy wooden bedroom with white bedding"
+    image3:       "/assets/images/kitchen.jpg"
+    image_alt3:   "Cuisine entièrement équipée du chalet"
+    image_alt3_en: "Fully equipped chalet kitchen"
+    reverse:      false
     features:
-      - { icon: "flame",     text: "Poêle scandinave en fonte" }
-      - { icon: "book-open", text: "Bibliothèque & jeux de société" }
-      - { icon: "wifi-off",  text: "Sans WiFi — reconnexion totale" }
-      - { icon: "coffee",    text: "Cuisine entièrement équipée" }
+      - { icon: "flame",     text: "Poêle scandinave en fonte",     text_en: "Cast-iron Scandinavian stove" }
+      - { icon: "book-open", text: "Bibliothèque & jeux de société", text_en: "Library & board games" }
+      - { icon: "wifi-off",  text: "Sans WiFi — reconnexion totale", text_en: "No WiFi — total reconnection" }
+      - { icon: "coffee",    text: "Cuisine entièrement équipée",    text_en: "Fully equipped kitchen" }
 
   - number:      "02"
     label:       "L'Extérieur"
+    label_en:    "The Outdoors"
     title:       "La forêt commence au jardin"
+    title_en:    "The forest starts at the garden"
     description: >
       Le chalet donne directement sur un sentier balisé. En vingt minutes à pied, on rejoint la
       rivière. Autour, c'est la forêt des Ardennes — des cerfs le matin, le calme tout le temps.
       Idéal pour randonner, se promener, ou ne rien faire du tout.
-    image:       "/assets/images/living-room.jpg"
-    image_alt:   "Vue sur la forêt des Ardennes depuis le chalet"
-    image2:      "/assets/images/forest.jpg"
-    image_alt2:  "Terrasse en bois entourée de forêt"
-    image3:      "/assets/images/mountain.jpg"
-    image_alt3:  "Sentier de randonnée en forêt ardennaise"
-    reverse:     true
+    description_en: >
+      The chalet opens directly onto a marked trail. A twenty-minute walk brings you to the river.
+      All around, the Ardennes forest — deer in the morning, quiet all the time. Perfect for hiking,
+      strolling, or doing absolutely nothing at all.
+    image:        "/assets/images/living-room.jpg"
+    image_alt:    "Vue sur la forêt des Ardennes depuis le chalet"
+    image_alt_en: "View of the Ardennes forest from the chalet"
+    image2:       "/assets/images/forest.jpg"
+    image_alt2:   "Terrasse en bois entourée de forêt"
+    image_alt2_en: "Wooden terrace surrounded by forest"
+    image3:       "/assets/images/mountain.jpg"
+    image_alt3:   "Sentier de randonnée en forêt ardennaise"
+    image_alt3_en: "Hiking trail in the Ardennes forest"
+    reverse:      true
     features:
-      - { icon: "footprints", text: "Sentiers de randonnée balisés" }
-      - { icon: "waves",      text: "Lacs & rivières à proximité" }
-      - { icon: "mountain",   text: "Points de vue panoramiques" }
-      - { icon: "tree-pine",  text: "2 hectares de terrain privé" }
+      - { icon: "footprints", text: "Sentiers de randonnée balisés", text_en: "Marked hiking trails" }
+      - { icon: "waves",      text: "Lacs & rivières à proximité",   text_en: "Lakes & rivers nearby" }
+      - { icon: "mountain",   text: "Points de vue panoramiques",    text_en: "Panoramic viewpoints" }
+      - { icon: "tree-pine",  text: "2 hectares de terrain privé",   text_en: "2 hectares of private land" }
 
 # ── Amenities ───────────────────────────────────────────
 amenities:
-  - { icon: "bed-double",       label: "3 Chambres" }
-  - { icon: "bath",             label: "2 Salles de bain" }
-  - { icon: "users",            label: "Jusqu'à 6 personnes" }
-  - { icon: "sofa",             label: "Canapé-lit" }
-  - { icon: "utensils",         label: "Cuisine équipée" }
-  - { icon: "coffee",           label: "Cafetière & thé" }
-  - { icon: "microwave",        label: "Micro-ondes" }
-  - { icon: "wine",             label: "Lave-vaisselle" }
-  - { icon: "flame",            label: "Poêle scandinave" }
-  - { icon: "trees",            label: "Terrasse en bois" }
-  - { icon: "tent",             label: "Barbecue extérieur" }
-  - { icon: "car",              label: "Parking privé" }
-  - { icon: "washing-machine",  label: "Lave-linge" }
-  - { icon: "wifi-off",         label: "Sans WiFi" }
-  - { icon: "paw-print",        label: "Animaux acceptés" }
-  - { icon: "baby",             label: "Lit bébé disponible" }
+  - { icon: "bed-double",       label: "3 Chambres",           label_en: "3 Bedrooms" }
+  - { icon: "bath",             label: "2 Salles de bain",     label_en: "2 Bathrooms" }
+  - { icon: "users",            label: "Jusqu'à 6 personnes",  label_en: "Up to 6 guests" }
+  - { icon: "sofa",             label: "Canapé-lit",           label_en: "Sofa bed" }
+  - { icon: "utensils",         label: "Cuisine équipée",      label_en: "Equipped kitchen" }
+  - { icon: "coffee",           label: "Cafetière & thé",      label_en: "Coffee maker & tea" }
+  - { icon: "microwave",        label: "Micro-ondes",          label_en: "Microwave" }
+  - { icon: "wine",             label: "Lave-vaisselle",       label_en: "Dishwasher" }
+  - { icon: "flame",            label: "Poêle scandinave",     label_en: "Scandinavian stove" }
+  - { icon: "trees",            label: "Terrasse en bois",     label_en: "Wooden terrace" }
+  - { icon: "tent",             label: "Barbecue extérieur",   label_en: "Outdoor barbecue" }
+  - { icon: "car",              label: "Parking privé",        label_en: "Private parking" }
+  - { icon: "washing-machine",  label: "Lave-linge",           label_en: "Washing machine" }
+  - { icon: "wifi-off",         label: "Sans WiFi",            label_en: "No WiFi" }
+  - { icon: "paw-print",        label: "Animaux acceptés",     label_en: "Pets welcome" }
+  - { icon: "baby",             label: "Lit bébé disponible",  label_en: "Baby cot available" }
 
 # ── Gallery ─────────────────────────────────────────────
 gallery:
-  - url:     "/assets/images/gallery-1.jpg"
-    alt:     "Rivière des Ardennes"
-    caption: "Rivière à proximité"
-  - url:     "/assets/images/gallery-2.jpg"
-    alt:     "Brouillard matinal en forêt"
-    caption: "Brouillard matinal"
-  - url:     "/assets/images/gallery-3.jpg"
-    alt:     "Le chalet sous la neige"
-    caption: "Le chalet en hiver"
-  - url:     "/assets/images/gallery-4.jpg"
-    alt:     "Couleurs d'automne"
-    caption: "Couleurs d'automne"
-  - url:     "/assets/images/bedroom-1.jpg"
-    alt:     "Salon chaleureux"
-    caption: "Salon chaleureux"
+  - url:        "/assets/images/gallery-1.jpg"
+    alt:        "Rivière des Ardennes"
+    alt_en:     "Ardennes river"
+    caption:    "Rivière à proximité"
+    caption_en: "Nearby river"
+  - url:        "/assets/images/gallery-2.jpg"
+    alt:        "Brouillard matinal en forêt"
+    alt_en:     "Morning mist in the forest"
+    caption:    "Brouillard matinal"
+    caption_en: "Morning mist"
+  - url:        "/assets/images/gallery-3.jpg"
+    alt:        "Le chalet sous la neige"
+    alt_en:     "The chalet in the snow"
+    caption:    "Le chalet en hiver"
+    caption_en: "The chalet in winter"
+  - url:        "/assets/images/gallery-4.jpg"
+    alt:        "Couleurs d'automne"
+    alt_en:     "Autumn colours"
+    caption:    "Couleurs d'automne"
+    caption_en: "Autumn colours"
+  - url:        "/assets/images/bedroom-1.jpg"
+    alt:        "Salon chaleureux"
+    alt_en:     "Warm living room"
+    caption:    "Salon chaleureux"
+    caption_en: "Warm living room"
 
 # ── Booking ─────────────────────────────────────────────
 booking:

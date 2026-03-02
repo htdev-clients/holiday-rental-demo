@@ -1,4 +1,17 @@
 {% assign p = site.data.property %}
+{% assign t = site.data.i18n[site.active_lang] %}
+{% if site.active_lang == 'en' %}
+  {% assign switch_to_fr = page.url | remove_first: '/en' %}
+  {% assign cgv_path = '/en/cgv' %}
+  {% assign privacy_path = '/en/confidentialite' %}
+  {% assign cookies_path = '/en/cookies' %}
+{% else %}
+  {% assign switch_to_fr = page.url %}
+  {% assign cgv_path = '/cgv' %}
+  {% assign privacy_path = '/confidentialite' %}
+  {% assign cookies_path = '/cookies' %}
+{% endif %}
+{% assign switch_to_en = '/en' | append: switch_to_fr %}
 <footer id="contact" class="bg-[#1f1a16] text-stone">
     <div class="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-3 gap-12">
 
@@ -6,7 +19,7 @@
         <div class="space-y-4">
             <p class="font-serif text-white text-3xl font-bold">{{ p.name }}.</p>
             <p class="text-white/50 text-xs leading-relaxed max-w-xs">
-                {{ p.footer_tagline }}
+                {{ p.footer_tagline[site.active_lang] }}
             </p>
             <div class="flex gap-5 text-white/50 pt-2">
                 <a href="{{ p.social.instagram }}" target="_blank" rel="noopener noreferrer" class="hover:text-clay transition-colors" aria-label="Instagram">
@@ -26,21 +39,21 @@
 
         <!-- Address -->
         <div class="space-y-4">
-            <span class="text-clay text-xs font-bold uppercase tracking-widest">Adresse</span>
+            <span class="text-clay text-xs font-bold uppercase tracking-widest">{{ t.footer.address_heading }}</span>
             <address class="not-italic text-white/80 font-serif text-lg leading-relaxed">
                 {{ p.location.address_line1 }},<br>
                 {{ p.location.address_line2 }},<br>
-                {{ p.location.country }}
+                {{ p.location.country[site.active_lang] }}
             </address>
             <a href="{{ p.location.maps_url }}" target="_blank" rel="noopener noreferrer"
                class="inline-flex items-center gap-2 text-xs text-clay hover:text-white transition-colors uppercase tracking-widest">
-                <i data-lucide="map-pin" class="w-3 h-3"></i> Voir sur la carte
+                <i data-lucide="map-pin" class="w-3 h-3"></i> {{ t.footer.view_map }}
             </a>
         </div>
 
         <!-- Contact -->
         <div class="space-y-4">
-            <span class="text-clay text-xs font-bold uppercase tracking-widest">Contact</span>
+            <span class="text-clay text-xs font-bold uppercase tracking-widest">{{ t.footer.contact_heading }}</span>
             <div class="space-y-3 text-white/80 font-serif text-lg">
                 <a href="tel:{{ p.contact.phone | remove: ' ' }}" class="flex items-center gap-3 hover:text-clay transition-colors">
                     <i data-lucide="phone" class="w-4 h-4 text-clay"></i>
@@ -53,7 +66,7 @@
             </div>
             <a href="#booking"
                class="inline-block mt-4 px-6 py-3 border border-clay text-clay text-xs font-bold uppercase tracking-widest hover:bg-clay hover:text-white transition-colors">
-                Faire une réservation
+                {{ t.footer.book_cta }}
             </a>
         </div>
 
@@ -61,12 +74,15 @@
 
     <div class="border-t border-white/10 py-5">
         <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-white/55 uppercase tracking-widest">
-            <span>© {{ 'now' | date: "%Y" }} {{ p.name }} · Tous droits réservés</span>
+            <span>© {{ 'now' | date: "%Y" }} {{ p.name }} · {{ t.footer.rights }}</span>
             <span class="text-white/40 normal-case tracking-normal">{{ p.compliance.registration_number }} · Agréé CGT Wallonie</span>
-            <div class="flex flex-wrap gap-x-6 gap-y-2">
-                <a href="/cgv"              class="hover:text-white transition-colors">CGV</a>
-                <a href="/confidentialite"  class="hover:text-white transition-colors">Politique de confidentialité</a>
-                <a href="/cookies"          class="hover:text-white transition-colors">Cookies</a>
+            <div class="flex flex-wrap gap-x-6 gap-y-2 items-center">
+                <a href="{{ cgv_path }}"     class="hover:text-white transition-colors">{{ t.footer.cgv }}</a>
+                <a href="{{ privacy_path }}" class="hover:text-white transition-colors">{{ t.footer.privacy }}</a>
+                <a href="{{ cookies_path }}" class="hover:text-white transition-colors">{{ t.footer.cookies }}</a>
+                <span class="text-white/30">|</span>
+                <a href="{{ switch_to_fr }}" class="{% if site.active_lang == 'fr' %}text-clay{% else %}hover:text-white{% endif %} transition-colors">FR</a>
+                <a href="{{ switch_to_en }}" class="{% if site.active_lang == 'en' %}text-clay{% else %}hover:text-white{% endif %} transition-colors">EN</a>
             </div>
         </div>
     </div>

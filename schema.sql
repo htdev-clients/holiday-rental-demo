@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS bookings (
   email       TEXT    NOT NULL,
   phone       TEXT,
   message     TEXT,
+  lang        TEXT    NOT NULL DEFAULT 'fr',
   created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
 );
 

@@ -1,7 +1,27 @@
 {% assign p = site.data.property %}
 {% assign c = p.capacity %}
+{% assign t = site.data.i18n[site.active_lang] %}
 {% assign interior = p.concept | first %}
 {% assign exterior = p.concept | last %}
+{% if site.active_lang == 'en' %}
+  {% assign interior_label = interior.label_en | default: interior.label %}
+  {% assign interior_title = interior.title_en | default: interior.title %}
+  {% assign interior_desc  = interior.description_en | default: interior.description %}
+  {% assign interior_alt   = interior.image_alt_en | default: interior.image_alt %}
+  {% assign exterior_label = exterior.label_en | default: exterior.label %}
+  {% assign exterior_title = exterior.title_en | default: exterior.title %}
+  {% assign exterior_desc  = exterior.description_en | default: exterior.description %}
+  {% assign exterior_alt   = exterior.image_alt_en | default: exterior.image_alt %}
+{% else %}
+  {% assign interior_label = interior.label %}
+  {% assign interior_title = interior.title %}
+  {% assign interior_desc  = interior.description %}
+  {% assign interior_alt   = interior.image_alt %}
+  {% assign exterior_label = exterior.label %}
+  {% assign exterior_title = exterior.title %}
+  {% assign exterior_desc  = exterior.description %}
+  {% assign exterior_alt   = exterior.image_alt %}
+{% endif %}
 
 <section id="presentation" class="bg-paper">
 
@@ -12,32 +32,32 @@
             <!-- Heading -->
             <div class="space-y-6">
                 <h2 class="font-serif text-5xl md:text-6xl text-earth leading-tight">
-                    Un chalet<br><em class="text-clay">dans les Ardennes</em>
+                    {{ t.presentation.heading_line1 }}<br><em class="text-clay">{{ t.presentation.heading_line2 }}</em>
                 </h2>
-                <p class="text-gray-500 leading-loose text-sm md:text-base max-w-md">{{ p.intro }}</p>
+                <p class="text-gray-500 leading-loose text-sm md:text-base max-w-md">{{ p.intro[site.active_lang] }}</p>
             </div>
 
             <!-- Stats grid -->
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <div class="bg-earth px-4 py-6 text-center">
                     <span class="block font-serif text-3xl text-clay font-bold">{{ c.guests }}</span>
-                    <span class="block text-white/60 text-xs uppercase tracking-widest mt-1">Personnes</span>
+                    <span class="block text-white/60 text-xs uppercase tracking-widest mt-1">{{ t.presentation.stat_guests }}</span>
                 </div>
                 <div class="bg-earth px-4 py-6 text-center">
                     <span class="block font-serif text-3xl text-clay font-bold">{{ c.bedrooms }}</span>
-                    <span class="block text-white/60 text-xs uppercase tracking-widest mt-1">Chambres</span>
+                    <span class="block text-white/60 text-xs uppercase tracking-widest mt-1">{{ t.presentation.stat_bedrooms }}</span>
                 </div>
                 <div class="bg-earth px-4 py-6 text-center">
                     <span class="block font-serif text-3xl text-clay font-bold">{{ c.area_m2 }}</span>
-                    <span class="block text-white/60 text-xs uppercase tracking-widest mt-1">m² habitables</span>
+                    <span class="block text-white/60 text-xs uppercase tracking-widest mt-1">{{ t.presentation.stat_area }}</span>
                 </div>
                 <div class="bg-earth px-4 py-6 text-center">
                     <span class="block font-serif text-3xl text-clay font-bold">{{ c.land_ha }} ha</span>
-                    <span class="block text-white/60 text-xs uppercase tracking-widest mt-1">Terrain privé</span>
+                    <span class="block text-white/60 text-xs uppercase tracking-widest mt-1">{{ t.presentation.stat_land }}</span>
                 </div>
                 <div class="bg-clay col-span-2 px-4 py-6 text-center">
                     <span class="block font-serif text-3xl text-white font-bold">{{ p.pricing.per_night }} €</span>
-                    <span class="block text-white/80 text-xs uppercase tracking-widest mt-1">Par nuit</span>
+                    <span class="block text-white/80 text-xs uppercase tracking-widest mt-1">{{ t.presentation.stat_per_night }}</span>
                 </div>
             </div>
 
@@ -51,19 +71,20 @@
             <!-- Main photo -->
             <div class="lg:col-span-7">
                 {% assign img_src = interior.image | remove_first: "/" %}
-                {% picture content {{ img_src }} alt="{{ interior.image_alt }}" class="w-full h-full object-cover hard-shadow" loading="lazy" decoding="async" --picture class="block w-full h-72 lg:h-full" %}
+                {% picture content {{ img_src }} alt="{{ interior_alt }}" class="w-full h-full object-cover hard-shadow" loading="lazy" decoding="async" --picture class="block w-full h-72 lg:h-full" %}
             </div>
 
             <!-- Text -->
             <div class="lg:col-span-5 space-y-5 lg:pt-4">
-                <span class="text-clay font-bold uppercase tracking-widest text-xs">{{ interior.number }} · {{ interior.label }}</span>
-                <h3 class="font-serif text-4xl text-earth leading-tight">{{ interior.title }}</h3>
-                <p class="text-gray-500 leading-loose text-sm">{{ interior.description }}</p>
+                <span class="text-clay font-bold uppercase tracking-widest text-xs">{{ interior.number }} · {{ interior_label }}</span>
+                <h3 class="font-serif text-4xl text-earth leading-tight">{{ interior_title }}</h3>
+                <p class="text-gray-500 leading-loose text-sm">{{ interior_desc }}</p>
                 <ul class="space-y-3 text-sm text-leaf font-medium">
                     {% for feature in interior.features %}
+                    {% if site.active_lang == 'en' %}{% assign feat_text = feature.text_en | default: feature.text %}{% else %}{% assign feat_text = feature.text %}{% endif %}
                     <li class="flex items-center gap-3">
                         <i data-lucide="{{ feature.icon }}" class="w-4 h-4 shrink-0"></i>
-                        {{ feature.text }}
+                        {{ feat_text }}
                     </li>
                     {% endfor %}
                 </ul>
@@ -78,14 +99,15 @@
 
             <!-- Text -->
             <div class="lg:col-span-5 space-y-5 lg:pt-4 order-2 lg:order-1">
-                <span class="text-clay font-bold uppercase tracking-widest text-xs">{{ exterior.number }} · {{ exterior.label }}</span>
-                <h3 class="font-serif text-4xl text-earth leading-tight">{{ exterior.title }}</h3>
-                <p class="text-gray-500 leading-loose text-sm">{{ exterior.description }}</p>
+                <span class="text-clay font-bold uppercase tracking-widest text-xs">{{ exterior.number }} · {{ exterior_label }}</span>
+                <h3 class="font-serif text-4xl text-earth leading-tight">{{ exterior_title }}</h3>
+                <p class="text-gray-500 leading-loose text-sm">{{ exterior_desc }}</p>
                 <ul class="space-y-3 text-sm text-leaf font-medium">
                     {% for feature in exterior.features %}
+                    {% if site.active_lang == 'en' %}{% assign feat_text = feature.text_en | default: feature.text %}{% else %}{% assign feat_text = feature.text %}{% endif %}
                     <li class="flex items-center gap-3">
                         <i data-lucide="{{ feature.icon }}" class="w-4 h-4 shrink-0"></i>
-                        {{ feature.text }}
+                        {{ feat_text }}
                     </li>
                     {% endfor %}
                 </ul>
@@ -94,7 +116,7 @@
             <!-- Main photo -->
             <div class="lg:col-span-7 order-1 lg:order-2">
                 {% assign img_src = exterior.image | remove_first: "/" %}
-                {% picture content {{ img_src }} alt="{{ exterior.image_alt }}" class="w-full h-full object-cover hard-shadow" loading="lazy" decoding="async" --picture class="block w-full h-72 lg:h-full" %}
+                {% picture content {{ img_src }} alt="{{ exterior_alt }}" class="w-full h-full object-cover hard-shadow" loading="lazy" decoding="async" --picture class="block w-full h-72 lg:h-full" %}
             </div>
 
         </div>
@@ -104,14 +126,15 @@
     <div id="amenities" class="bg-earth">
         <div class="max-w-7xl mx-auto px-6 py-20">
             <div class="mb-12 sr">
-                <span class="text-clay font-bold uppercase tracking-widest text-xs">Ce qui est inclus</span>
-                <h3 class="font-serif text-3xl md:text-4xl text-white mt-2">Équipements</h3>
+                <span class="text-clay font-bold uppercase tracking-widest text-xs">{{ t.presentation.amenities_eyebrow }}</span>
+                <h3 class="font-serif text-3xl md:text-4xl text-white mt-2">{{ t.presentation.amenities_heading }}</h3>
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 sr">
                 {% for a in p.amenities %}
+                {% if site.active_lang == 'en' %}{% assign a_label = a.label_en | default: a.label %}{% else %}{% assign a_label = a.label %}{% endif %}
                 <div class="flex items-center gap-3 py-4 border-b border-white/10 text-white/75 text-sm font-medium">
                     <i data-lucide="{{ a.icon }}" class="w-4 h-4 text-clay shrink-0"></i>
-                    {{ a.label }}
+                    {{ a_label }}
                 </div>
                 {% endfor %}
             </div>

@@ -2,11 +2,14 @@
   "name": "holiday-rental-template",
   "private": true,
   "scripts": {
+    "build:css": "tailwindcss -i ./assets/css/input.css -o ./assets/css/tailwind.css --minify",
+    "watch:css": "tailwindcss -i ./assets/css/input.css -o ./assets/css/tailwind.css --watch",
     "dev": "wrangler pages dev _site",
     "deploy:secrets": "wrangler pages secret bulk secrets.json --project-name holiday-rental-template",
     "admin-url": "node scripts/admin-url.js"
   },
   "devDependencies": {
+    "tailwindcss": "^3",
     "wrangler": "^4.68.1"
   }
 }

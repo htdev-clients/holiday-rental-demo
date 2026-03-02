@@ -1,14 +1,36 @@
-{% if page.url == '/' %}{% assign hp = '' %}{% assign logo_href = '#' %}{% else %}{% assign hp = '/' %}{% assign logo_href = '/' %}{% endif %}
+{% assign t = site.data.i18n[site.active_lang] %}
+{% assign home_url = '/' %}
+{% if site.active_lang == 'en' %}{% assign home_url = '/en/' %}{% endif %}
+{% if page.url == home_url %}
+  {% assign hp = '' %}
+  {% assign logo_href = '#' %}
+{% else %}
+  {% assign hp = home_url %}
+  {% assign logo_href = home_url %}
+{% endif %}
+{% if site.active_lang == 'en' %}
+  {% assign switch_to_fr = page.url | remove_first: '/en' %}
+  {% assign switch_to_en = page.url %}
+{% else %}
+  {% assign switch_to_fr = page.url %}
+  {% assign switch_to_en = '/en' | append: page.url %}
+{% endif %}
+
 <!-- ── Mobile Menu Overlay ── -->
 <div id="mobile-menu" class="fixed inset-0 z-[60] bg-earth/97 backdrop-blur-md flex flex-col justify-center items-center gap-8 menu-hidden">
     <button id="close-menu-btn" class="absolute top-6 right-6 text-white hover:text-clay transition-colors">
         <i data-lucide="x" class="w-10 h-10"></i>
     </button>
-    <a href="{{ hp }}#presentation" class="mobile-link font-serif text-3xl text-white hover:text-clay italic transition-colors">Le Chalet</a>
-    <a href="{{ hp }}#amenities"    class="mobile-link font-serif text-3xl text-white hover:text-clay italic transition-colors">Équipements</a>
-    <a href="{{ hp }}#gallery"      class="mobile-link font-serif text-3xl text-white hover:text-clay italic transition-colors">Galerie</a>
-    <a href="{{ hp }}#booking"      class="mobile-link font-serif text-3xl text-white hover:text-clay italic transition-colors">Disponibilités</a>
-    <a href="{{ hp }}#booking"      class="mobile-link mt-4 px-8 py-3 bg-clay text-white font-bold uppercase tracking-widest text-sm hover:bg-white hover:text-earth transition-colors">Réserver</a>
+    <a href="{{ hp }}#presentation" class="mobile-link font-serif text-3xl text-white hover:text-clay italic transition-colors">{{ t.nav.chalet }}</a>
+    <a href="{{ hp }}#amenities"    class="mobile-link font-serif text-3xl text-white hover:text-clay italic transition-colors">{{ t.nav.amenities }}</a>
+    <a href="{{ hp }}#gallery"      class="mobile-link font-serif text-3xl text-white hover:text-clay italic transition-colors">{{ t.nav.gallery }}</a>
+    <a href="{{ hp }}#booking"      class="mobile-link font-serif text-3xl text-white hover:text-clay italic transition-colors">{{ t.nav.availability }}</a>
+    <a href="{{ hp }}#booking"      class="mobile-link mt-4 px-8 py-3 bg-clay text-white font-bold uppercase tracking-widest text-sm hover:bg-white hover:text-earth transition-colors">{{ t.nav.book }}</a>
+    <div class="flex items-center gap-3 text-sm font-bold uppercase tracking-widest mt-2">
+        <a href="{{ switch_to_fr }}" class="{% if site.active_lang == 'fr' %}text-clay{% else %}text-white/50 hover:text-white{% endif %} transition-colors">FR</a>
+        <span class="text-white/20">|</span>
+        <a href="{{ switch_to_en }}" class="{% if site.active_lang == 'en' %}text-clay{% else %}text-white/50 hover:text-white{% endif %} transition-colors">EN</a>
+    </div>
 </div>
 
 <!-- ── Main Nav ── -->
@@ -18,17 +40,24 @@
     </a>
 
     <div class="hidden md:flex gap-8 text-white text-xs font-semibold tracking-widest uppercase drop-shadow-sm">
-        <a href="{{ hp }}#presentation" class="hover:text-clay transition-colors">Le Chalet</a>
-        <a href="{{ hp }}#amenities"    class="hover:text-clay transition-colors">Équipements</a>
-        <a href="{{ hp }}#gallery"      class="hover:text-clay transition-colors">Galerie</a>
-        <a href="{{ hp }}#booking"      class="hover:text-clay transition-colors">Disponibilités</a>
+        <a href="{{ hp }}#presentation" class="hover:text-clay transition-colors">{{ t.nav.chalet }}</a>
+        <a href="{{ hp }}#amenities"    class="hover:text-clay transition-colors">{{ t.nav.amenities }}</a>
+        <a href="{{ hp }}#gallery"      class="hover:text-clay transition-colors">{{ t.nav.gallery }}</a>
+        <a href="{{ hp }}#booking"      class="hover:text-clay transition-colors">{{ t.nav.availability }}</a>
     </div>
 
-    <a href="{{ hp }}#booking" class="hidden md:block bg-clay text-white px-6 py-2 text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-earth transition-colors shadow-lg">
-        Réserver
-    </a>
+    <div class="hidden md:flex items-center gap-4">
+        <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest">
+            <a href="{{ switch_to_fr }}" class="{% if site.active_lang == 'fr' %}text-clay{% else %}text-white/50 hover:text-white{% endif %} transition-colors drop-shadow-sm">FR</a>
+            <span class="text-white/30">|</span>
+            <a href="{{ switch_to_en }}" class="{% if site.active_lang == 'en' %}text-clay{% else %}text-white/50 hover:text-white{% endif %} transition-colors drop-shadow-sm">EN</a>
+        </div>
+        <a href="{{ hp }}#booking" class="bg-clay text-white px-6 py-2 text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-earth transition-colors shadow-lg">
+            {{ t.nav.book }}
+        </a>
+    </div>
 
-    <button id="open-menu-btn" class="md:hidden text-white drop-shadow-md p-2 -mr-2" aria-label="Ouvrir le menu">
+    <button id="open-menu-btn" class="md:hidden text-white drop-shadow-md p-2 -mr-2" aria-label="{{ t.nav.open_menu }}">
         <i data-lucide="menu" class="w-8 h-8"></i>
     </button>
 </nav>

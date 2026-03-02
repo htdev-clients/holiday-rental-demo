@@ -1,0 +1,95 @@
+nav:
+  chalet:      "The Chalet"
+  amenities:   "Amenities"
+  gallery:     "Gallery"
+  availability: "Availability"
+  book:        "Book"
+  open_menu:   "Open menu"
+
+hero:
+  cta_check:   "Check availability"
+  cta_discover: "Discover the place"
+  scroll:      "Scroll"
+
+presentation:
+  heading_line1:    "A chalet"
+  heading_line2:    "in the Ardennes"
+  stat_guests:      "Guests"
+  stat_bedrooms:    "Bedrooms"
+  stat_area:        "m² floor area"
+  stat_land:        "Private land"
+  stat_per_night:   "Per night"
+  amenities_eyebrow: "What's included"
+  amenities_heading: "Amenities"
+
+gallery:
+  eyebrow: "Visual exploration"
+  heading: "Gallery"
+
+booking:
+  eyebrow:       "Book direct"
+  heading_line1: "Book"
+  heading_line2: "your stay"
+  step1_title:   "Select your dates"
+  step1_desc:    "Click your check-in date, then your check-out date."
+  step2_title:   "Fill in the form"
+  step2_desc:    "Your contact details and number of guests."
+  step3_title:   "Confirmation within HOURSh"
+  step3_desc:    "The owner will confirm and send you the payment link."
+  legend_available: "Available"
+  legend_selected:  "Selected"
+  price_prompt:     "Select your dates"
+  label_checkin:    "Check-in"
+  label_checkout:   "Check-out"
+  label_guests:     "Number of guests"
+  guests_placeholder: "Select"
+  guest_singular:   "person"
+  guest_plural:     "people"
+  label_firstname:  "First name"
+  label_lastname:   "Last name"
+  label_email:      "Email"
+  label_phone:      "Phone"
+  label_message:    "Message"
+  message_placeholder: "Special requests, pets, allergies..."
+  cgv_prefix:       "I have read and accept the"
+  cgv_link_text:    "General Terms & Conditions"
+  cgv_middle:       "and the"
+  privacy_link_text: "Privacy Policy"
+  form_error:       "Please fill in all required fields."
+  submit:           "Send my request"
+  secure_note:      "Data transmitted securely"
+  success_title:    "Request sent!"
+  success_msg:      "Thank you for your request. The owner will review it and send you a secure payment link within HOURSh."
+  spam_note:        "Please check your spam folder if you do not receive an email."
+
+footer:
+  address_heading: "Address"
+  view_map:        "View on map"
+  contact_heading: "Contact"
+  book_cta:        "Make a booking"
+  rights:          "All rights reserved"
+  cgv:             "T&Cs"
+  privacy:         "Privacy policy"
+  cookies:         "Cookies"
+
+cookie:
+  text:       "This site uses essential technical cookies required for its operation. No tracking cookies are placed without your consent."
+  learn_more: "Learn more"
+  decline:    "Decline"
+  accept:     "Accept"
+  aria_label: "Cookie settings"
+
+legal:
+  back: "Back to home"
+
+page_404:
+  eyebrow:     "Error 404"
+  heading:     "Page not found"
+  description: "The page you are looking for does not exist or has been moved. Return to the homepage to discover the chalet."
+  cta:         "Back to home"
+
+confirmation:
+  heading:           "Booking confirmed"
+  payment_received:  "Your payment has been received."
+  detail:            "A confirmation email has been sent to you with all the details of your stay. The owner will contact you shortly regarding check-in arrangements."
+  cta:               "Back to home"

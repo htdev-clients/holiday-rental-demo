@@ -1,4 +1,5 @@
 import { signHmac, sendEmail, jsonError, escapeHtml } from '../_shared/utils.js';
+import { t as emailT } from '../_shared/email-translations.js';
 
 /**
  * POST /api/booking
@@ -44,6 +45,9 @@ export async function onRequestPost(context) {
     return jsonError('Nombre de voyageurs invalide.', 400);
   }
 
+  // Sanitise and validate lang — only accept known values
+  const lang = data.lang === 'en' ? 'en' : 'fr';
+
   // Rate limiting: max 3 pending bookings per email in the last 24 hours
   const recentCount = await env.DB
     .prepare(`SELECT COUNT(*) AS n FROM bookings
@@ -65,15 +69,16 @@ export async function onRequestPost(context) {
   try {
     await env.DB.prepare(`
       INSERT INTO bookings
-        (id, property_id, status, checkin, checkout, guests, firstname, lastname, email, phone, message)
-      VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?)
+        (id, property_id, status, checkin, checkout, guests, firstname, lastname, email, phone, message, lang)
+      VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `)
     .bind(
       id, env.PROPERTY_ID,
       checkin, checkout, guestsInt,
       firstname.trim(), lastname.trim(), email.trim(),
       data.phone?.trim() || null,
-      data.message?.trim() || null
+      data.message?.trim() || null,
+      lang
     )
     .run();
   } catch (err) {
@@ -81,7 +86,7 @@ export async function onRequestPost(context) {
     return jsonError('Erreur serveur. Veuillez réessayer.', 500);
   }
 
-  // Email owner — log on failure (booking is in D1, visible in admin dashboard)
+  // Email owner (always French) — log on failure
   const approveUrl = `${env.SITE_URL}/api/approve?id=${id}&token=${token}`;
   try {
     await sendEmail(env.RESEND_API_KEY, {
@@ -94,13 +99,14 @@ export async function onRequestPost(context) {
     console.error('[booking] Failed to notify owner:', emailErr);
   }
 
-  // Email guest acknowledgment — best effort
+  // Email guest acknowledgment (in guest's language) — best effort
+  const T = emailT(lang);
   try {
     await sendEmail(env.RESEND_API_KEY, {
       from: env.FROM_EMAIL,
       to: email.trim(),
-      subject: `Votre demande de réservation — ${propertyName}`,
-      html: guestAcknowledgmentHtml({ firstname, checkin, checkout, nights, guests, propertyName, ttlHours }),
+      subject: T.ack_subject(propertyName),
+      html: guestAcknowledgmentHtml({ firstname, checkin, checkout, nights, guests, propertyName, ttlHours, T }),
     });
   } catch (emailErr) {
     console.error('[booking] Failed to send guest acknowledgment:', emailErr);
@@ -112,18 +118,18 @@ export async function onRequestPost(context) {
   });
 }
 
-function guestAcknowledgmentHtml({ firstname, checkin, checkout, nights, guests, propertyName, ttlHours }) {
+function guestAcknowledgmentHtml({ firstname, checkin, checkout, nights, guests, propertyName, ttlHours, T }) {
   return `
-<h2 style="color:#2C2520;font-family:Georgia,serif">Votre demande a bien été reçue</h2>
-<p style="font-family:sans-serif">Bonjour ${escapeHtml(firstname)},</p>
-<p style="font-family:sans-serif">Nous avons bien reçu votre demande de réservation pour ${escapeHtml(propertyName)}. Le propriétaire vous répondra dans les <strong>${escapeHtml(ttlHours)}h</strong>.</p>
+<h2 style="color:#2C2520;font-family:Georgia,serif">${T.ack_heading}</h2>
+<p style="font-family:sans-serif">${T.ack_greeting(escapeHtml(firstname))}</p>
+<p style="font-family:sans-serif">${T.ack_body(escapeHtml(propertyName), escapeHtml(String(ttlHours)))}</p>
 <table style="border-collapse:collapse;font-family:sans-serif;font-size:14px;margin:20px 0">
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Arrivée</td><td style="padding:6px 0">${escapeHtml(checkin)}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Départ</td><td style="padding:6px 0">${escapeHtml(checkout)}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Durée</td><td style="padding:6px 0">${nights} nuit${nights > 1 ? 's' : ''}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${escapeHtml(guests)}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.ack_col_checkin}</td><td style="padding:6px 0">${escapeHtml(checkin)}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.ack_col_checkout}</td><td style="padding:6px 0">${escapeHtml(checkout)}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.ack_col_nights}</td><td style="padding:6px 0">${T.ack_nights(nights)}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.ack_col_guests}</td><td style="padding:6px 0">${escapeHtml(String(guests))}</td></tr>
 </table>
-<p style="font-family:sans-serif;color:#999;font-size:12px;margin-top:16px">Cet email est un accusé de réception automatique — aucune réservation n'est encore confirmée.</p>
+<p style="font-family:sans-serif;color:#999;font-size:12px;margin-top:16px">${T.ack_footer}</p>
 `;
 }
 
@@ -137,7 +143,7 @@ function ownerEmailHtml({ firstname, lastname, email, phone, checkin, checkout, 
   <tr><td style="padding:6px 16px 6px 0;color:#888">Arrivée</td><td style="padding:6px 0">${escapeHtml(checkin)}</td></tr>
   <tr><td style="padding:6px 16px 6px 0;color:#888">Départ</td><td style="padding:6px 0">${escapeHtml(checkout)}</td></tr>
   <tr><td style="padding:6px 16px 6px 0;color:#888">Durée</td><td style="padding:6px 0">${nights} nuit${nights > 1 ? 's' : ''}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${escapeHtml(guests)}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${escapeHtml(String(guests))}</td></tr>
   ${message ? `<tr><td style="padding:6px 16px 6px 0;color:#888;vertical-align:top">Message</td><td style="padding:6px 0">${escapeHtml(message)}</td></tr>` : ''}
 </table>
 <p style="margin-top:24px;padding:14px 16px;background:#FEF3C7;border-left:4px solid #D97706;font-family:sans-serif;font-size:14px;color:#92400E">

@@ -1,22 +1,25 @@
+{% assign t = site.data.i18n[site.active_lang] %}
+{% assign cookies_path = '/cookies' %}
+{% if site.active_lang == 'en' %}{% assign cookies_path = '/en/cookies' %}{% endif %}
 <!-- ── Cookie Consent Banner ── -->
 <div id="cookie-banner"
      class="fixed bottom-0 left-0 right-0 z-[100] bg-earth border-t border-white/10 shadow-2xl"
      style="display:none"
      role="dialog"
-     aria-label="Gestion des cookies">
+     aria-label="{{ t.cookie.aria_label }}">
     <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
         <p class="text-xs text-white/70 leading-relaxed max-w-2xl font-sans">
-            Ce site utilise des cookies techniques essentiels à son fonctionnement. Aucun cookie de traçage n'est déposé sans votre accord.
-            <a href="/cookies" class="text-clay underline hover:text-white transition-colors ml-1">En savoir plus</a>
+            {{ t.cookie.text }}
+            <a href="{{ cookies_path }}" class="text-clay underline hover:text-white transition-colors ml-1">{{ t.cookie.learn_more }}</a>
         </p>
         <div class="flex gap-3 flex-shrink-0">
             <button id="cookie-decline"
                     class="px-5 py-2 text-xs font-bold uppercase tracking-widest border border-white/30 text-white/70 hover:text-white hover:border-white transition-colors">
-                Refuser
+                {{ t.cookie.decline }}
             </button>
             <button id="cookie-accept"
                     class="px-5 py-2 text-xs font-bold uppercase tracking-widest bg-clay text-white hover:bg-white hover:text-earth transition-colors">
-                Accepter
+                {{ t.cookie.accept }}
             </button>
         </div>
     </div>

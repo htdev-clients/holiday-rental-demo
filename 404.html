@@ -1,25 +1,27 @@
 ---
 layout: default
 title: Page introuvable
+title_en: Page not found
 sitemap: false
 permalink: /404.html
 ---
+{% assign t = site.data.i18n[site.active_lang] %}
+{% assign home_url = '/' %}{% if site.active_lang == 'en' %}{% assign home_url = '/en/' %}{% endif %}
 {% include nav.html %}
 
 <main class="min-h-screen bg-paper flex items-center justify-center px-6">
   <div class="text-center max-w-lg mx-auto py-24">
 
-    <p class="font-sans text-clay text-sm tracking-widest uppercase mb-6">Erreur 404</p>
+    <p class="font-sans text-clay text-sm tracking-widest uppercase mb-6">{{ t.page_404.eyebrow }}</p>
 
-    <h1 class="font-serif text-5xl text-earth mb-6">Page introuvable</h1>
+    <h1 class="font-serif text-5xl text-earth mb-6">{{ t.page_404.heading }}</h1>
 
     <p class="font-sans text-stone-600 leading-relaxed mb-10">
-      La page que vous cherchez n'existe pas ou a été déplacée.<br>
-      Revenez à l'accueil pour découvrir le chalet.
+      {{ t.page_404.description }}
     </p>
 
-    <a href="/" class="inline-block bg-clay text-white font-sans font-semibold text-sm tracking-widest uppercase px-8 py-4 hover:bg-earth transition-colors duration-200">
-      Retour à l'accueil
+    <a href="{{ home_url }}" class="inline-block bg-clay text-white font-sans font-semibold text-sm tracking-widest uppercase px-8 py-4 hover:bg-earth transition-colors duration-200">
+      {{ t.page_404.cta }}
     </a>
 
   </div>

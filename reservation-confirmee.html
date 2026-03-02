@@ -1,8 +1,11 @@
 ---
 layout: default
 title: Réservation confirmée
+title_en: Booking confirmed
 sitemap: false
 ---
+{% assign t = site.data.i18n[site.active_lang] %}
+{% assign home_url = '/' %}{% if site.active_lang == 'en' %}{% assign home_url = '/en/' %}{% endif %}
 {% include nav.html %}
 
 <main class="min-h-screen bg-paper flex items-center justify-center px-6">
@@ -12,18 +15,17 @@ sitemap: false
       <i data-lucide="check" class="w-10 h-10 text-white"></i>
     </div>
 
-    <h1 class="font-serif text-4xl text-earth mb-4">Réservation confirmée</h1>
+    <h1 class="font-serif text-4xl text-earth mb-4">{{ t.confirmation.heading }}</h1>
 
     <p class="font-sans text-stone-600 text-lg leading-relaxed mb-2">
-      Votre paiement a bien été reçu.
+      {{ t.confirmation.payment_received }}
     </p>
     <p class="font-sans text-stone-600 leading-relaxed mb-10">
-      Un email de confirmation vous a été envoyé avec tous les détails de votre séjour.
-      Le propriétaire vous contactera prochainement pour les modalités d'arrivée.
+      {{ t.confirmation.detail }}
     </p>
 
-    <a href="/" class="inline-block bg-clay text-white font-sans font-semibold text-sm tracking-widest uppercase px-8 py-4 hover:bg-earth transition-colors duration-200">
-      Retour à l'accueil
+    <a href="{{ home_url }}" class="inline-block bg-clay text-white font-sans font-semibold text-sm tracking-widest uppercase px-8 py-4 hover:bg-earth transition-colors duration-200">
+      {{ t.confirmation.cta }}
     </a>
 
   </div>

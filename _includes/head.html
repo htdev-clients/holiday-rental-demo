@@ -4,20 +4,26 @@
     <meta name="theme-color" content="#2C2520">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
-    <title>{% if page.title %}{{ page.title }} | {{ site.data.property.name }}{% else %}{{ site.data.property.name }} | {{ site.data.property.tagline }}{% endif %}</title>
-    <meta name="description" content="{{ site.data.property.description }}">
+    {% assign p = site.data.property %}
+    {% assign meta_desc = p.description[site.active_lang] | default: p.description.fr %}
+    {% assign og_locale = 'fr_BE' %}{% if site.active_lang == 'en' %}{% assign og_locale = 'en_GB' %}{% endif %}
+    {% assign page_title = page.title %}{% if site.active_lang == 'en' and page.title_en %}{% assign page_title = page.title_en %}{% endif %}
+    <title>{% if page_title %}{{ page_title }} | {{ p.name }}{% else %}{{ p.name }} | {{ p.tagline[site.active_lang] }}{% endif %}</title>
+    <meta name="description" content="{{ meta_desc }}">
     <link rel="canonical" href="{{ site.url }}{{ page.url }}">
-    <meta property="og:title"       content="{% if page.title %}{{ page.title }} | {{ site.data.property.name }}{% else %}{{ site.data.property.name }}{% endif %}">
-    <meta property="og:description" content="{{ site.data.property.description }}">
-    <meta property="og:image"       content="{{ site.url }}{{ site.data.property.hero_image }}">
+    <meta property="og:title"       content="{% if page_title %}{{ page_title }} | {{ p.name }}{% else %}{{ p.name }}{% endif %}">
+    <meta property="og:description" content="{{ meta_desc }}">
+    <meta property="og:image"       content="{{ site.url }}{{ p.hero_image }}">
     <meta property="og:type"        content="website">
     <meta property="og:url"         content="{{ site.url }}{{ page.url }}">
-    <meta property="og:site_name"   content="{{ site.data.property.name }}">
-    <meta property="og:locale"      content="fr_BE">
+    <meta property="og:site_name"   content="{{ p.name }}">
+    <meta property="og:locale"      content="{{ og_locale }}">
     <meta name="twitter:card"        content="summary_large_image">
-    <meta name="twitter:title"       content="{% if page.title %}{{ page.title }} | {{ site.data.property.name }}{% else %}{{ site.data.property.name }}{% endif %}">
-    <meta name="twitter:description" content="{{ site.data.property.description }}">
-    <meta name="twitter:image"       content="{{ site.url }}{{ site.data.property.hero_image }}">
+    <meta name="twitter:title"       content="{% if page_title %}{{ page_title }} | {{ p.name }}{% else %}{{ p.name }}{% endif %}">
+    <meta name="twitter:description" content="{{ meta_desc }}">
+    <meta name="twitter:image"       content="{{ site.url }}{{ p.hero_image }}">
+
+    <link rel="stylesheet" href="/assets/css/tailwind.css">
 
     <style>
         /* ── Self-hosted fonts ── */
@@ -72,34 +78,6 @@
     </style>
 
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <script>
-        tailwind.config = {
-            future: {
-                hoverOnlyWhenSupported: true,
-            },
-            theme: {
-                extend: {
-                    colors: {
-                        earth: '#2C2520',
-                        clay:  '#D6A87C',
-                        leaf:  '#4A5D44',
-                        paper: '#F2F0E9',
-                        stone: '#E5E2D9',
-                        cream: '#FAF8F3',
-                    },
-                    fontFamily: {
-                        serif: ['Cormorant Garamond', 'serif'],
-                        sans:  ['Montserrat', 'sans-serif'],
-                    },
-                    screens: {
-                        pointer: { raw: '(hover: hover)' },
-                    }
-                }
-            }
-        }
-    </script>
 
     <style>
         html { scroll-behavior: smooth; }
@@ -328,14 +306,14 @@
     </style>
     {% endif %}
 
-    {% if page.url == "/" %}
-    {% assign p = site.data.property %}
+    {% assign home_url = '/' %}{% if site.active_lang == 'en' %}{% assign home_url = '/en/' %}{% endif %}
+    {% if page.url == home_url %}
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "LodgingBusiness",
       "name": "{{ p.name }}",
-      "description": "{{ p.description }}",
+      "description": "{{ meta_desc }}",
       "url": "{{ site.url }}",
       "telephone": "{{ p.contact.phone | remove: ' ' }}",
       "email": "{{ p.contact.email }}",

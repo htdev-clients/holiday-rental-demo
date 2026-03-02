@@ -1,11 +1,18 @@
 {% assign p = site.data.property %}
+{% assign t = site.data.i18n[site.active_lang] %}
+{% assign cgv_path = '/cgv' %}
+{% assign privacy_path = '/confidentialite' %}
+{% if site.active_lang == 'en' %}
+  {% assign cgv_path = '/en/cgv' %}
+  {% assign privacy_path = '/en/confidentialite' %}
+{% endif %}
 <section id="booking" class="py-24 bg-stone">
     <div class="max-w-7xl mx-auto px-6">
 
         <div class="text-center mb-16 sr">
-            <span class="text-clay font-bold uppercase tracking-widest text-xs">Réservation directe</span>
+            <span class="text-clay font-bold uppercase tracking-widest text-xs">{{ t.booking.eyebrow }}</span>
             <h2 class="font-serif text-4xl md:text-5xl text-earth mt-3">
-                Réservez <em class="text-clay">votre séjour</em>
+                {{ t.booking.heading_line1 }} <em class="text-clay">{{ t.booking.heading_line2 }}</em>
             </h2>
         </div>
 
@@ -19,22 +26,22 @@
                     <div class="flex gap-4 items-start">
                         <div class="w-7 h-7 shrink-0 bg-clay text-white flex items-center justify-center text-xs font-bold rounded-full">1</div>
                         <div>
-                            <p class="font-semibold text-earth text-sm">Sélectionnez vos dates</p>
-                            <p class="text-gray-600 text-sm mt-1">Cliquez sur votre date d'arrivée, puis sur votre date de départ.</p>
+                            <p class="font-semibold text-earth text-sm">{{ t.booking.step1_title }}</p>
+                            <p class="text-gray-600 text-sm mt-1">{{ t.booking.step1_desc }}</p>
                         </div>
                     </div>
                     <div class="flex gap-4 items-start">
                         <div class="w-7 h-7 shrink-0 bg-clay text-white flex items-center justify-center text-xs font-bold rounded-full">2</div>
                         <div>
-                            <p class="font-semibold text-earth text-sm">Complétez le formulaire</p>
-                            <p class="text-gray-600 text-sm mt-1">Vos coordonnées et le nombre de voyageurs.</p>
+                            <p class="font-semibold text-earth text-sm">{{ t.booking.step2_title }}</p>
+                            <p class="text-gray-600 text-sm mt-1">{{ t.booking.step2_desc }}</p>
                         </div>
                     </div>
                     <div class="flex gap-4 items-start">
                         <div class="w-7 h-7 shrink-0 bg-clay text-white flex items-center justify-center text-xs font-bold rounded-full">3</div>
                         <div>
-                            <p class="font-semibold text-earth text-sm">Confirmation sous {{ p.booking.response_hours }}h</p>
-                            <p class="text-gray-600 text-sm mt-1">Le propriétaire confirme et vous envoie le lien de paiement.</p>
+                            <p class="font-semibold text-earth text-sm">{{ t.booking.step3_title | replace: 'HOURS', p.booking.response_hours }}</p>
+                            <p class="text-gray-600 text-sm mt-1">{{ t.booking.step3_desc }}</p>
                         </div>
                     </div>
                 </div>
@@ -44,11 +51,11 @@
                     <div class="flex gap-6 mb-4 text-xs uppercase tracking-widest font-semibold">
                         <div class="flex items-center gap-2">
                             <div class="w-4 h-4 rounded-sm bg-paper border border-earth/20"></div>
-                            <span>Disponible</span>
+                            <span>{{ t.booking.legend_available }}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <div class="w-4 h-4 rounded-sm bg-clay"></div>
-                            <span>Sélectionné</span>
+                            <span>{{ t.booking.legend_selected }}</span>
                         </div>
                     </div>
 
@@ -67,7 +74,7 @@
                                     <p id="price-prompt"
                                        class="text-xl text-earth/70 font-serif italic leading-relaxed transition-opacity duration-300"
                                        style="grid-area:s">
-                                        Sélectionnez vos dates
+                                        {{ t.booking.price_prompt }}
                                     </p>
                                     <div id="price-summary-row"
                                          class="opacity-0 pointer-events-none transition-opacity duration-300"
@@ -85,7 +92,7 @@
                             <div class="mt-5 pt-4 border-t border-stone">
                                 <p id="price-note"
                                    class="text-xs text-earth/40 opacity-0 pointer-events-none transition-opacity duration-300">
-                                    * {{ p.pricing.note }}
+                                    * {{ p.pricing.note[site.active_lang] }}
                                 </p>
                             </div>
 
@@ -101,65 +108,68 @@
                 <div id="booking-form-container" class="flex flex-col flex-1">
                     <form id="booking-form" class="flex flex-col flex-1 bg-cream px-8 py-10 border border-stone" novalidate>
 
+                        <!-- Hidden lang field -->
+                        <input type="hidden" name="lang" value="{{ site.active_lang }}">
+
                         <!-- Fields -->
                         <div class="space-y-5">
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">Arrivée *</label>
+                                    <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">{{ t.booking.label_checkin }} *</label>
                                     <input type="date" name="checkin" id="checkin" required class="form-input">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">Départ *</label>
+                                    <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">{{ t.booking.label_checkout }} *</label>
                                     <input type="date" name="checkout" id="checkout" required class="form-input">
                                 </div>
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">Nombre de voyageurs *</label>
+                                <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">{{ t.booking.label_guests }} *</label>
                                 <select name="guests" required class="form-input">
-                                    <option value="" disabled selected>Sélectionner</option>
+                                    <option value="" disabled selected>{{ t.booking.guests_placeholder }}</option>
                                     {% for i in (1..p.capacity.guests) %}
-                                    <option value="{{ i }}">{{ i }} personne{% if i > 1 %}s{% endif %}</option>
+                                    <option value="{{ i }}">{{ i }} {% if i > 1 %}{{ t.booking.guest_plural }}{% else %}{{ t.booking.guest_singular }}{% endif %}</option>
                                     {% endfor %}
                                 </select>
                             </div>
 
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">Prénom *</label>
+                                    <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">{{ t.booking.label_firstname }} *</label>
                                     <input type="text" name="firstname" required placeholder="Marie" class="form-input">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">Nom *</label>
+                                    <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">{{ t.booking.label_lastname }} *</label>
                                     <input type="text" name="lastname" required placeholder="Dupont" class="form-input">
                                 </div>
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">Email *</label>
+                                <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">{{ t.booking.label_email }} *</label>
                                 <input type="email" name="email" required placeholder="marie.dupont@gmail.com" class="form-input">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">Téléphone</label>
+                                <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">{{ t.booking.label_phone }}</label>
                                 <input type="tel" name="phone" placeholder="+32 4XX XX XX XX" class="form-input">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">Message</label>
+                                <label class="block text-xs font-semibold uppercase tracking-widest text-earth mb-2">{{ t.booking.label_message }}</label>
                                 <textarea name="message" rows="3"
-                                    placeholder="Questions particulières, animaux de compagnie, allergies..."
+                                    placeholder="{{ t.booking.message_placeholder }}"
                                     class="form-input resize-none"></textarea>
                             </div>
 
                             <div class="flex items-start gap-3 pt-1">
                                 <input type="checkbox" name="cgv" id="cgv" required class="mt-1 w-4 h-4 accent-clay shrink-0">
                                 <label for="cgv" class="text-xs text-gray-500 leading-relaxed">
-                                    J'ai lu et j'accepte les
-                                    <a href="/cgv" class="text-clay underline hover:text-earth">Conditions Générales de Vente</a>
-                                    ainsi que la
-                                    <a href="/confidentialite" class="text-clay underline hover:text-earth">Politique de confidentialité</a>. *
+                                    {{ t.booking.cgv_prefix }}
+                                    <a href="{{ cgv_path }}" class="text-clay underline hover:text-earth">{{ t.booking.cgv_link_text }}</a>
+                                    {{ t.booking.cgv_middle }}
+                                    <a href="{{ privacy_path }}" class="text-clay underline hover:text-earth">{{ t.booking.privacy_link_text }}</a>. *
                                 </label>
                             </div>
 
@@ -170,16 +180,16 @@
 
                         <!-- CTA -->
                         <div class="space-y-3">
-                            <p id="form-error" class="text-red-500 text-xs hidden">Veuillez remplir tous les champs obligatoires.</p>
+                            <p id="form-error" class="text-red-500 text-xs hidden">{{ t.booking.form_error }}</p>
                             <button type="submit" id="submit-btn"
                                 class="w-full py-4 bg-clay text-white font-bold uppercase tracking-widest text-sm hover:bg-earth transition-colors flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
                                 disabled>
                                 <i data-lucide="send" class="w-4 h-4"></i>
-                                Envoyer ma demande
+                                {{ t.booking.submit }}
                             </button>
                             <p class="text-xs text-gray-400 text-center">
                                 <i data-lucide="lock" class="w-3 h-3 inline -mt-0.5 mr-1"></i>
-                                Données transmises de manière sécurisée
+                                {{ t.booking.secure_note }}
                             </p>
                         </div>
 
@@ -189,12 +199,11 @@
                 <!-- Success state -->
                 <div id="booking-success" class="flex-1 hidden bg-leaf/10 border border-leaf p-10 text-center flex flex-col items-center justify-center space-y-4">
                     <i data-lucide="check-circle-2" class="w-12 h-12 text-leaf mx-auto"></i>
-                    <h3 class="font-serif text-2xl text-earth">Demande envoyée !</h3>
+                    <h3 class="font-serif text-2xl text-earth">{{ t.booking.success_title }}</h3>
                     <p class="text-gray-600 text-sm leading-relaxed max-w-xs mx-auto">
-                        Merci pour votre demande. Le propriétaire l'examinera et vous enverra
-                        un lien de paiement sécurisé sous <strong>{{ p.booking.response_hours }}h</strong>.
+                        {{ t.booking.success_msg | replace: 'HOURS', p.booking.response_hours }}
                     </p>
-                    <p class="text-xs text-gray-400">Pensez à vérifier vos spams si vous ne recevez pas d'email.</p>
+                    <p class="text-xs text-gray-400">{{ t.booking.spam_note }}</p>
                 </div>
             </div>
 

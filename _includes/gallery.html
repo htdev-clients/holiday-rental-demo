@@ -1,8 +1,9 @@
+{% assign t = site.data.i18n[site.active_lang] %}
 <section id="gallery" class="py-24 bg-paper overflow-hidden">
     <div class="px-6 md:px-12 mb-12 flex justify-between items-end sr">
         <div>
-            <span class="text-clay font-bold uppercase tracking-widest text-xs">Exploration visuelle</span>
-            <h2 class="font-serif text-4xl md:text-5xl text-earth mt-2">Galerie</h2>
+            <span class="text-clay font-bold uppercase tracking-widest text-xs">{{ t.gallery.eyebrow }}</span>
+            <h2 class="font-serif text-4xl md:text-5xl text-earth mt-2">{{ t.gallery.heading }}</h2>
         </div>
         <div class="flex gap-3">
             <button onclick="scrollGallery('left')"
@@ -18,12 +19,19 @@
 
     <div id="gallery-container" class="flex gap-4 overflow-x-auto hide-scroll snap-x snap-mandatory px-6 md:px-12 pb-6">
         {% for image in site.data.property.gallery %}
+        {% if site.active_lang == 'en' %}
+          {% assign img_alt     = image.alt_en     | default: image.alt %}
+          {% assign img_caption = image.caption_en | default: image.caption %}
+        {% else %}
+          {% assign img_alt     = image.alt %}
+          {% assign img_caption = image.caption %}
+        {% endif %}
         <div class="snap-center shrink-0 w-[85vw] md:w-[38vw]">
             <div class="aspect-[4/3] overflow-hidden bg-earth">
                 {% assign gallery_src = image.url | remove_first: "/" %}
-                {% picture gallery {{ gallery_src }} alt="{{ image.alt }}" class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" loading="lazy" decoding="async" --picture class="block w-full h-full" %}
+                {% picture gallery {{ gallery_src }} alt="{{ img_alt }}" class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" loading="lazy" decoding="async" --picture class="block w-full h-full" %}
             </div>
-            <p class="font-serif text-xl italic text-earth mt-3 px-1">{{ image.caption }}</p>
+            <p class="font-serif text-xl italic text-earth mt-3 px-1">{{ img_caption }}</p>
         </div>
         {% endfor %}
     </div>

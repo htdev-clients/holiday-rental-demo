@@ -1,5 +1,6 @@
 ---
 layout: legal
+lang: fr
 title: Politique de Confidentialité
 permalink: /confidentialite/
 ---
@@ -10,7 +11,7 @@ permalink: /confidentialite/
 
 Les données personnelles collectées via ce site sont traitées par :
 
-**{{ site.data.property.contact.owner_name }}**, propriétaire de **{{ site.data.property.name }}** — {{ site.data.property.location.address_line1 }}, {{ site.data.property.location.address_line2 }}, {{ site.data.property.location.country }}
+**{{ site.data.property.contact.owner_name }}**, propriétaire de **{{ site.data.property.name }}** — {{ site.data.property.location.address_line1 }}, {{ site.data.property.location.address_line2 }}, {{ site.data.property.location.country.fr }}
 
 Contact : [{{ site.data.property.contact.email }}](mailto:{{ site.data.property.contact.email }})
 

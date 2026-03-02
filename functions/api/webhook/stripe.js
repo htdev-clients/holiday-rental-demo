@@ -1,4 +1,5 @@
 import { sendEmail, escapeHtml } from '../../_shared/utils.js';
+import { t as emailT } from '../../_shared/email-translations.js';
 
 /**
  * POST /api/webhook/stripe
@@ -43,14 +44,15 @@ export async function onRequestPost(context) {
     if (booking) {
       const nights = Math.round((new Date(booking.checkout) - new Date(booking.checkin)) / 86400000);
       const total  = session.amount_total / 100; // Stripe stores in cents
+      const T = emailT(booking.lang);
 
       try {
         await Promise.all([
           sendEmail(env.RESEND_API_KEY, {
             from:    env.FROM_EMAIL,
             to:      booking.email,
-            subject: `Confirmation de votre réservation — ${propertyName}`,
-            html:    guestConfirmationHtml({ booking, nights, total, propertyName }),
+            subject: T.conf_subject(propertyName),
+            html:    guestConfirmationHtml({ booking, nights, total, propertyName, T }),
           }),
           sendEmail(env.RESEND_API_KEY, {
             from:    env.FROM_EMAIL,
@@ -94,19 +96,19 @@ async function verifyStripeSignature(body, header, secret) {
   return hex === signature;
 }
 
-function guestConfirmationHtml({ booking, nights, total, propertyName }) {
+function guestConfirmationHtml({ booking, nights, total, propertyName, T }) {
   return `
-<h2 style="color:#4A5D44">Votre réservation est confirmée !</h2>
-<p style="font-family:sans-serif">Bonjour ${escapeHtml(booking.firstname)},</p>
-<p style="font-family:sans-serif">Votre paiement a bien été reçu. Votre séjour à ${escapeHtml(propertyName)} est confirmé.</p>
+<h2 style="color:#4A5D44">${T.conf_heading}</h2>
+<p style="font-family:sans-serif">${T.conf_greeting(escapeHtml(booking.firstname))}</p>
+<p style="font-family:sans-serif">${T.conf_body(escapeHtml(propertyName))}</p>
 <table style="border-collapse:collapse;font-family:sans-serif;font-size:14px">
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Arrivée</td><td style="padding:6px 0">${escapeHtml(booking.checkin)}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Départ</td><td style="padding:6px 0">${escapeHtml(booking.checkout)}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Durée</td><td style="padding:6px 0">${nights} nuit${nights > 1 ? 's' : ''}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${escapeHtml(booking.guests)}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Total payé</td><td style="padding:6px 0"><strong>${total.toLocaleString('fr-BE')} €</strong></td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.conf_col_checkin}</td><td style="padding:6px 0">${escapeHtml(booking.checkin)}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.conf_col_checkout}</td><td style="padding:6px 0">${escapeHtml(booking.checkout)}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.conf_col_nights}</td><td style="padding:6px 0">${T.conf_nights(nights)}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.conf_col_guests}</td><td style="padding:6px 0">${escapeHtml(String(booking.guests))}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.conf_col_total}</td><td style="padding:6px 0"><strong>${total.toLocaleString('fr-BE')} €</strong></td></tr>
 </table>
-<p style="font-family:sans-serif;margin-top:16px">Nous vous souhaitons un excellent séjour !</p>
+<p style="font-family:sans-serif;margin-top:16px">${T.conf_closing}</p>
 `;
 }
 
@@ -119,7 +121,7 @@ function ownerConfirmationHtml({ booking, nights, total }) {
   <tr><td style="padding:6px 16px 6px 0;color:#888">Arrivée</td><td style="padding:6px 0">${escapeHtml(booking.checkin)}</td></tr>
   <tr><td style="padding:6px 16px 6px 0;color:#888">Départ</td><td style="padding:6px 0">${escapeHtml(booking.checkout)}</td></tr>
   <tr><td style="padding:6px 16px 6px 0;color:#888">Durée</td><td style="padding:6px 0">${nights} nuit${nights > 1 ? 's' : ''}</td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${escapeHtml(booking.guests)}</td></tr>
+  <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${escapeHtml(String(booking.guests))}</td></tr>
   <tr><td style="padding:6px 16px 6px 0;color:#888">Total</td><td style="padding:6px 0"><strong>${total.toLocaleString('fr-BE')} €</strong></td></tr>
 </table>
 `;

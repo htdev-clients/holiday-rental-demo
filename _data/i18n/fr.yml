@@ -1,0 +1,95 @@
+nav:
+  chalet:      "Le Chalet"
+  amenities:   "Équipements"
+  gallery:     "Galerie"
+  availability: "Disponibilités"
+  book:        "Réserver"
+  open_menu:   "Ouvrir le menu"
+
+hero:
+  cta_check:   "Vérifier les disponibilités"
+  cta_discover: "Découvrir le lieu"
+  scroll:      "Défiler"
+
+presentation:
+  heading_line1:    "Un chalet"
+  heading_line2:    "dans les Ardennes"
+  stat_guests:      "Personnes"
+  stat_bedrooms:    "Chambres"
+  stat_area:        "m² habitables"
+  stat_land:        "Terrain privé"
+  stat_per_night:   "Par nuit"
+  amenities_eyebrow: "Ce qui est inclus"
+  amenities_heading: "Équipements"
+
+gallery:
+  eyebrow: "Exploration visuelle"
+  heading: "Galerie"
+
+booking:
+  eyebrow:       "Réservation directe"
+  heading_line1: "Réservez"
+  heading_line2: "votre séjour"
+  step1_title:   "Sélectionnez vos dates"
+  step1_desc:    "Cliquez sur votre date d'arrivée, puis sur votre date de départ."
+  step2_title:   "Complétez le formulaire"
+  step2_desc:    "Vos coordonnées et le nombre de voyageurs."
+  step3_title:   "Confirmation sous HOURSh"
+  step3_desc:    "Le propriétaire confirme et vous envoie le lien de paiement."
+  legend_available: "Disponible"
+  legend_selected:  "Sélectionné"
+  price_prompt:     "Sélectionnez vos dates"
+  label_checkin:    "Arrivée"
+  label_checkout:   "Départ"
+  label_guests:     "Nombre de voyageurs"
+  guests_placeholder: "Sélectionner"
+  guest_singular:   "personne"
+  guest_plural:     "personnes"
+  label_firstname:  "Prénom"
+  label_lastname:   "Nom"
+  label_email:      "Email"
+  label_phone:      "Téléphone"
+  label_message:    "Message"
+  message_placeholder: "Questions particulières, animaux de compagnie, allergies..."
+  cgv_prefix:       "J'ai lu et j'accepte les"
+  cgv_link_text:    "Conditions Générales de Vente"
+  cgv_middle:       "ainsi que la"
+  privacy_link_text: "Politique de confidentialité"
+  form_error:       "Veuillez remplir tous les champs obligatoires."
+  submit:           "Envoyer ma demande"
+  secure_note:      "Données transmises de manière sécurisée"
+  success_title:    "Demande envoyée !"
+  success_msg:      "Merci pour votre demande. Le propriétaire l'examinera et vous enverra un lien de paiement sécurisé sous HOURSh."
+  spam_note:        "Pensez à vérifier vos spams si vous ne recevez pas d'email."
+
+footer:
+  address_heading: "Adresse"
+  view_map:        "Voir sur la carte"
+  contact_heading: "Contact"
+  book_cta:        "Faire une réservation"
+  rights:          "Tous droits réservés"
+  cgv:             "CGV"
+  privacy:         "Politique de confidentialité"
+  cookies:         "Cookies"
+
+cookie:
+  text:       "Ce site utilise des cookies techniques essentiels à son fonctionnement. Aucun cookie de traçage n'est déposé sans votre accord."
+  learn_more: "En savoir plus"
+  decline:    "Refuser"
+  accept:     "Accepter"
+  aria_label: "Gestion des cookies"
+
+legal:
+  back: "Retour à l'accueil"
+
+page_404:
+  eyebrow:     "Erreur 404"
+  heading:     "Page introuvable"
+  description: "La page que vous cherchez n'existe pas ou a été déplacée. Revenez à l'accueil pour découvrir le chalet."
+  cta:         "Retour à l'accueil"
+
+confirmation:
+  heading:           "Réservation confirmée"
+  payment_received:  "Votre paiement a bien été reçu."
+  detail:            "Un email de confirmation vous a été envoyé avec tous les détails de votre séjour. Le propriétaire vous contactera prochainement pour les modalités d'arrivée."
+  cta:               "Retour à l'accueil"
