@@ -10,12 +10,23 @@
     {% assign page_title = page.title %}{% if site.active_lang == 'en' and page.title_en %}{% assign page_title = page.title_en %}{% endif %}
     <title>{% if page_title %}{{ page_title }} | {{ p.name }}{% else %}{{ p.name }} | {{ p.tagline[site.active_lang] }}{% endif %}</title>
     <meta name="description" content="{{ meta_desc }}">
+    {% if site.active_lang == 'en' %}
+    <link rel="canonical" href="{{ site.url }}/en{{ page.url }}">
+    {% else %}
     <link rel="canonical" href="{{ site.url }}{{ page.url }}">
+    {% endif %}
+    <link rel="alternate" hreflang="fr"        href="{{ site.url }}{{ page.url }}">
+    <link rel="alternate" hreflang="en"        href="{{ site.url }}/en{{ page.url }}">
+    <link rel="alternate" hreflang="x-default" href="{{ site.url }}{{ page.url }}">
     <meta property="og:title"       content="{% if page_title %}{{ page_title }} | {{ p.name }}{% else %}{{ p.name }}{% endif %}">
     <meta property="og:description" content="{{ meta_desc }}">
     <meta property="og:image"       content="{{ site.url }}{{ p.hero_image }}">
     <meta property="og:type"        content="website">
+    {% if site.active_lang == 'en' %}
+    <meta property="og:url"         content="{{ site.url }}/en{{ page.url }}">
+    {% else %}
     <meta property="og:url"         content="{{ site.url }}{{ page.url }}">
+    {% endif %}
     <meta property="og:site_name"   content="{{ p.name }}">
     <meta property="og:locale"      content="{{ og_locale }}">
     <meta name="twitter:card"        content="summary_large_image">
