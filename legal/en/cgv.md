@@ -64,8 +64,6 @@ The Guest agrees to return the property in the condition in which it was found.
 
 ## 10. Insurance and liability
 
-The service provider is covered by {{ site.data.property.compliance.insurance_provider }}.
-
 The Guest is responsible for any damage caused to the rented property. Taking out holiday insurance is strongly recommended.
 
 ## 11. Personal data

@@ -136,7 +136,7 @@ All content is in **`_data/property.yml`** — no HTML editing needed for:
 - Pricing (per night)
 - Address and contact details
 - Social media links
-- Belgian compliance info (registration number, insurance)
+- Belgian compliance info (registration number)
 - Concept section text and images
 - Amenities list
 - Gallery images
@@ -273,7 +273,6 @@ For production: verify the client's domain in Resend and update `FROM_EMAIL` in 
 ## Belgian Compliance Checklist
 
 - [x] Walloon registration number displayed (N° ETA-XXXX-XXXX)
-- [x] Insurance info displayed (Lodge Protect / abandon de recours)
 - [x] CGV checkbox on booking form (mandatory)
 - [x] Politique de confidentialité link
 - [x] CGV page (`cgv.md` → `/cgv/`)

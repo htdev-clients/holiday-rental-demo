@@ -64,8 +64,6 @@ Le Locataire s'engage à restituer le logement dans l'état dans lequel il l'a t
 
 ## 10. Assurance et responsabilité
 
-Le prestataire est couvert par {{ site.data.property.compliance.insurance_provider }}.
-
 Le Locataire est responsable des dégradations causées au bien loué. La souscription d'une assurance villégiature est vivement recommandée.
 
 ## 11. Données personnelles

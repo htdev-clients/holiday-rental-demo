@@ -79,8 +79,6 @@ social:
 compliance:
   registration_number: "N° ETA-XXXX-XXXX"
   registration_body:   "Commissariat Général au Tourisme de Wallonie"
-  insurance_provider:  "Lodge Protect"
-  insurance_note:      "Assurance responsabilité civile & abandon de recours inclus"
   payment_note:        "Paiement en ligne sécurisé via Stripe. Aucune donnée bancaire stockée."
 
 # ── Concept Sections ────────────────────────────────────
