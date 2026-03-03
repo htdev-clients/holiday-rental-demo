@@ -21,6 +21,8 @@ FROM_EMAIL      = "onboarding@resend.dev"
 # Airbnb iCal export URL — get from Airbnb › Listing › Availability › Export Calendar.
 # Leave empty for demo/template. /api/availability returns [] when not set.
 ICAL_URL        = ""
+# Ruby version for Jekyll builds on Cloudflare Pages
+RUBY_VERSION    = "3.4.4"
 
 # D1 database binding — shared across all client projects.
 # Run `wrangler d1 create holiday-rentals-db` once, then paste the database_id here.
