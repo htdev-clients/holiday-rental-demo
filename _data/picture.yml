@@ -1,0 +1,36 @@
+# _data/picture.yml — jekyll-picture-tag v2 configuration
+# https://rbuchberger.github.io/jekyll_picture_tag/
+#
+# Defines image presets used via {% picture <preset> <src> ... %} tags.
+# Generates responsive <picture> elements with WebP + original fallback.
+# Rebuilt images are cached in _site/assets/images/ (hashed filename).
+
+presets:
+
+  # ── Hero image — full-width background photograph ───────────────
+  # Source image is 1920px wide (capped there to avoid upscaling warnings)
+  hero:
+    formats: [webp, original]
+    widths: [600, 1000, 1400, 1800, 1920]
+    attributes:
+      img:
+        sizes: "100vw"
+
+  # ── Presentation section — interior/exterior photos ─────────────
+  # Desktop: 7/12 of max-w-7xl (≈ 58vw). Mobile: full width.
+  # Source images are 1170px wide.
+  content:
+    formats: [webp, original]
+    widths: [400, 700, 1000, 1170]
+    attributes:
+      img:
+        sizes: "(max-width: 1024px) 100vw, 58vw"
+
+  # ── Gallery carousel ─────────────────────────────────────────────
+  # Desktop: w-[38vw]. Mobile: w-[85vw].
+  gallery:
+    formats: [webp, original]
+    widths: [400, 700, 1000]
+    attributes:
+      img:
+        sizes: "(max-width: 768px) 85vw, 38vw"

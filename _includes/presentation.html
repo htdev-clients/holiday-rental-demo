@@ -71,7 +71,7 @@
             <!-- Main photo -->
             <div class="lg:col-span-7">
                 {% assign img_src = interior.image | remove_first: "/" %}
-                {% picture content {{ img_src }} alt="{{ interior_alt }}" class="w-full h-full object-cover hard-shadow" loading="lazy" decoding="async" --picture class="block w-full h-72 lg:h-full" %}
+                {% picture content {{ img_src }} alt="{{ interior_alt }}" class="w-full h-full object-cover hard-shadow" decoding="async" --picture class="block w-full h-72 lg:h-full" %}
             </div>
 
             <!-- Text -->
@@ -116,7 +116,7 @@
             <!-- Main photo -->
             <div class="lg:col-span-7 order-1 lg:order-2">
                 {% assign img_src = exterior.image | remove_first: "/" %}
-                {% picture content {{ img_src }} alt="{{ exterior_alt }}" class="w-full h-full object-cover hard-shadow" loading="lazy" decoding="async" --picture class="block w-full h-72 lg:h-full" %}
+                {% picture content {{ img_src }} alt="{{ exterior_alt }}" class="w-full h-full object-cover hard-shadow" decoding="async" --picture class="block w-full h-72 lg:h-full" %}
             </div>
 
         </div>

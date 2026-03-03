@@ -72,16 +72,57 @@ holiday-rental-template/
 
 ## Running Locally
 
+### Prerequisites
+- **Node.js** (any recent LTS — v20 or v22 recommended; v25 works with the flag below)
+- **Ruby** + **Bundler** (`gem install bundler`)
+
+### First-time setup
+
 ```bash
-# Install Ruby dependencies
+# Install Ruby gems (Jekyll, plugins)
 bundle install
 
-# Serve with live reload
-bundle exec jekyll serve --livereload
+# Install Node.js packages — use --ignore-scripts to skip native binary builds
+# (avoids a sharp/node-gyp compilation error on newer Node versions)
+npm install --ignore-scripts
+```
 
-# Build for production
-bundle exec jekyll build
-# Output → _site/
+> **Note:** Never use `npm ci` locally — it wipes `node_modules` and may fail on `sharp`
+> (a transitive Wrangler dependency that requires native compilation). Always use `npm install --ignore-scripts`.
+
+### Daily development workflow
+
+```bash
+# 1. Build Tailwind CSS (required once before serving, and after any template change)
+npm run build:css
+
+# 2a. Frontend only — Jekyll dev server with live reload (no backend)
+bundle exec jekyll serve --livereload
+# → http://localhost:4000
+
+# 2b. Full stack — Jekyll build + Wrangler Pages dev (backend functions + D1)
+npm run build:css && bundle exec jekyll build
+npx wrangler pages dev _site
+# → http://localhost:8788
+# Requires .dev.vars (copy from .dev.vars.example and fill in secrets)
+```
+
+### Watching CSS changes
+
+Open two terminal tabs:
+```bash
+# Tab 1: auto-rebuild CSS on every template save
+npm run watch:css
+
+# Tab 2: Jekyll dev server
+bundle exec jekyll serve --livereload
+```
+
+### Production build (mirrors Cloudflare Pages CI)
+
+```bash
+npm ci && npm run build:css && bundle exec jekyll build
+# If npm ci fails on sharp, use: npm install --ignore-scripts && npm run build:css && bundle exec jekyll build
 ```
 
 ---

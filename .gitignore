@@ -11,3 +11,7 @@ node_modules/
 .dev.vars
 secrets.json
 assets/css/tailwind.css
+# jekyll-picture-tag generated responsive images (regenerated on each build)
+# Pattern: imagename-WIDTH-HASH.ext
+assets/images/*-[0-9]*-[a-f0-9]*.webp
+assets/images/*-[0-9]*-[a-f0-9]*.jpg
