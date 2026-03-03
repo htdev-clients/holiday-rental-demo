@@ -154,6 +154,6 @@ function ownerEmailHtml({ firstname, lastname, email, phone, checkin, checkout, 
     → Répondre à la demande
   </a>
 </p>
-<p style="color:#999;font-size:12px;font-family:sans-serif">Ces liens sont valables ${ttlHours}h.</p>
+<p style="color:#999;font-size:12px;font-family:sans-serif">Ce lien est valable ${ttlHours}h.</p>
 `;
 }

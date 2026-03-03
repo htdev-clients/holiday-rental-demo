@@ -1,5 +1,17 @@
 {% assign t = site.data.i18n[site.active_lang] %}
 <script>
+    // ── Anchor scroll correction after font-swap ───────────────
+    // Custom fonts (font-display:swap) can shift layout after the browser scrolls
+    // to a hash target. Re-scroll once fonts are ready, but only if they weren't
+    // already loaded (i.e. second visit / cached = no-op).
+    document.addEventListener('click', function(e) {
+        const a = e.target.closest('a[href^="#"]');
+        if (!a || document.fonts.status === 'loaded') return;
+        const el = document.querySelector(a.getAttribute('href'));
+        if (!el) return;
+        document.fonts.ready.then(() => el.scrollIntoView({ behavior: 'smooth' }));
+    });
+
     // ── Language Switcher ───────────────────────────────────────
     (function() {
         var p = window.location.pathname;

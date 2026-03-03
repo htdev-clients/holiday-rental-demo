@@ -46,25 +46,11 @@
                     </div>
                 </div>
 
-                <!-- Legend + Calendar — anchored bottom -->
+                <!-- Price summary + Legend + Calendar — anchored bottom -->
                 <div class="mt-12">
-                    <div class="flex gap-6 mb-4 text-xs uppercase tracking-widest font-semibold">
-                        <div class="flex items-center gap-2">
-                            <div class="w-4 h-4 rounded-sm bg-paper border border-earth/20"></div>
-                            <span>{{ t.booking.legend_available }}</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-4 h-4 rounded-sm bg-clay"></div>
-                            <span>{{ t.booking.legend_selected }}</span>
-                        </div>
-                    </div>
-
-                    <div id="availability">
-                        <div id="calendar-root"></div>
-                    </div>
 
                     <!-- Récapitulatif tarifaire — toujours rendu, aucun décalage de mise en page -->
-                    <div class="mt-6 border border-stone bg-white shadow-sm overflow-hidden">
+                    <div class="mb-6 border border-stone bg-white shadow-sm overflow-hidden">
                         <div class="h-1 bg-clay"></div>
                         <div class="px-6 pt-5 pb-5">
 
@@ -97,6 +83,21 @@
                             </div>
 
                         </div>
+                    </div>
+
+                    <div class="flex gap-6 mb-4 text-xs uppercase tracking-widest font-semibold">
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 rounded-sm bg-paper border border-earth/20"></div>
+                            <span>{{ t.booking.legend_available }}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 rounded-sm bg-clay"></div>
+                            <span>{{ t.booking.legend_selected }}</span>
+                        </div>
+                    </div>
+
+                    <div id="availability">
+                        <div id="calendar-root"></div>
                     </div>
 
                 </div>
@@ -203,7 +204,7 @@
                     <p class="text-gray-600 text-sm leading-relaxed max-w-xs mx-auto">
                         {{ t.booking.success_msg | replace: 'HOURS', p.booking.response_hours }}
                     </p>
-                    <p class="text-xs text-gray-400">{{ t.booking.spam_note }}</p>
+                    <p class="text-xs text-gray-600">{{ t.booking.spam_note }}</p>
                 </div>
             </div>
 
