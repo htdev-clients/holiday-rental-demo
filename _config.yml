@@ -3,7 +3,7 @@ description: Location de chalet éco-responsable au cœur des Ardennes Belges.
 baseurl: ""
 # Deployed URL — must match SITE_URL in wrangler.toml.
 # Update both when switching from the Cloudflare Pages domain to a custom domain.
-url: "https://holiday-rental-template.pages.dev"
+url: "https://holiday-rental-demo.pages.dev"
 
 markdown: kramdown
 
