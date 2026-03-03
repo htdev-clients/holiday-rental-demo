@@ -46,8 +46,8 @@
                     </div>
                 </div>
 
-                <!-- Price summary + Legend + Calendar — anchored bottom -->
-                <div class="mt-12">
+                <!-- Price summary + Legend + Calendar — fills remaining space, calendar pinned to bottom -->
+                <div class="mt-12 flex-1 flex flex-col">
 
                     <!-- Récapitulatif tarifaire — toujours rendu, aucun décalage de mise en page -->
                     <div class="mb-6 border border-stone bg-white shadow-sm overflow-hidden">
@@ -84,6 +84,9 @@
 
                         </div>
                     </div>
+
+                    <!-- Spacer — absorbs height difference between left and right columns -->
+                    <div class="flex-1 min-h-6"></div>
 
                     <div class="flex gap-6 mb-4 text-xs uppercase tracking-widest font-semibold">
                         <div class="flex items-center gap-2">

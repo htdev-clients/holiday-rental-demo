@@ -9,7 +9,9 @@
         if (!a || document.fonts.status === 'loaded') return;
         const el = document.querySelector(a.getAttribute('href'));
         if (!el) return;
-        document.fonts.ready.then(() => el.scrollIntoView({ behavior: 'smooth' }));
+        // requestAnimationFrame ensures the font-swap reflow has been applied to the
+        // DOM before we recalculate the element's position and re-scroll.
+        document.fonts.ready.then(() => requestAnimationFrame(() => el.scrollIntoView({ behavior: 'smooth' })));
     });
 
     // ── Language Switcher ───────────────────────────────────────
