@@ -394,6 +394,8 @@
         }
 
         document.getElementById('booking-form-container').classList.add('hidden');
-        document.getElementById('booking-success').classList.remove('hidden');
+        const successEl = document.getElementById('booking-success');
+        successEl.classList.remove('hidden');
+        successEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
 </script>

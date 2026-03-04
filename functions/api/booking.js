@@ -146,12 +146,16 @@ function ownerEmailHtml({ firstname, lastname, email, phone, checkin, checkout, 
   <tr><td style="padding:6px 16px 6px 0;color:#888">Voyageurs</td><td style="padding:6px 0">${escapeHtml(String(guests))}</td></tr>
   ${message ? `<tr><td style="padding:6px 16px 6px 0;color:#888;vertical-align:top">Message</td><td style="padding:6px 0">${escapeHtml(message)}</td></tr>` : ''}
 </table>
-<p style="margin-top:24px;padding:14px 16px;background:#FEF3C7;border-left:4px solid #D97706;font-family:sans-serif;font-size:14px;color:#92400E">
-  <strong>⚠ Avant d'approuver :</strong> bloquez ces dates dans votre calendrier Airbnb pour éviter une double réservation.
-</p>
+<table style="border-collapse:collapse;margin-top:24px">
+  <tr>
+    <td style="padding:14px 16px;background:#FEF3C7;border-left:4px solid #D97706;font-family:sans-serif;font-size:14px;color:#92400E">
+      <strong>⚠ Avant d'approuver :</strong> bloquez ces dates dans votre calendrier Airbnb pour éviter une double réservation.
+    </td>
+  </tr>
+</table>
 <p style="margin-top:16px">
   <a href="${approveUrl}" style="background:#4A5D44;color:#fff;padding:14px 28px;text-decoration:none;font-weight:bold;font-family:sans-serif;display:inline-block">
-    → Répondre à la demande
+    Répondre à la demande
   </a>
 </p>
 <p style="color:#999;font-size:12px;font-family:sans-serif">Ce lien est valable ${ttlHours}h.</p>
