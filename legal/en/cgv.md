@@ -31,7 +31,7 @@ All prices are stated in euros (€), inclusive of all taxes. Prices confirmed a
 
 *[To be completed: amount due (deposit or full payment), payment deadline.]*
 
-Payment is made via secure online payment (Stripe). No banking data is stored by the service provider.
+Payment is made by bank transfer to the service provider's account. The bank details (IBAN) and payment reference to include are sent to the Guest by email upon booking confirmation. The stay is definitively reserved upon receipt of the transfer.
 
 ## 6. Cancellation by the Guest
 

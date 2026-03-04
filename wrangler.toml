@@ -1,4 +1,4 @@
-name = "holiday-rental-demo"
+name = "holiday-rental-nostripe-demo"
 compatibility_date = "2024-09-23"
 pages_build_output_dir = "_site"
 
@@ -17,9 +17,11 @@ RATE_LIMIT_PER_EMAIL = "100"
 RESPONSE_HOURS   = "24"
 # Deployed URL — must match url in _config.yml.
 # Update both when switching from the Cloudflare Pages domain to a custom domain.
-SITE_URL        = "https://holiday-rental-demo.pages.dev"
+SITE_URL        = "https://holiday-rental-nostripe-demo.pages.dev"
 # Sender address — use onboarding@resend.dev until client domain is verified with Resend
 FROM_EMAIL      = "onboarding@resend.dev"
+# Owner's bank account number (IBAN) — displayed in the payment email sent to guests
+OWNER_IBAN      = "BE00 0000 0000 0000"
 # Airbnb iCal export URL — get from Airbnb › Listing › Availability › Export Calendar.
 # Leave empty for demo/template. /api/availability returns [] when not set.
 ICAL_URL        = ""
