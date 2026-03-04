@@ -12,7 +12,7 @@
 {% endif %}
 
 <!-- ── Mobile Menu Overlay ── -->
-<div id="mobile-menu" class="fixed inset-0 z-[60] bg-earth/97 backdrop-blur-md flex flex-col justify-center items-center gap-8 menu-hidden">
+<div id="mobile-menu" class="fixed inset-0 z-[60] bg-earth flex flex-col justify-center items-center gap-8 menu-hidden">
     <button id="close-menu-btn" class="absolute top-6 right-6 text-white hover:text-clay transition-colors">
         <i data-lucide="x" class="w-10 h-10"></i>
     </button>
@@ -29,7 +29,7 @@
 </div>
 
 <!-- ── Main Nav ── -->
-<nav id="main-nav" class="fixed w-full z-50 px-6 py-5 flex justify-between items-center transition-all duration-400 bg-earth/90 backdrop-blur-sm">
+<nav id="main-nav" class="fixed w-full z-50 px-6 py-5 flex justify-between items-center transition-all duration-400 bg-gradient-to-b from-earth/80 to-transparent">
     <a href="{{ logo_href }}" class="text-white font-serif font-bold text-2xl tracking-wider drop-shadow-md">
         {{ site.data.property.name }}.
     </a>
