@@ -42,7 +42,7 @@ export async function onRequestGet(context) {
 
 /**
  * POST /api/approve
- * Processes the owner's decision: action=approve sends bank transfer instructions, action=refuse sends a rejection email.
+ * Processes the owner's decision: action=approve sends a payment link, action=refuse sends a rejection email.
  */
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -85,12 +85,20 @@ export async function onRequestPost(context) {
 
   if (action === 'approve') {
     const total = calcTotal(nights, parseFloat(env.PRICE_PER_NIGHT));
-    const paymentRef = `RSV-${id.slice(0, 8).toUpperCase()}`;
+
+    let paymentUrl;
+    try {
+      const session = await createStripeSession({ booking, total, env, propertyName, T });
+      paymentUrl = session.url;
+    } catch (stripeErr) {
+      console.error('Stripe error:', stripeErr);
+      return err('Erreur lors de la création du lien de paiement. Veuillez réessayer.');
+    }
 
     // Update status first — if the email fails, the owner sees an error page and the
     // booking remains 'approved' in the DB (not retryable as pending). Better than the
-    // reverse, where a DB failure after a successful email leaves the guest with bank
-    // details but the booking stuck as 'pending'.
+    // reverse, where a DB failure after a successful email leaves the guest with a link
+    // but the booking stuck as 'pending'.
     try {
       await env.DB.prepare("UPDATE bookings SET status = 'approved' WHERE id = ?").bind(id).run();
     } catch (dbErr) {
@@ -98,25 +106,22 @@ export async function onRequestPost(context) {
       return err('Erreur serveur lors de la mise à jour. Veuillez réessayer.');
     }
 
-    const confirmToken = await signHmac('confirm:' + id, env.APPROVE_SECRET);
-    const confirmUrl = `${env.SITE_URL}/api/confirm?id=${encodeURIComponent(id)}&token=${encodeURIComponent(confirmToken)}`;
-
     try {
       await sendEmail(env.RESEND_API_KEY, {
         from: env.FROM_EMAIL,
         to: booking.email,
         subject: T.pay_subject(propertyName),
-        html: guestPaymentEmailHtml({ booking, nights, total, paymentRef, ownerIban: env.OWNER_IBAN, propertyName, ownerMessage, T }),
+        html: guestPaymentEmailHtml({ booking, nights, total, paymentUrl, propertyName, ownerMessage, T }),
       });
     } catch (emailErr) {
       // DB is already updated — log the failure and show a warning to the owner.
-      console.error('[approve] Failed to email guest bank details:', emailErr);
-      return new Response(successPageHtml(booking, propertyName, 'approved', confirmUrl, { emailFailed: true }), {
+      console.error('[approve] Failed to email guest payment link:', emailErr);
+      return new Response(successPageHtml(booking, propertyName, 'approved', paymentUrl), {
         headers: { 'Content-Type': 'text/html;charset=UTF-8' },
       });
     }
 
-    return new Response(successPageHtml(booking, propertyName, 'approved', confirmUrl), {
+    return new Response(successPageHtml(booking, propertyName, 'approved'), {
       headers: { 'Content-Type': 'text/html;charset=UTF-8' },
     });
   } else {
@@ -144,9 +149,42 @@ export async function onRequestPost(context) {
   }
 }
 
+// ─── Stripe ───────────────────────────────────────────────────────────────────
+
+async function createStripeSession({ booking, total, env, propertyName, T }) {
+  const res = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${env.STRIPE_SECRET_KEY}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    // URLSearchParams must be built from an array of tuples to allow duplicate keys
+    // (object literals silently drop duplicate keys — bancontact would override card)
+    body: new URLSearchParams([
+      ['payment_method_types[]',                                     'card'],
+      ['payment_method_types[]',                                     'bancontact'],
+      ['line_items[0][price_data][currency]',                        'eur'],
+      ['line_items[0][price_data][product_data][name]',              `${propertyName} — ${booking.checkin} → ${booking.checkout}`],
+      ['line_items[0][price_data][product_data][description]',       T.pay_stripe_desc(booking.guests)],
+      ['line_items[0][price_data][unit_amount]',                     String(Math.round(total * 100))],
+      ['line_items[0][quantity]',                                    '1'],
+      ['mode',                                                       'payment'],
+      ['locale',                                                     T.pay_locale],
+      ['success_url',                                                `${env.SITE_URL}${T.success_path}`],
+      ['cancel_url',                                                 `${env.SITE_URL}/#booking`],
+      ['customer_email',                                             booking.email],
+      ['metadata[booking_id]',                                       booking.id],
+      ['metadata[property_id]',                                      booking.property_id],
+      ['custom_text[submit][message]',                               T.pay_stripe_note],
+    ]),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
 // ─── Email templates ──────────────────────────────────────────────────────────
 
-function guestPaymentEmailHtml({ booking, nights, total, paymentRef, ownerIban, propertyName, ownerMessage, T }) {
+function guestPaymentEmailHtml({ booking, nights, total, paymentUrl, propertyName, ownerMessage, T }) {
   return `
 <h2 style="color:#2C2520">${T.pay_heading}</h2>
 <p style="font-family:sans-serif">${T.pay_greeting(booking.firstname)}</p>
@@ -159,13 +197,12 @@ ${ownerMessage ? `<p style="font-family:sans-serif;background:#f9f6f0;padding:14
   <tr><td style="padding:6px 16px 6px 0;color:#888">${T.pay_col_guests}</td><td style="padding:6px 0">${booking.guests}</td></tr>
   <tr><td style="padding:6px 16px 6px 0;color:#888">${T.pay_col_total}</td><td style="padding:6px 0"><strong>${total.toLocaleString('fr-BE')} €</strong></td></tr>
 </table>
-<p style="font-family:sans-serif;font-weight:600;margin-top:20px">${T.pay_transfer_title}</p>
-<table style="border-collapse:collapse;font-family:sans-serif;font-size:14px;background:#f9f6f0;padding:16px;border-left:3px solid #D6A87C">
-  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.pay_iban_label}</td><td style="padding:6px 0"><strong>${escapeHtml(ownerIban || '[IBAN]')}</strong></td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.pay_ref_label}</td><td style="padding:6px 0"><strong>${escapeHtml(paymentRef)}</strong></td></tr>
-  <tr><td style="padding:6px 16px 6px 0;color:#888">${T.pay_amount_label}</td><td style="padding:6px 0"><strong>${total.toLocaleString('fr-BE')} €</strong></td></tr>
-</table>
-<p style="color:#999;font-size:12px;font-family:sans-serif;margin-top:12px">${T.pay_transfer_note}</p>
+<p style="margin-top:24px">
+  <a href="${paymentUrl}" style="background:#D6A87C;color:#fff;padding:14px 28px;text-decoration:none;font-weight:bold;font-family:sans-serif;display:inline-block">
+    ${T.pay_cta}
+  </a>
+</p>
+<p style="color:#999;font-size:12px;font-family:sans-serif">${T.pay_link_expiry}</p>
 `;
 }
 
@@ -217,12 +254,8 @@ function pageShell({ title, propertyName, body, footerNote = '' }) {
     button:hover { opacity: 0.82; }
     .btn-approve { background: #4A5D44; color: #fff; }
     .btn-refuse  { background: #E5E2D9; color: #2C2520; }
-    .btn-confirm { display: inline-block; background: #4A5D44; color: #fff; padding: 14px 28px; font-size: 11px; font-weight: 600; font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 0.07em; text-decoration: none; margin-top: 20px; }
-    .btn-confirm:hover { opacity: 0.82; }
     .note   { font-size: 11px; color: #bbb; text-align: center; margin-top: 20px; }
     .warning { background: #FEF3C7; border-left: 4px solid #D97706; padding: 12px 16px; font-size: 13px; color: #92400E; margin-bottom: 20px; line-height: 1.5; }
-    .confirm-box { background: #F2F0E9; border: 1px solid #E5E2D9; padding: 20px; margin-top: 24px; }
-    .confirm-box p { font-size: 12px; color: #666; margin-top: 10px; line-height: 1.5; }
   </style>
 </head>
 <body>
@@ -262,35 +295,25 @@ function actionFormHtml({ booking, nights, propertyName, id, token, ttlHours }) 
   return pageShell({ title: 'Demande de réservation', propertyName, body, footerNote: `Lien sécurisé · valable ${ttlHours}h` });
 }
 
-function successPageHtml(booking, propertyName, result, confirmUrl = null, opts = {}) {
+function successPageHtml(booking, propertyName, result, emailFailedPaymentUrl = null) {
   const approved = result === 'approved';
   const icon     = approved ? '✓' : '—';
   const heading  = approved ? 'Réservation approuvée' : 'Demande refusée';
-
   let detail;
-  if (approved && opts.emailFailed) {
-    detail = `⚠ L'email au voyageur n'a pas pu être envoyé. Transmettez manuellement les coordonnées bancaires à <strong>${escapeHtml(booking.email)}</strong>.`;
+  if (approved && emailFailedPaymentUrl) {
+    detail = `⚠ L'email au voyageur n'a pas pu être envoyé. Transmettez ce lien manuellement à <strong>${escapeHtml(booking.email)}</strong> :<br><a href="${escapeHtml(emailFailedPaymentUrl)}" style="color:#D6A87C;word-break:break-all">${escapeHtml(emailFailedPaymentUrl)}</a>`;
   } else if (approved) {
-    detail = `Les coordonnées bancaires ont été envoyées à <strong>${escapeHtml(booking.email)}</strong>.`;
+    detail = `Un lien de paiement a été envoyé à <strong>${escapeHtml(booking.email)}</strong>.`;
   } else {
     detail = `Un email de refus a été envoyé à <strong>${escapeHtml(booking.email)}</strong>.`;
   }
-
-  const confirmBlock = approved && confirmUrl ? `
-    <div class="confirm-box">
-      <label style="margin-bottom:4px">Étape suivante</label>
-      <a href="${escapeHtml(confirmUrl)}" class="btn-confirm">✓ Confirmer la réception du paiement</a>
-      <p>Cliquez ce bouton une fois le virement reçu sur votre compte. Le voyageur recevra alors un email de confirmation.</p>
-    </div>` : '';
-
   const body = `
     <h1 style="color:${approved ? '#4A5D44' : '#888'}">${icon} ${heading}</h1>
     <p class="sub" style="margin-top:12px">${detail}</p>
     <table style="margin-top:8px">
       <tr><td>Voyageur</td><td>${escapeHtml(booking.firstname)} ${escapeHtml(booking.lastname)}</td></tr>
       <tr><td>Dates</td><td>${booking.checkin} → ${booking.checkout}</td></tr>
-    </table>
-    ${confirmBlock}`;
+    </table>`;
   return pageShell({ title: heading, propertyName, body });
 }
 

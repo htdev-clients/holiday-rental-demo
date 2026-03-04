@@ -31,7 +31,7 @@ Les tarifs sont indiqués en euros (€), toutes taxes comprises. Les tarifs en 
 
 *[À compléter : montant dû (acompte ou totalité), délai de paiement.]*
 
-Le paiement s'effectue par virement bancaire sur le compte du prestataire. Les coordonnées bancaires (IBAN) ainsi que la communication structurée à indiquer sont transmises au Locataire par email lors de la confirmation de la réservation. Le séjour est définitivement réservé à réception du virement.
+Le paiement s'effectue par voie électronique sécurisée (Stripe). Aucune donnée bancaire n'est conservée par le prestataire.
 
 ## 6. Annulation par le Locataire
 

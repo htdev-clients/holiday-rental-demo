@@ -14,9 +14,8 @@ FROM_EMAIL=onboarding@resend.dev
 # Airbnb iCal export URL — get from Airbnb › Listing › Availability › Export Calendar
 ICAL_URL=
 
-# Owner's bank account number (IBAN) — displayed in the payment email sent to guests
-OWNER_IBAN=BE00 0000 0000 0000
-
 # Secrets — production values go in secrets.json → npm run deploy:secrets
 RESEND_API_KEY=re_...
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
 APPROVE_SECRET=change-me-to-a-long-random-string
