@@ -11,6 +11,8 @@ OWNER_EMAIL     = "harold.taeter@gmail.com"
 PRICE_PER_NIGHT  = "150"
 # Max guests allowed — must match capacity.guests in _data/property.yml
 MAX_GUESTS       = "6"
+# Max booking requests per email per 24 h (rate limiting). Set high for demos, low (3) for production.
+RATE_LIMIT_PER_EMAIL = "100"
 # Hours the owner has to respond — must match booking.response_hours in _data/property.yml
 RESPONSE_HOURS   = "24"
 # Deployed URL — must match url in _config.yml.

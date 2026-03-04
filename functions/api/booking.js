@@ -48,14 +48,15 @@ export async function onRequestPost(context) {
   // Sanitise and validate lang — only accept known values
   const lang = data.lang === 'en' ? 'en' : 'fr';
 
-  // Rate limiting: max 3 pending bookings per email in the last 24 hours
+  // Rate limiting — configurable via RATE_LIMIT_PER_EMAIL in wrangler.toml (default: 3)
+  const rateLimit = parseInt(env.RATE_LIMIT_PER_EMAIL, 10) || 3;
   const recentCount = await env.DB
     .prepare(`SELECT COUNT(*) AS n FROM bookings
               WHERE email = ? AND property_id = ?
               AND created_at > datetime('now', '-24 hours')`)
     .bind(email.trim().toLowerCase(), env.PROPERTY_ID)
     .first('n');
-  if (recentCount >= 3) {
+  if (recentCount >= rateLimit) {
     return jsonError('Trop de demandes. Veuillez réessayer dans 24h.', 429);
   }
 
