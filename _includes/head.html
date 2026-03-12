@@ -29,6 +29,11 @@
     {% endif %}
     <meta property="og:site_name"   content="{{ p.name }}">
     <meta property="og:locale"      content="{{ og_locale }}">
+    {% if site.active_lang == 'en' %}
+    <meta property="og:locale:alternate" content="fr_BE">
+    {% else %}
+    <meta property="og:locale:alternate" content="en_GB">
+    {% endif %}
     <meta name="twitter:card"        content="summary_large_image">
     <meta name="twitter:title"       content="{% if page_title %}{{ page_title }} | {{ p.name }}{% else %}{{ p.name }}{% endif %}">
     <meta name="twitter:description" content="{{ meta_desc }}">
