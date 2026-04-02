@@ -7,7 +7,7 @@ pages_build_output_dir = "_site"
 [vars]
 PROPERTY_ID     = "refuge-sauvage-001"
 PROPERTY_NAME   = "Le Refuge Sauvage"
-OWNER_EMAIL     = "harold.taeter@gmail.com"
+OWNER_EMAIL     = "owner@example.com"
 PRICE_PER_NIGHT  = "150"
 # Max guests allowed — must match capacity.guests in _data/property.yml
 MAX_GUESTS       = "6"
@@ -31,4 +31,4 @@ RUBY_VERSION    = "3.2.10"
 [[d1_databases]]
 binding       = "DB"
 database_name = "holiday-rentals-db"
-database_id   = "febe74a2-262a-41ef-a6a5-446ae0d488f8"
+database_id   = "YOUR_D1_DATABASE_ID"
