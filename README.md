@@ -8,7 +8,9 @@
 
 This is a demo website built to showcase a **semi-direct booking solution** for holiday rental owners. The concept: instead of relying solely on Airbnb, owners get their own branded website where guests can discover the property and book directly — cutting out platform fees and building a direct relationship with their guests.
 
-This demo simulates a Belgian chalet rental in the Ardennes. It is part of a wider product that includes a [reusable template](https://github.com/htdev-clients/holiday-rental-template) designed to be quickly deployed for any holiday rental client.
+This demo simulates a Belgian chalet rental in the Ardennes.
+
+This variant handles payments **online via Stripe Checkout** (credit card + Bancontact), making it suitable for owners who want a fully automated payment flow. A [no-payment-integration version](https://github.com/htdev-clients/holiday-rental-nostripe-demo) is also available for owners who prefer to handle payments manually.
 
 ---
 
@@ -55,9 +57,3 @@ This demo simulates a Belgian chalet rental in the Ardennes. It is part of a wid
 - GDPR cookie consent banner
 - Walloon tourism registration number display
 
----
-
-## Related
-
-This demo is built on the same codebase as the client-ready template:
-👉 [holiday-rental-template](https://github.com/htdev-clients/holiday-rental-template) — the version without demo content, ready to deploy for a real property.
