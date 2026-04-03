@@ -24,11 +24,11 @@ FROM_EMAIL      = "onboarding@resend.dev"
 # Leave empty for demo/template. /api/availability returns [] when not set.
 ICAL_URL        = ""
 # Ruby version for Jekyll builds on Cloudflare Pages
-RUBY_VERSION    = "3.2.10"
+RUBY_VERSION    = "3.2.2"
 
 # D1 database binding — shared across all client projects.
 # Run `wrangler d1 create holiday-rentals-db` once, then paste the database_id here.
 [[d1_databases]]
 binding       = "DB"
 database_name = "holiday-rentals-db"
-database_id   = "YOUR_D1_DATABASE_ID"
+database_id   = "febe74a2-262a-41ef-a6a5-446ae0d488f8"
