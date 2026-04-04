@@ -16,3 +16,4 @@ assets/css/tailwind.css
 assets/images/*-[0-9]*-[a-f0-9]*.webp
 assets/images/*-[0-9]*-[a-f0-9]*.jpg
 CLAUDE.md
+.wrangler/
